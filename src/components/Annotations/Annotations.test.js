@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { ErrorBoundary } from 'react-error-boundary';
 import Annotations from './Annotations';
 import manifest from '@TestData/playlist';
@@ -41,16 +41,21 @@ describe('Annotations component', () => {
       expect(screen.queryByTestId('markers-display-table')).toBeInTheDocument();
     });
 
-    test('renders all marker information properly', () => {
-      expect(screen.queryByText('Marker 1')).toBeInTheDocument();
-      expect(screen.queryByText('00:00:02.836')).toBeInTheDocument();
-      expect(screen.queryByText('Marker 2')).toBeInTheDocument();
-      expect(screen.queryByText('00:00:25.941')).toBeInTheDocument();
+    test('renders all marker information in chronological order', () => {
+      const markerRows = screen.queryAllByTestId('marker-row');
+      expect(markerRows).toHaveLength(3);
+
+      expect(within(markerRows[0]).queryByText('Marker 1')).toBeInTheDocument();
+      expect(within(markerRows[0]).queryByText('00:00:02.836')).toBeInTheDocument();
+      expect(within(markerRows[1]).queryByText('Marker 2')).toBeInTheDocument();
+      expect(within(markerRows[1]).queryByText('00:00:25.941')).toBeInTheDocument();
+      expect(within(markerRows[2]).queryByText('Marker 0')).toBeInTheDocument();
+      expect(within(markerRows[2]).queryByText('00:00:31.941')).toBeInTheDocument();
     });
 
     test('renders edit/delete buttons for each marker', () => {
-      expect(screen.queryAllByTestId('edit-button')).toHaveLength(2);
-      expect(screen.queryAllByTestId('delete-button')).toHaveLength(2);
+      expect(screen.queryAllByTestId('edit-button')).toHaveLength(3);
+      expect(screen.queryAllByTestId('delete-button')).toHaveLength(3);
     });
 
     describe('editing markers', () => {
@@ -104,7 +109,7 @@ describe('Annotations component', () => {
         expect(timestampInput).toHaveClass('time-valid');
       });
 
-      test('saving updates the markers table', () => {
+      test('saving updates the markers table', async () => {
         const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 201,
         });
@@ -113,30 +118,60 @@ describe('Annotations component', () => {
         expect(labelInput).toHaveDisplayValue('Marker 1');
 
         fireEvent.change(labelInput, { target: { value: 'Test Marker' } });
-        fireEvent.click(screen.getByTestId('edit-save-button'));
+        act(() => fireEvent.click(screen.getByTestId('edit-save-button')));
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(fetchSpy).toHaveBeenCalledTimes(1);
           expect(screen.queryByText('Test Marker')).toBeInTheDocument();
         });
       });
 
-      test('delete action removes the marker from table', () => {
+      test('saving edited marker re-renders markers in chronological order', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 201,
+        });
+        const markerRows = screen.queryAllByTestId('marker-row');
+        expect(markerRows).toHaveLength(3);
+
+        // Marker with label 'Marker 2' is initially the second row
+        expect(within(markerRows[1]).queryByText('Marker 2')).toBeInTheDocument();
+        expect(within(markerRows[1]).queryByText('00:00:25.941')).toBeInTheDocument();
+
+        fireEvent.click(secondEditButton);
+
+        const timestampInput = screen.getByTestId('edit-timestamp');
+        expect(timestampInput).toHaveDisplayValue('00:00:25.941');
+
+        // Update 'Marker 2' timestamp to be earlier than 'Marker 1'
+        fireEvent.change(timestampInput, { target: { value: '00:00:00.422' } });
+        expect(timestampInput).toHaveClass('time-valid');
+
+        act(() => fireEvent.click(screen.getByTestId('edit-save-button')));
+
+        await waitFor(() => {
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          // After updating 'Marker 2' is now the first row
+          expect(within(markerRows[0]).queryByText('Marker 2')).toBeInTheDocument();
+          expect(within(markerRows[0]).queryByText('00:00:00.422')).toBeInTheDocument();
+        });
+      });
+
+      test('delete action removes the marker from table', async () => {
         const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 200,
         });
         fireEvent.click(secondDeleteButton);
 
         expect(screen.queryByTestId('delete-confirm-button')).toBeInTheDocument();
-        fireEvent.click(screen.getByTestId('delete-confirm-button'));
+        act(() => fireEvent.click(screen.getByTestId('delete-confirm-button')));
 
-        waitFor(() => {
+        await waitFor(() => {
           expect(fetchSpy).toHaveBeenCalledTimes(1);
           expect(screen.queryByText('Marker 2')).not.toBeInTheDocument();
         });
       });
 
-      test('user actions do not have csrf token in header when it is not present in DOM', () => {
+      test('user actions do not have csrf token in header when it is not present in DOM', async () => {
         const deleteFetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 200,
         });
@@ -149,34 +184,9 @@ describe('Annotations component', () => {
         };
 
         fireEvent.click(secondDeleteButton);
-        fireEvent.click(screen.getByTestId('delete-confirm-button'));
+        act(() => fireEvent.click(screen.queryByTestId('delete-confirm-button')));
 
-        expect(deleteFetchSpy).toHaveBeenCalled();
-        expect(deleteFetchSpy).toHaveBeenCalledWith(
-          "http://example.com/playlists/1/canvas/3/marker/4",
-          deleteOptions,
-          { signal: 'test-signal' },
-        );
-      });
-
-      test('user actions have csrf token in header when it is present in DOM', () => {
-        document.head.innerHTML = '<meta name="csrf-token" content="csrftoken">';
-        const deleteFetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
-          status: 200,
-        });
-        const deleteOptions = {
-          method: 'DELETE',
-          credentials: 'same-origin',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-Token': 'csrftoken',
-          },
-        };
-
-        fireEvent.click(secondDeleteButton);
-        fireEvent.click(screen.getByTestId('delete-confirm-button'));
-
-        waitFor(() => {
+        await waitFor(() => {
           expect(deleteFetchSpy).toHaveBeenCalled();
           expect(deleteFetchSpy).toHaveBeenCalledWith(
             "http://example.com/playlists/1/canvas/3/marker/4",
@@ -184,6 +194,71 @@ describe('Annotations component', () => {
             { signal: 'test-signal' },
           );
         });
+      });
+    });
+  });
+
+  describe('with csrf token in DOM', () => {
+    /** Reference: https://dev.to/pyyding/comment/mk2n  */
+    const abortCall = jest.fn();
+    global.AbortController = class {
+      signal = 'test-signal';
+      abort = abortCall;
+    };
+
+    beforeEach(() => {
+      // Set up CSRF token before rendering the component
+      document.head.innerHTML = '<meta name="csrf-token" content="csrftoken">';
+      const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
+        initialManifestState: {
+          ...manifestState(manifest, 2),
+          playlist: {
+            hasAnnotationService: true,
+            isEditing: false,
+            annotationServiceId: 'http://example.com/marker',
+            markers: [],
+            isPlaylist: true,
+          },
+          annotations: [annotationParser.parseAnnotationSets(manifest, 2)],
+        },
+        initialPlayerState: { player: { currentTime: jest.fn() } },
+      });
+      render(
+        <ErrorBoundary>
+          <AnnotationsWrapped />
+        </ErrorBoundary>
+      );
+    });
+
+    afterEach(() => {
+      // Clean up the CSRF meta tag
+      document.head.innerHTML = '';
+    });
+
+    test('user actions have csrf token in header when it is present in DOM', async () => {
+      const deleteFetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+        status: 200,
+      });
+      const deleteOptions = {
+        method: 'DELETE',
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-Token': 'csrftoken',
+        },
+      };
+
+      const secondDeleteButton = screen.queryAllByTestId('delete-button')[1];
+      fireEvent.click(secondDeleteButton);
+      fireEvent.click(screen.getByTestId('delete-confirm-button'));
+
+      await waitFor(() => {
+        expect(deleteFetchSpy).toHaveBeenCalled();
+        expect(deleteFetchSpy).toHaveBeenCalledWith(
+          "http://example.com/playlists/1/canvas/3/marker/4",
+          deleteOptions,
+          { signal: 'test-signal' },
+        );
       });
     });
   });

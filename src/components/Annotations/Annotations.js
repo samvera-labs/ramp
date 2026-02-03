@@ -35,15 +35,18 @@ const Annotations = ({
   useAnnotations();
 
   const { annotationServiceId, hasAnnotationService, isPlaylist, markers } = playlist;
-  const [_, setCanvasPlaylistsMarkers] = useState([]);
+  const [canvasPlaylistsMarkers, setCanvasPlaylistsMarkers] = useState([]);
   const { showBoundary } = useErrorBoundary();
   const canvasIdRef = useRef();
 
   // Using a ref updates markers table immediately after marker edit/creation
   let canvasPlaylistsMarkersRef = useRef([]);
   const setCanvasMarkers = (list) => {
-    setCanvasPlaylistsMarkers(...list);
+    // Sort markers chronologically for the display
+    list.sort((a, b) => a.time - b.time);
     canvasPlaylistsMarkersRef.current = list;
+    // Trigger re-render with sorted list
+    setCanvasPlaylistsMarkers([...list]);
   };
 
   // Retrieves the CRSF authenticity token when component is embedded in a Rails app.
@@ -169,7 +172,7 @@ const Annotations = ({
         </table>
       );
     }
-  }, [canvasPlaylistsMarkersRef.current]);
+  }, [canvasPlaylistsMarkers]);
 
   return (
     <div className='ramp--annotations-display'
