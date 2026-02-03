@@ -285,7 +285,7 @@ const MarkerRow = ({
     );
   } else {
     return (
-      <tr>
+      <tr data-testid="marker-row">
         <td>
           <a
             href={`${marker.canvasId}#t=${markerOffsetRef.current},`}

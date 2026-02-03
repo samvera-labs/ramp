@@ -219,6 +219,17 @@ export default {
               body: {
                 type: "TextualBody",
                 format: "text/html",
+                value: "Marker 0"
+              },
+              id: 'http://example.com/playlists/1/canvas/3/marker/2',
+              target: 'http://example.com/playlists/1/canvas/3#t=31.941'
+            },
+            {
+              type: "Annotation",
+              motivation: "highlighting",
+              body: {
+                type: "TextualBody",
+                format: "text/html",
                 value: "Marker 1"
               },
               id: 'http://example.com/playlists/1/canvas/3/marker/3',

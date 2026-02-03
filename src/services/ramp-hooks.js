@@ -1458,6 +1458,8 @@ export const useAnnotations = () => {
         const { _, annotationSets } = markers[0];
         canvasMarkers = annotationSets.map((a) => a.markers)
           .filter(m => m != undefined).flat();
+        // Sort markers chronologically
+        canvasMarkers.sort((a, b) => a.time - b.time);
       }
       // Update markers in global state
       manifestDispatch({ markers: { canvasIndex, canvasMarkers }, type: 'setPlaylistMarkers' });
