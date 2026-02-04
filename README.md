@@ -132,10 +132,21 @@ To run tests in `watch` mode:
 yarn test:watch
 ```
 
+The built library can be imported directly from GitHub to test unreleased code changes. To do this, please follow the following steps.
+
+1. Create a new branch from `main` with the latest code
+2. Run `yarn build` commande in your branch. This will create CommoneJS, ES Module, and UMD distribution files located in the `/dist/` directory.
+3. Push these files into your branch in GitHub
+4. In your application;
+   - Remove the existing `@samvera/ramp` installation with `yarn remove @samvera/ramp`
+   - Clean cache using `yarn cache clean`
+   - Add the built library from your GitHub branch `yarn add https://github.com/samvera-labs/ramp#<your_branch_name>`
+
+Once you've completed your testing, _please cleanup the test branch from GitHub_.
+
 ## Deployment
 
 When new code is added into the `main` branch of the GitHub repo, it is deployed into two locations.
-
 
 ### Deploying to Netlify demo site
 
