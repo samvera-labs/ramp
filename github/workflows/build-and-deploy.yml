@@ -1,0 +1,76 @@
+name: Build and Notify Avalon
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      build_changed: ${{ steps.push-build.outputs.build_changed }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build library
+        run: NODE_ENV=production npx vite build
+      - name: Verify build output
+        run: |
+          test -f dist/ramp.cjs.js
+          test -f dist/ramp.esm.js
+          test -f dist/ramp.umd.js
+          test -f dist/ramp.css
+      - name: Deploy to ramp-build branch
+        id: push-build
+        run: |
+          MAIN_SHA=$(git rev-parse --short HEAD)
+          git fetch origin ramp-build || true
+          BEFORE_SHA=$(git rev-parse origin/ramp-build 2>/dev/null || echo "none")
+
+          # Stage only the build files and package.json for testing code changes
+          mkdir -p /tmp/ramp-publish/dist
+          cp -r dist/* /tmp/ramp-publish/dist/
+          cp package.json /tmp/ramp-publish/
+
+          # Use gh-pages to publish the content to the ramp-build branch
+          npx gh-pages \
+            -d /tmp/ramp-publish \
+            -b ramp-build \
+            -u "dwithana <dwithana@iu.edu>" \
+            -m "Auto-build from main ($MAIN_SHA)" \
+            -r "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+
+          git fetch origin ramp-build
+          AFTER_SHA=$(git rev-parse origin/ramp-build)
+
+          # Do nothing if the build output hasn't changed to avoid unnecessary notifications
+          if [ "$BEFORE_SHA" = "$AFTER_SHA" ]; then
+            echo "No build changes, skipping notification"
+            echo "build_changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build_changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  notify-avalon:
+    needs: build-and-deploy
+    if: needs.build-and-deploy.outputs.build_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify new Ramp build
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.AVALON_DISPATCH_TOKEN }}
+          repository: avalonmediasystem/avalon
+          event-type: ramp-build-updated
+          client-payload: '{"ramp_commit": "${{ github.sha }}"}'
+
