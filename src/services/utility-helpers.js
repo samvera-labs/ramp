@@ -2,6 +2,7 @@ import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import { getPlaceholderCanvas } from './iiif-parser';
 import mimeTypes from 'mime-types';
+import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
 // Number of decimal places for milliseconds used in time calculations. 
@@ -1020,4 +1021,86 @@ const findLastTextNode = (node) => {
     }
   }
   return null;
+};
+
+/**
+ * Offset text track cues based on the current source's 'altStart' value for
+ * multi-source media in a single Canvas.
+ * This makes cues match the player's relative time.
+ * @param {Object} player VideoJS player instance
+ * @param {Number} altStart offset of the current source in the Canvas
+ * @param {Number} duration duration of the current source in the Canvas
+ */
+export const offsetTextTrackCues = (player, altStart, duration) => {
+  const textTracks = player.textTracks();
+
+  for (let i = 0; i < textTracks.length; i++) {
+    const track = textTracks[i];
+    if (track.kind !== 'subtitles' && track.kind !== 'captions') continue;
+
+    // Handle iOS and Safari native tracks
+    if ((IS_MOBILE && !IS_ANDROID) || IS_SAFARI) {
+      // Native tracks: cues may be read-only, use track events
+      track.oncuechange = null;
+      track.oncuechange = () => {
+        // Filter and display only cues in range
+        filterAndOffsetTextTrackCues(track, altStart, duration);
+      };
+    } else {
+      const cues = track.cues;
+      if (!cues) continue;
+
+      for (let j = 0; j < cues.length; j++) {
+        const cue = cues[j];
+        // Store original times on first access
+        if (cue._originalStartTime === undefined) {
+          cue._originalStartTime = cue.startTime;
+          cue._originalEndTime = cue.endTime;
+        }
+        /**
+         * Apply offset to convert cue's time the player's relative time.
+         * When altStart > cue's original start/end times the offset cue times
+         * become negative. And these cues belong to previous source(s) and
+         * VideoJS naturally ignores them.
+         */
+        cue.startTime = cue._originalStartTime - altStart;
+        cue.endTime = cue._originalEndTime - altStart;
+      }
+    }
+  }
+};
+
+/**
+ * Filter and offset only the active cues in a given TextTrack in iOS/Safari native tracks.
+ * @param {Object} track TextTrack object from VideoJS
+ * @param {Number} altStart offset of the current source in the Canvas
+ * @param {Number} duration duration of the current source in the Canvas
+ * @returns 
+ */
+const filterAndOffsetTextTrackCues = (track, altStart, duration) => {
+  const cues = track.cues;
+  if (!cues || altStart === 0) return;
+
+  for (let i = 0; i < cues.length; i++) {
+    const cue = cues[i];
+
+    // Store original times on first access
+    if (cue._originalStartTime === undefined) {
+      cue._originalStartTime = cue.startTime;
+      cue._originalEndTime = cue.endTime;
+    }
+    const altEnd = altStart === 0 ? altStart : altStart + duration;
+
+    // Hide cues that are out of range by setting text='' and offset times for cues in range
+    if (cue._originalEndTime < altStart || cue._originalStartTime > altEnd) {
+      // Store original text to restore later and clear text to hide the cue
+      if (cue._originalText === undefined) cue._originalText = cue.text;
+      cue.text = '';
+    } else {
+      cue.startTime = cue._originalStartTime - altStart;
+      cue.endTime = cue._originalEndTime - altStart;
+      // Restore original text if it was previously hidden
+      if (cue._originalText !== undefined) cue.text = cue._originalText;
+    }
+  }
 };

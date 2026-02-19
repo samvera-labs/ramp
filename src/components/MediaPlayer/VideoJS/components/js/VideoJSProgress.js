@@ -393,7 +393,12 @@ class CustomSeekBar extends SeekBar {
   // Update progress bar with timeupdate in the player
   timeUpdateHandler() {
     const { initTimeRef, player } = this;
-    if (player.isDisposed() || player.ended() || player == null) { return; }
+    if (player.isDisposed() || player == null) { return; }
+    // Allow processing when current source is ended for multi-sourced Canvases
+    // This fixes Chrome's timing issue where 'ended' event fires before source switch
+    const hasMoreSources = this.isMultiSourceRef.current &&
+      this.srcIndexRef.current < this.canvasTargetsRef.current?.length - 1;
+    if (player.ended() && !hasMoreSources) { return; }
     let curTime;
     // Initially update progress from the prop passed from Ramp,
     // this accounts for structured navigation when switching canvases
