@@ -35,6 +35,7 @@
     th {
       border: 1px solid vars.$primaryLightest;
       padding: 0.5rem;
+      text-align: left;
     }
 
     td {
@@ -57,7 +58,7 @@
 
   .marker-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
 
     svg {
       vertical-align: sub;

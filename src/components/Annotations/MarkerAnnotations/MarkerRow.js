@@ -201,16 +201,6 @@ const MarkerRow = ({
       <tr>
         <td>
           <input
-            id="marker-edit-label"
-            data-testid="edit-label"
-            defaultValue={markerLabelRef.current}
-            type="text"
-            className="ramp--markers-display__edit-marker"
-            onChange={(e) => setMarkerLabel(e.target.value)}
-            name="label" />
-        </td>
-        <td>
-          <input
             className={cx(
               'ramp--markers-display__edit-marker',
               isValid ? 'time-valid' : 'time-invalid'
@@ -221,6 +211,16 @@ const MarkerRow = ({
             type="text"
             onChange={(e) => validateTime(e.target.value)}
             name="time" />
+        </td>
+        <td>
+          <input
+            id="marker-edit-label"
+            data-testid="edit-label"
+            defaultValue={markerLabelRef.current}
+            type="text"
+            className="ramp--markers-display__edit-marker"
+            onChange={(e) => setMarkerLabel(e.target.value)}
+            name="label" />
         </td>
         <td>
           <div className="marker-actions">
@@ -253,6 +253,7 @@ const MarkerRow = ({
   } else if (deleting) {
     return (
       <tr>
+        <td>{markerTimeRef.current}</td>
         <td>
           <a
             href={`${marker.canvasId}#t=${markerOffsetRef.current},`}
@@ -260,7 +261,6 @@ const MarkerRow = ({
             data-offset={markerOffsetRef.current}>
             {markerLabelRef.current}
           </a></td>
-        <td>{markerTimeRef.current}</td>
         <td>
           <div className="marker-actions">
             <p>Are you sure?</p>
@@ -286,6 +286,7 @@ const MarkerRow = ({
   } else {
     return (
       <tr data-testid="marker-row">
+        <td>{markerTimeRef.current}</td>
         <td>
           <a
             href={`${marker.canvasId}#t=${markerOffsetRef.current},`}
@@ -293,7 +294,6 @@ const MarkerRow = ({
             data-offset={markerOffsetRef.current}>
             {markerLabelRef.current}
           </a></td>
-        <td>{markerTimeRef.current}</td>
         {hasAnnotationService &&
           <td>
             <div className="marker-actions">
