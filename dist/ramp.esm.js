@@ -66192,8 +66192,8 @@ const e3 = ({
     }
   }, [T]);
   return a ? /* @__PURE__ */ Q.jsxs("tr", { children: [
-    /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("input", { id: "marker-edit-label", "data-testid": "edit-label", defaultValue: x.current, type: "text", className: "ramp--markers-display__edit-marker", onChange: (M) => w(M.target.value), name: "label" }) }),
     /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("input", { className: bn("ramp--markers-display__edit-marker", o ? "time-valid" : "time-invalid"), id: "marker-edit-time", "data-testid": "edit-timestamp", defaultValue: U.current, type: "text", onChange: (M) => L(M.target.value), name: "time" }) }),
+    /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("input", { id: "marker-edit-label", "data-testid": "edit-label", defaultValue: x.current, type: "text", className: "ramp--markers-display__edit-marker", onChange: (M) => w(M.target.value), name: "label" }) }),
     /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsxs("div", { className: "marker-actions", children: [
       d && /* @__PURE__ */ Q.jsx("p", { className: "ramp--markers-display__error-message", children: f }),
       /* @__PURE__ */ Q.jsxs("button", { type: "submit", onClick: C, disabled: !o, className: "ramp--markers-display__edit-button", "data-testid": "edit-save-button", children: [
@@ -66206,8 +66206,8 @@ const e3 = ({
       ] })
     ] }) })
   ] }) : p ? /* @__PURE__ */ Q.jsxs("tr", { children: [
-    /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("a", { href: `${n.canvasId}#t=${D.current},`, onClick: (M) => V(M), "data-offset": D.current, children: x.current }) }),
     /* @__PURE__ */ Q.jsx("td", { children: U.current }),
+    /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("a", { href: `${n.canvasId}#t=${D.current},`, onClick: (M) => V(M), "data-offset": D.current, children: x.current }) }),
     /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsxs("div", { className: "marker-actions", children: [
       /* @__PURE__ */ Q.jsx("p", { children: "Are you sure?" }),
       /* @__PURE__ */ Q.jsxs("button", { type: "submit", className: "ramp--markers-display__edit-button-danger", "data-testid": "delete-confirm-button", onClick: B, children: [
@@ -66220,8 +66220,8 @@ const e3 = ({
       ] })
     ] }) })
   ] }) : /* @__PURE__ */ Q.jsxs("tr", { "data-testid": "marker-row", children: [
-    /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("a", { href: `${n.canvasId}#t=${D.current},`, onClick: (M) => V(M), "data-offset": D.current, children: x.current }) }),
     /* @__PURE__ */ Q.jsx("td", { children: U.current }),
+    /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsx("a", { href: `${n.canvasId}#t=${D.current},`, onClick: (M) => V(M), "data-offset": D.current, children: x.current }) }),
     v && /* @__PURE__ */ Q.jsx("td", { children: /* @__PURE__ */ Q.jsxs("div", { className: "marker-actions", children: [
       d && /* @__PURE__ */ Q.jsx("p", { className: "ramp--markers-display__error-message", children: f }),
       /* @__PURE__ */ Q.jsxs("button", { onClick: R, className: "ramp--markers-display__edit-button", "data-testid": "edit-button", disabled: y, children: [
@@ -66651,8 +66651,8 @@ const EP = ({
     if (y.current.length > 0)
       return /* @__PURE__ */ Q.jsxs("table", { className: "ramp--markers-display_table", "data-testid": "markers-display-table", children: [
         /* @__PURE__ */ Q.jsx("thead", { children: /* @__PURE__ */ Q.jsxs("tr", { children: [
-          /* @__PURE__ */ Q.jsx("th", { children: /* @__PURE__ */ Q.jsx("label", { htmlFor: "marker-edit-label", children: "Name" }) }),
           /* @__PURE__ */ Q.jsx("th", { children: /* @__PURE__ */ Q.jsx("label", { htmlFor: "marker-edit-time", children: "Time" }) }),
+          /* @__PURE__ */ Q.jsx("th", { children: /* @__PURE__ */ Q.jsx("label", { htmlFor: "marker-edit-label", children: "Name" }) }),
           h && /* @__PURE__ */ Q.jsx("th", { children: "Actions" })
         ] }) }),
         /* @__PURE__ */ Q.jsx("tbody", { children: y.current.map((C, L) => /* @__PURE__ */ Q.jsx(e3, { marker: C, handleSubmit: w, handleDelete: D, toggleIsEditing: E, csrfToken: x }, L)) })
