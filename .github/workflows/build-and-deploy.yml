@@ -47,7 +47,7 @@ jobs:
             -d /tmp/ramp-publish \
             -b ramp-build \
             -u "dwithana <dwithana@iu.edu>" \
-            -m "Auto-build from main ($MAIN_SHA)" \
+            -m "Auto-build from main ($MAIN_SHA) [ci skip]" \
             -r "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
 
           git fetch origin ramp-build
