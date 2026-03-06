@@ -553,6 +553,33 @@ describe('util helper', () => {
       expect(isMultiResource).toBeFalsy();
     });
 
+    test('parses forced caption annotation from label and sets forced flag', () => {
+      const annotations = [
+        {
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/manifest/canvas/1/page/annotation/1',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'http://example.com/manifest/lunchroom_manners.vtt',
+                label: { eng: ['lunchroom_manners.vtt [forced]'], none: ['lunchroom_manners.vtt'] },
+                language: 'eng',
+                type: 'Text',
+                format: 'text/vtt',
+              },
+              target: 'http://example.com/manifest/canvas/1',
+            }
+          ]
+        }
+      ];
+      const { resources } = util.parseResourceAnnotations(annotations, 896.55, 'supplementing');
+      expect(resources).toHaveLength(1);
+      expect(resources[0].label).toEqual('lunchroom_manners.vtt [forced]');
+      expect(resources[0].forced).toBe(true);
+    });
+
     test('with annotations undefined', () => {
       expect(util.parseResourceAnnotations(undefined, 572.32, 'supplementing')).toEqual({
         resources: [], error: 'No resources found in Canvas', poster: '',

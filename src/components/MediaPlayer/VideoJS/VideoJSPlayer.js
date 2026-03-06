@@ -88,6 +88,7 @@ function VideoJSPlayer({
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
+  const isForcedTextTrackRef = useRef(false);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -171,9 +172,9 @@ function VideoJSPlayer({
        * In the quality-selector plugin used in Ramp, when the player is using remote 
        * text tracks they get cleared upon quality selection.
        * This is a known issue with @silvermine/videojs-quality-selector plugin.
-       * When a new source is selected this event is invoked. So, we are using this event
-       * to check whether the current video player has tracks when tracks are available as
-       * annotations in the Manifest and adding them back in.
+       * When a new source from the quality selector is selected 'emptied' event is trigger.
+       * Therefore, leverage this event to check whether the current video player has tracks, and
+       * when tracks are available as annotations in the Manifest add them back.
        */
       if (tracksRef.current?.length > 0 && isVideo
         && player.textTracks()?.length <= tracksRef.current?.length) {
@@ -876,7 +877,7 @@ function VideoJSPlayer({
            * First caption is already turned on in the code block below, so read it
            * from activeTrackRef
            */
-          if (startCaptioned && activeTextTrackRef.current) {
+          if (activeTextTrackRef.current) {
             textTracks.tracks_.filter(t =>
               t.label === activeTextTrackRef.current.label
               && t.language === activeTextTrackRef.current.language)[0].mode = 'showing';
@@ -905,11 +906,27 @@ function VideoJSPlayer({
         }
       }
 
-      // Enable the first caption when captions are enabled in the session
-      if (firstSubCap && startCaptioned) {
-        ;
-        firstSubCap.mode = 'showing';
-        activeTextTrackRef.current = firstSubCap;
+      /**
+       * Find if there is a forced text track for the Canvas. Use tracksRef built from the parsed
+       * information from Manifest to identify the forced subtitle/caption file and find the relevant
+       * VideoJS textTrack object from VideoJS' textTrack.tracks_ list to set the 'mode' to 'showing'.
+       */
+      const forcedTrackSource = tracksRef.current?.find(t => t.forced);
+      const forcedSubCap = forcedTrackSource && textTracks.tracks_.find(
+        t => t.label === forcedTrackSource.label && t.language === forcedTrackSource.srclang
+      );
+      // Seed the isForcedTextTrackRef before mode='showing' triggeres the 'change' event
+      isForcedTextTrackRef.current = forcedSubCap ? true : false;
+
+      /**
+       * Enable the relevant text track based on the following priority order:
+       * 1. Forced subtitle/caption track for the Canvas if it exists
+       * 2. First caption/subtitle track in the textTracks list when captions are turned on via localStorage 'startCaptioned' flag
+       */
+      const trackToEnable = forcedSubCap || (startCaptioned ? firstSubCap : null);
+      if (trackToEnable) {
+        trackToEnable.mode = 'showing';
+        activeTextTrackRef.current = trackToEnable;
         handleCaptionChange(true);
       }
     }
@@ -927,7 +944,23 @@ function VideoJSPlayer({
       }
       const subsOn = trackModes.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
-      setStartCaptioned(subsOn);
+      /**
+       * Update 'startCaptioned' in localStorage based on user interactions:
+       * - If a forced track is showing and 'startCaptioned' was false => preserve false as this is auto-enabled without a user action
+       * - All other cases: update to reflect current caption state
+       *
+       * Re-check isForcedTextTrackRef against the currently active track so that if the
+       * user manually switches away from the forced track, the flag updates accordingly.
+       */
+      const activeIsForced = activeTextTrackRef.current
+        && tracksRef.current?.some(
+          t => t.forced && t.label === activeTextTrackRef.current.label
+            && t.srclang === activeTextTrackRef.current.language
+        );
+      isForcedTextTrackRef.current = !!activeIsForced;
+      if (!(subsOn && isForcedTextTrackRef.current && !startCaptioned)) {
+        setStartCaptioned(subsOn);
+      }
     });
   };
 

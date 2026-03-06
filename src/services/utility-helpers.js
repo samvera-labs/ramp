@@ -479,6 +479,8 @@ function getResourceInfo(item, start, duration, motivation) {
   // If there are multiple labels, assume the first one
   // is the one intended for default display
   let label = getLabelValue(item.label);
+  // Detect forced captions by detecting '[forced]' text in the label
+  const isForced = typeof label === 'string' && label.toLowerCase().includes('[forced]');
   if (motivation === 'supplementing') {
     aType = identifySupplementingAnnotation(item.id);
   }
@@ -506,6 +508,7 @@ function getResourceInfo(item, start, duration, motivation) {
       source.kind = item.format.toLowerCase().includes('text/vtt')
         ? 'subtitles'
         : 'metadata';
+      if (isForced) source.forced = true;
     }
   }
   return source;
