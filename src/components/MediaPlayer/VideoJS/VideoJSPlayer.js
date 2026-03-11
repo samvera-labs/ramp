@@ -121,6 +121,8 @@ function VideoJSPlayer({
   const audioDescTracksRef = useRef();
   audioDescTracksRef.current = useMemo(() => { return audioDescTracks; }, [audioDescTracks]);
 
+  const adOnRef = useRef(false);
+
   const clickedUrlRef = useRef();
   clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
 
@@ -638,6 +640,11 @@ function VideoJSPlayer({
       });
     }
 
+    // Cancel any active speech synthesis on Canvas change
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
     /*
       Update player control bar for;
        - track scrubber button
@@ -695,14 +702,6 @@ function VideoJSPlayer({
         subsCapBtn.children_[0].addClass('captions-on');
       }
 
-      // Add or remove AD button based on whether AD tracks exist for the current Canvas
-      if (audioDescTracksRef.current?.length > 0 && isVideo) {
-        if (!controlBar.getChild('descriptionsButton')) {
-          controlBar.addChild('descriptionsButton', {}, volumeIndex + 2);
-        }
-      } else {
-        controlBar.removeChild('descriptionsButton');
-      }
 
       /*
         Change player's appearance when switching between audio and video canvases.
@@ -830,7 +829,49 @@ function VideoJSPlayer({
         }
       }
 
-      if (isVideo) { setUpCaptions(player); }
+      if (isVideo) {
+        setUpCaptions(player);
+        if (audioDescTracksRef.current?.length > 0) {
+          // Find the AD text-track from player's textTracks list
+          var adTrack = Array.from(player.textTracks()).find(t => t.kind === 'descriptions');
+
+          if (adTrack) {
+            // Set AD track mode to 'hidden' to enable display of captions simultaneously
+            adTrack.mode = 'hidden';
+            // Cleanup any existing event listeners
+            adTrack.removeEventListener('cuechange');
+
+            // Use 'cuechange' event in the AD text-track to activate speech synthesis
+            adTrack.addEventListener('cuechange', function () {
+              // Access the currently active cues
+              var activeCues = adTrack.activeCues;
+
+              if (activeCues && activeCues.length > 0) {
+                // If AD is off do nothing
+                if (!adOnRef.current) return;
+                const wasPlaying = !player.paused();
+                const text = activeCues[0].text;
+
+                /**
+                 * If the active AD cue is encountered during playback; 
+                 * 1. pause the player 
+                 * 2. read the active AD cue
+                 * 3. continue playback
+                 */
+                if (wasPlaying) {
+                  player.pause();
+                  const utterance = new SpeechSynthesisUtterance(text);
+                  window.speechSynthesis.cancel();
+                  utterance.onend = () => {
+                    if (player.paused()) player.play();
+                  };
+                  window.speechSynthesis.speak(utterance);
+                }
+              }
+            });
+          }
+        }
+      }
 
       /*
         Set playable duration within the given media file and alternate start time as
@@ -933,13 +974,15 @@ function VideoJSPlayer({
       // Disable all text tracks to avoid multiple selections and pick the first one as default
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         let t = textTracks.tracks_[i];
-        if ((t.kind === 'subtitles' || t.kind === 'captions') && (t.language != '' && t.label != '')) {
+        if ((t.kind === 'subtitles' || t.kind === 'captions' || t.kind === 'descriptions') &&
+          (t.language != '' && t.label != '')) {
           t.mode = 'disabled';
-          if (!onFirstCap) firstSubCap = t;
+          if (!onFirstCap && t.kind !== 'descriptions') firstSubCap = t;
           onFirstCap = true;
         }
       }
 
+<<<<<<< HEAD
       /**
        * Find if there is a forced text track for the Canvas. Use tracksRef built from the parsed
        * information from Manifest to identify the forced subtitle/caption file and then, find the relevant
@@ -966,6 +1009,12 @@ function VideoJSPlayer({
          */
         activeTextTrackRef.current = trackToEnable;
         trackToEnable.mode = 'showing';
+=======
+      // Enable the first caption when captions are enabled in the session
+      if (firstSubCap && startCaptioned) {
+        firstSubCap.mode = 'showing';
+        activeTextTrackRef.current = firstSubCap;
+>>>>>>> 5d5ca2c (Use speech synthesis to read AD text-tracks enabled by VideoJS AD)
         handleCaptionChange(true);
       }
 
@@ -992,7 +1041,6 @@ function VideoJSPlayer({
       }
     }
 
-    // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', () => {
       /**
        * Safari/WebKit can asynchronously enable additional text tracks as a 'nativeTextTracks'
@@ -1023,14 +1071,21 @@ function VideoJSPlayer({
         }
       }
       let trackModes = [];
+      let adMode = [];
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         const { mode, label, kind } = textTracks[i];
-        trackModes.push(textTracks[i].mode);
+        // Collect track modes for AD text-tracks separately
+        if (kind == 'descriptions') {
+          adMode.push(textTracks[i].mode);
+        } else {
+          trackModes.push(textTracks[i].mode);
+        }
         if (mode === 'showing' && label != ''
           && (kind === 'subtitles' || kind === 'captions')) {
           activeTextTrackRef.current = textTracks[i];
         }
       }
+      // Add/remove CSS to indicate captions/subtitles is turned on
       const subsOn = trackModes.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
       /**
@@ -1051,6 +1106,23 @@ function VideoJSPlayer({
         setStartCaptioned(subsOn);
       }
       if (player._applyForcedMenuItemStyle) player._applyForcedMenuItemStyle();
+
+      const controlBar = player.getChild('controlBar');
+      const descBtn = controlBar?.getChild('descriptionsButton');
+      if (descBtn) {
+        // Override the AD button state in VideoJS regardless captions status
+        descBtn.enable();
+
+        const adOn = adMode.includes('showing') ? true : false;
+        adOnRef.current = adOn;
+        descBtn.setAttribute('aria-pressed', String(adOn));
+        if (adOn) {
+          descBtn.addClass('ad-active');
+        } else {
+          descBtn.removeClass('ad-active');
+          window.speechSynthesis?.cancel();
+        }
+      }
     });
   };
 
