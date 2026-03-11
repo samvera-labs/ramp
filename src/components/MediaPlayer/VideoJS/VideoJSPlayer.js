@@ -37,6 +37,7 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
  * Module to setup VideoJS instance on initial page load and update
  * on successive player reloads on Canvas changes.
  * @param {Object} props
+ * @param {Array} props.audioDescTracks
  * @param {Boolean} props.isVideo
  * @param {Boolean} props.isPlaylist
  * @param {Object} props.trackScrubberRef
@@ -52,6 +53,7 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
  * @param {Object} props.options
  */
 function VideoJSPlayer({
+  audioDescTracks,
   enableFileDownload,
   enableTitleLink,
   isVideo,
@@ -115,6 +117,9 @@ function VideoJSPlayer({
 
   const tracksRef = useRef();
   tracksRef.current = useMemo(() => { return tracks; }, [tracks]);
+
+  const audioDescTracksRef = useRef();
+  audioDescTracksRef.current = useMemo(() => { return audioDescTracks; }, [audioDescTracks]);
 
   const clickedUrlRef = useRef();
   clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
@@ -626,12 +631,20 @@ function VideoJSPlayer({
       }
     }
 
+    // Add audio description tracks to the player
+    if (audioDescTracksRef.current?.length > 0 && isVideo) {
+      audioDescTracksRef.current.forEach(function (track) {
+        player.addRemoteTextTrack(track, false);
+      });
+    }
+
     /*
       Update player control bar for;
        - track scrubber button
        - volume panel
        - if tracks exists: captions button for video players
-       - appearance of the player: big play button and aspect ratio of the player 
+       - if audioDescription tracks exists: AD button
+       - appearance of the player: big play button and aspect ratio of the player
         based on media type
        - file download menu
     */
@@ -680,6 +693,15 @@ function VideoJSPlayer({
         );
         // Add CSS to mark captions-on
         subsCapBtn.children_[0].addClass('captions-on');
+      }
+
+      // Add or remove AD button based on whether AD tracks exist for the current Canvas
+      if (audioDescTracksRef.current?.length > 0 && isVideo) {
+        if (!controlBar.getChild('descriptionsButton')) {
+          controlBar.addChild('descriptionsButton', {}, volumeIndex + 2);
+        }
+      } else {
+        controlBar.removeChild('descriptionsButton');
       }
 
       /*
@@ -844,7 +866,7 @@ function VideoJSPlayer({
   const {
     activeId, fragmentMarker, isReadyRef, playerRef, setActiveId, setFragmentMarker, setIsReady
   } = useVideoJSPlayer({
-    options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
+    audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
   });
 
   let cIndexRef = useRef();
@@ -1381,6 +1403,7 @@ function VideoJSPlayer({
 };
 
 VideoJSPlayer.propTypes = {
+  audioDescTracks: PropTypes.array,
   enableFileDownload: PropTypes.bool,
   enableTitleLink: PropTypes.bool,
   isVideo: PropTypes.bool,

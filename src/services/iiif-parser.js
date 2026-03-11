@@ -163,11 +163,14 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, i
     // Read supplementing resources fom annotations
     const supplementingRes = parseResourceAnnotations(annotations, duration, 'supplementing');
 
-    tracks = supplementingRes ? supplementingRes.resources : [];
+    const allSupplementing = supplementingRes ? supplementingRes.resources : [];
+    const audioDescTracks = allSupplementing.filter(t => t.kind === 'descriptions');
+    tracks = allSupplementing.filter(t => t.kind !== 'descriptions');
 
     const mediaInfo = {
       sources,
       tracks,
+      audioDescTracks,
       canvasTargets,
       isMultiSource,
       error,

@@ -4,7 +4,7 @@ import { getPlaceholderCanvas } from './iiif-parser';
 import mimeTypes from 'mime-types';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 
-const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3 };
+const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3, audioDescription: 4 };
 // Number of decimal places for milliseconds used in time calculations. 
 // This is used to ensure there are no mis-calculations around times that has a long decimal for milliseconds.
 const MILLISECOND_PRECISION = 1000;
@@ -500,14 +500,19 @@ function getResourceInfo(item, start, duration, motivation) {
       };
     }
     if (motivation === 'supplementing') {
-      // Set language for captions/subtitles
+      // Set language for captions/subtitles/descriptions
       source.srclang = item.language ?? 'en';
-      // Specify kind to subtitles for VTT annotations. Without this VideoJS
-      // resolves the kind to metadata for subtitles file, resulting in empty
-      // subtitles lists in iOS devices' native palyers
-      source.kind = item.format.toLowerCase().includes('text/vtt')
-        ? 'subtitles'
-        : 'metadata';
+      if (aType === S_ANNOTATION_TYPE.audioDescription) {
+        // Mark VideoJS 'descriptions' kind for audio description tracks
+        source.kind = 'descriptions';
+      } else {
+        // Specify kind to subtitles for VTT annotations. Without this VideoJS
+        // resolves the kind to metadata for subtitles file, resulting in empty
+        // subtitles lists in iOS devices' native players
+        source.kind = item.format.toLowerCase().includes('text/vtt')
+          ? 'subtitles'
+          : 'metadata';
+      }
       if (isForced) source.forced = true;
     }
   }
@@ -605,6 +610,8 @@ export function identifySupplementingAnnotation(uri) {
     return S_ANNOTATION_TYPE.transcript;
   } else if (identifier === 'captions') {
     return S_ANNOTATION_TYPE.caption;
+  } else if (identifier === 'descriptions') {
+    return S_ANNOTATION_TYPE.audioDescription;
   } else {
     return S_ANNOTATION_TYPE.both;
   }

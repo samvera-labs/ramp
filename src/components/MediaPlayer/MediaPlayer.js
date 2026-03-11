@@ -56,7 +56,7 @@ const MediaPlayer = ({
     switchPlayer
   } = useSetupPlayer({ enableFileDownload, lastCanvasIndex, withCredentials });
 
-  const { error, poster, sources, targets, tracks } = playerConfig;
+  const { error, poster, sources, targets, tracks, audioDescTracks } = playerConfig;
 
   // Load Video.js language map using dynamic imports
   const loadVideoJSLanguageMap = useMemo(() => {
@@ -159,6 +159,7 @@ const MediaPlayer = ({
             'customControlSpacer', // Spacer element from VideoJS
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
+            (audioDescTracks.length > 0) ? 'descriptionsButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
             'qualitySelector',
             enablePlaybackRate ? 'playbackRateMenuButton' : '',
@@ -205,6 +206,7 @@ const MediaPlayer = ({
         aria-label='media player'
       >
         <VideoJSPlayer
+          audioDescTracks={audioDescTracks}
           enableFileDownload={enableFileDownload}
           enableTitleLink={enableTitleLink}
           isVideo={isVideo}

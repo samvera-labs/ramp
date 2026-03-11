@@ -15,7 +15,7 @@ describe('iiif-parser', () => {
   describe('canvasesInManifest()', () => {
     it('returns a list canvases in the manifest', () => {
       const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
-      expect(canvases).toHaveLength(2);
+      expect(canvases).toHaveLength(3);
     });
 
     it('returns information related to each canvas', () => {
@@ -269,6 +269,17 @@ describe('iiif-parser', () => {
             canvasIndex: 0,
           });
           expect(tracks).toEqual([]);
+        });
+
+        it('separates audio description tracks into audioDescTracks', () => {
+          const { tracks, audioDescTracks } = iiifParser.getMediaInfo({
+            manifest: lunchroomManifest,
+            canvasIndex: 2,
+          });
+          expect(audioDescTracks).toHaveLength(1);
+          expect(audioDescTracks[0].kind).toEqual('descriptions');
+          expect(audioDescTracks[0].src).toContain('/descriptions');
+          expect(tracks).toHaveLength(0);
         });
       });
     });

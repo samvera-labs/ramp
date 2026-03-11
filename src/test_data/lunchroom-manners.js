@@ -268,6 +268,54 @@ export default {
         },
       ]
     },
+    {
+      type: 'Canvas',
+      id: 'https://example.com/manifest/lunchroom_manners/canvas/3',
+      duration: 660,
+      items: [
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/3/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/3/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              body: {
+                id: 'https://example.com/manifest/lunchroom_manners_hd.mp4',
+                type: 'Video',
+                format: 'video/mp4',
+                label: { en: ['High'] },
+              },
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/3',
+            },
+          ]
+        },
+      ],
+      annotations: [
+        {
+          id: 'https://example.com/manifest/lunchroom_manners/canvas/3/page/2',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/3/annotation/2',
+              type: 'Annotation',
+              motivation: 'supplementing',
+              body: {
+                id: 'https://example.com/manifest/lunchroom_manners/descriptions',
+                type: 'Text',
+                format: 'text/vtt',
+                label: {
+                  eng: ['audio-description.vtt'], none: ['audio-description.vtt']
+                },
+                language: 'eng',
+              },
+              target: 'https://example.com/manifest/lunchroom_manners/canvas/3'
+            }
+          ]
+        },
+      ]
+    },
   ],
   structures: [
     {

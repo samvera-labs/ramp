@@ -155,7 +155,7 @@ function buildTranscriptAnnotation(annotations, index, manifestURL, resource, ti
         let sType = identifySupplementingAnnotation(id);
         let { isMachineGen, labelText } = identifyMachineGen(label);
         if (filename === '') { filename = labelText; };
-        if (sType === 1 || sType === 3) {
+        if (sType === 1 || sType === 3 || sType === 4) {
           canvasTranscripts.push({
             title: labelText,
             filename: filename,
