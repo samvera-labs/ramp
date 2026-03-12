@@ -88,6 +88,7 @@ function VideoJSPlayer({
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
+  const isForcedTextTrackRef = useRef(false);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -171,9 +172,9 @@ function VideoJSPlayer({
        * In the quality-selector plugin used in Ramp, when the player is using remote 
        * text tracks they get cleared upon quality selection.
        * This is a known issue with @silvermine/videojs-quality-selector plugin.
-       * When a new source is selected this event is invoked. So, we are using this event
-       * to check whether the current video player has tracks when tracks are available as
-       * annotations in the Manifest and adding them back in.
+       * When a new source from the quality selector is selected 'emptied' event is trigger.
+       * Therefore, leverage this event to check whether the current video player has tracks, and
+       * when tracks are available as annotations in the Manifest add them back.
        */
       if (tracksRef.current?.length > 0 && isVideo
         && player.textTracks()?.length <= tracksRef.current?.length) {
@@ -859,28 +860,40 @@ function VideoJSPlayer({
   const setUpCaptions = (player) => {
     let textTracks = player.textTracks();
     /* 
-      Filter the text track Video.js adds with an empty label and language 
-      when nativeTextTracks are enabled for iPhones and iPads.
+      Cleanup empty and duplicated text tracks added in iOS/WebKit handling
+      when 'nativeTextTracks' are enabled.
       Related links, Video.js => https://github.com/videojs/video.js/issues/2808 and
       in Apple => https://developer.apple.com/library/archive/qa/qa1801/_index.html
     */
     if (IS_MOBILE && !IS_ANDROID) {
       textTracks.on('addtrack', () => {
+        // Remove empty label text tracks and duplicated text tracks
+        const seen = new Set();
+        const tracksToRemove = [];
         for (let i = 0; i < textTracks.length; i++) {
-          if (textTracks[i].language === '' && textTracks[i].label === '') {
-            player.textTracks().removeTrack(textTracks[i]);
+          const t = textTracks[i];
+          if (t.language === '' && t.label === '') {
+            tracksToRemove.push(t);
+          } else {
+            const key = `${t.label}|${t.language}`;
+            if (seen.has(key)) {
+              tracksToRemove.push(t);
+            } else {
+              seen.add(key);
+            }
           }
-          /**
-           * This enables the caption in the native iOS player first playback.
-           * Only enable caption when captions are turned on.
-           * First caption is already turned on in the code block below, so read it
-           * from activeTrackRef
-           */
-          if (startCaptioned && activeTextTrackRef.current) {
-            textTracks.tracks_.filter(t =>
-              t.label === activeTextTrackRef.current.label
-              && t.language === activeTextTrackRef.current.language)[0].mode = 'showing';
-          }
+        }
+        tracksToRemove.forEach(t => player.textTracks().removeTrack(t));
+        /**
+         * Enable caption in the native iOS player on first playback only when an
+         * an active text track is present. This could be either forced or the first
+         * caption/subtitle based on the 'startCaptioned' flag in localStorage.
+         */
+        if (activeTextTrackRef.current) {
+          const match = textTracks.tracks_.filter(t =>
+            t.label === activeTextTrackRef.current.label
+            && t.language === activeTextTrackRef.current.language);
+          if (match[0]) match[0].mode = 'showing';
         }
         // Offset cues for multi-source playback after text tracks are cleaned for iOS
         if (player.targets?.length > 1 && player.targets[player.srcIndex]) {
@@ -905,17 +918,88 @@ function VideoJSPlayer({
         }
       }
 
-      // Enable the first caption when captions are enabled in the session
-      if (firstSubCap && startCaptioned) {
-        ;
-        firstSubCap.mode = 'showing';
-        activeTextTrackRef.current = firstSubCap;
+      /**
+       * Find if there is a forced text track for the Canvas. Use tracksRef built from the parsed
+       * information from Manifest to identify the forced subtitle/caption file and then, find the relevant
+       * VideoJS textTrack object from VideoJS' textTrack.tracks_ list to set the 'mode' to 'showing'.
+       */
+      const forcedTrackSource = tracksRef.current?.find(t => t.forced);
+      const forcedSubCap = forcedTrackSource && textTracks.tracks_.find(
+        t => t.label === forcedTrackSource.label && t.language === forcedTrackSource.srclang
+      );
+      // Seed the 'isForcedTextTrackRef' before mode='showing' triggers the 'change' event
+      isForcedTextTrackRef.current = forcedSubCap ? true : false;
+
+      /**
+       * Enable the relevant text track based on the following priority order:
+       * 1. Forced subtitle/caption track for the Canvas if it exists
+       * 2. First caption/subtitle track in the textTracks list when captions are turned
+       * on via localStorage 'startCaptioned' flag
+       */
+      const trackToEnable = forcedSubCap || (startCaptioned ? firstSubCap : null);
+      if (trackToEnable) {
+        /**
+         * Set activeTextTrackRef before mode change, so that the 'change' event handler
+         * can correctly identify this as the active text track.
+         */
+        activeTextTrackRef.current = trackToEnable;
+        trackToEnable.mode = 'showing';
         handleCaptionChange(true);
+      }
+
+      // Add a tooltip for the forced text track menu item for added information and a11y
+      if (forcedSubCap) {
+        const applyForcedMenuItemStyle = () => {
+          const subsButton = player.controlBar?.getChild('SubsCapsButton')
+            || player.controlBar?.getChild('subsCapsButton');
+          if (!subsButton) return;
+          const items = subsButton.menu?.children() || [];
+          items.forEach(item => {
+            if (item.track && item.track.label === forcedSubCap.label
+              && item.track.language === forcedSubCap.language) {
+              const el = item.el();
+              if (!el) return;
+              el.setAttribute('title', 'This track gets auto-enabled by the content on load');
+            }
+          });
+        };
+        // Store in the player instance the change handler can call it
+        player._applyForcedMenuItemStyle = applyForcedMenuItemStyle;
+      } else {
+        player._applyForcedMenuItemStyle = null;
       }
     }
 
     // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', () => {
+      /**
+       * Safari/WebKit can asynchronously enable additional text tracks as a 'nativeTextTracks'
+       * config's side effect.
+       * The 'change' event handler's last-write-wins loop then picks up the second track and
+       * overwrites 'activeTextTrackRef.current', and it breaks the guard that protects setting
+       * the 'startCaptioned' flag in localStorage.
+       * Therefore, if the intended active track is already showing, disable any other tracks with
+       * mode='showing' before the loop updates the 'activeTextTrackRef.current' to prevent state corruption.
+       */
+      if ((IS_SAFARI || (IS_MOBILE && !IS_ANDROID)) && activeTextTrackRef.current) {
+        const activeTrackIsShowing = Array.from({ length: textTracks.tracks_.length },
+          (_, i) => textTracks.tracks_[i]).some(
+            t => t.label === activeTextTrackRef.current.label
+              && t.language === activeTextTrackRef.current.language
+              && t.mode === 'showing'
+          );
+        if (activeTrackIsShowing) {
+          for (let i = 0; i < textTracks.tracks_.length; i++) {
+            const t = textTracks.tracks_[i];
+            if ((t.kind === 'subtitles' || t.kind === 'captions')
+              && t.mode === 'showing'
+              && !(t.label === activeTextTrackRef.current.label
+                && t.language === activeTextTrackRef.current.language)) {
+              t.mode = 'disabled';
+            }
+          }
+        }
+      }
       let trackModes = [];
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         const { mode, label, kind } = textTracks[i];
@@ -927,7 +1011,24 @@ function VideoJSPlayer({
       }
       const subsOn = trackModes.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
-      setStartCaptioned(subsOn);
+      /**
+       * Update 'startCaptioned' in localStorage based on user interactions:
+       * - If a forced track is showing and 'startCaptioned' was false => preserve false as this is auto-enabled without a user action
+       * - All other cases: update to reflect current caption state
+       *
+       * Re-check isForcedTextTrackRef against the currently active track so that if the
+       * user manually switches away from the forced track, the flag updates accordingly.
+       */
+      const activeIsForced = activeTextTrackRef.current
+        && tracksRef.current?.some(
+          t => t.forced && t.label === activeTextTrackRef.current.label
+            && t.srclang === activeTextTrackRef.current.language
+        );
+      isForcedTextTrackRef.current = !!activeIsForced;
+      if (!(subsOn && isForcedTextTrackRef.current && !startCaptioned)) {
+        setStartCaptioned(subsOn);
+      }
+      if (player._applyForcedMenuItemStyle) player._applyForcedMenuItemStyle();
     });
   };
 

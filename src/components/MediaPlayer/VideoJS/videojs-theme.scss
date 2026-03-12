@@ -253,3 +253,14 @@
     cursor: pointer !important;
   }
 }
+
+// Make captions menu width fit content
+.vjs-theme-ramp .vjs-subs-caps-button .vjs-menu .vjs-menu-content {
+  width: fit-content;
+
+  li {
+    width: 100%;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+}
