@@ -122,8 +122,6 @@ function VideoJSPlayer({
   const audioDescTracksRef = useRef();
   audioDescTracksRef.current = useMemo(() => { return audioDescTracks; }, [audioDescTracks]);
 
-  const adOnRef = useRef(false);
-
   const clickedUrlRef = useRef();
   clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
 
@@ -300,6 +298,11 @@ function VideoJSPlayer({
         && player.currentTime() != currentTimeRef.current) {
         player.currentTime(currentTimeRef.current);
       }
+      // Cancel any active speech synthesis on seek action when it is NOT the initial 'seek' on player load
+      if (window.speechSynthesis && player.readyState() == 4 && player.currentTime() != 0) {
+        window.speechSynthesis.cancel();
+      }
+
       /**
        * Use setTimeout to add dispatch action to update global state with the current time from 'seek' action,
        * to the event queue to be called when the current call stack is empty. 
@@ -650,8 +653,6 @@ function VideoJSPlayer({
       Update player control bar for;
        - track scrubber button
        - volume panel
-       - if tracks exists: captions button for video players
-       - if audioDescription tracks exists: AD button
        - appearance of the player: big play button and aspect ratio of the player
         based on media type
        - file download menu
@@ -826,8 +827,8 @@ function VideoJSPlayer({
         if (audioDescTracksRef.current?.length > 0) {
           /** 
            * Refresh the AD track cuechange listener after new tracks are loaded.
-           * This is needs to go here, because the VideoJS custom components are not able
-           * to catch the loadedmetadata player event somehow.
+           * This needs to be addressed here, because the VideoJS custom components
+           * are not able to catch the 'loadedmetadata' player event to do this.
           */
           const adBtn = player.getChild('controlBar')?.getChild('VideoJSADButton');
           if (adBtn?.refreshTrack) adBtn.refreshTrack();
@@ -1025,15 +1026,10 @@ function VideoJSPlayer({
         }
       }
       let trackModes = [];
-      let adMode = [];
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         const { mode, label, kind } = textTracks[i];
-        // Collect track modes for AD text-tracks separately
-        if (kind == 'descriptions') {
-          adMode.push(textTracks[i].mode);
-        } else {
-          trackModes.push(textTracks[i].mode);
-        }
+        // Collect track modes
+        if (kind != 'descriptions') trackModes.push(mode);
         if (mode === 'showing' && label != ''
           && (kind === 'subtitles' || kind === 'captions')) {
           activeTextTrackRef.current = textTracks[i];
@@ -1060,23 +1056,6 @@ function VideoJSPlayer({
         setStartCaptioned(subsOn);
       }
       if (player._applyForcedMenuItemStyle) player._applyForcedMenuItemStyle();
-
-      const controlBar = player.getChild('controlBar');
-      const descBtn = controlBar?.getChild('descriptionsButton');
-      if (descBtn) {
-        // Override the AD button state in VideoJS regardless captions status
-        descBtn.enable();
-
-        const adOn = adMode.includes('showing') ? true : false;
-        adOnRef.current = adOn;
-        descBtn.setAttribute('aria-pressed', String(adOn));
-        if (adOn) {
-          descBtn.addClass('ad-active');
-        } else {
-          descBtn.removeClass('ad-active');
-          window.speechSynthesis?.cancel();
-        }
-      }
     });
   };
 

@@ -1,6 +1,6 @@
 import { createRef } from 'react';
 import videojs from 'video.js';
-import { IS_FIREFOX } from '@Services/browser';
+import { IS_FIREFOX, IS_IOS } from '@Services/browser';
 
 const Button = videojs.getComponent('Button');
 
@@ -28,6 +28,8 @@ class VideoJSADButton extends Button {
     this.audioDescTracks = this.options.audioDescTracks;
     this.adOnRef = createRef();
     this.adOnRef.current = false;
+    this.wasPlayingRef = createRef();
+    this.wasPlayingRef.current = !this.player.paused();
 
     /**
      * Listen for track changes and update the visibility of the AD button
@@ -90,24 +92,23 @@ class VideoJSADButton extends Button {
       // If AD is turned off, do nothing
       if (!this.adOnRef.current) return;
 
-      const wasPlaying = !this.player.paused();
+      this.wasPlayingRef.current = !this.player.paused();
       const text = activeCues[0].text;
-
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.cancel();
       /**
        * If the active AD cue is encountered during playback;
        * 1. pause the player
        * 2. read the active AD cue
-       * 3. continue playback
+       * 3. continue playback once the speech ends
        */
-      if (wasPlaying) {
+      if (this.wasPlayingRef.current) {
         this.player.pause();
-        const utterance = new SpeechSynthesisUtterance(text);
-        window.speechSynthesis.cancel();
         utterance.onend = () => {
           if (this.player.paused()) this.player.play();
         };
-        window.speechSynthesis.speak(utterance);
       }
+      window.speechSynthesis.speak(utterance);
     };
 
     adTrack.addEventListener('cuechange', this._cueChangeHandler);
@@ -123,6 +124,24 @@ class VideoJSADButton extends Button {
 
   handleClick() {
     this.handleADClick();
+
+    /**
+     * iOS does support 'speechSynthesis' and requires speech synthesis to be triggered
+     * directly from a user gesture, not programmatically from within a event handler
+     * like 'cuechange'.
+     * Since the code inside the event callbacks are considered asynchronous, by the time
+     * the code runs, the "user gesture" context has expired, so it silently fails.
+     * To overcome this limitation, use this AD button toggle click event from the user
+     * to utter a silent speech. This "unlocks" the audio context for the 'speechSynthesis'
+     * object, and allows to programmatically invoke speech synthesis later.
+     * IMPORTANT: AD button is never turned ON by default, this always needs to be
+     * toggled ON by the user.
+     */
+    if (IS_IOS) {
+      const silentUtterance = new SpeechSynthesisUtterance(' ');
+      silentUtterance.volume = 0;
+      window.speechSynthesis.speak(silentUtterance);
+    }
   }
 
   /**
@@ -139,8 +158,22 @@ class VideoJSADButton extends Button {
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
-      // Resume playback if AD had paused the player for non-Firefox browsers
-      if (this.player.paused() && !IS_FIREFOX) {
+      /**
+       * If the player had been playing when the speech synthesis had started, then the
+       * player gets momentarily paused until speech is ended. In this scenario, if the
+       * user toggles OFF the AD button the player needs to resume playback like the user
+       * had initially intended.
+       * Firefox takes care of this automatically without any assistance. However the other
+       * 2 major desktop browsers (Safari and Chrome) don't, so this code block handles it.
+       * 
+       * As for any browser in the iOS platform this action is blocked. Because, in order
+       * to access the AD button the user needs to exit the native player.
+       * This intentionally pauses the playback because, without 'playsInline' attribute
+       * in the <video> element, iOS is forced to use native player for playback.
+       * Resuming playback in this instance when AD is toggled OFF, creates a flash effect
+       * which is not in line a11y principles.
+       */
+      if (this.wasPlayingRef.current && !IS_FIREFOX && !IS_IOS) {
         this.player.play();
       }
     }

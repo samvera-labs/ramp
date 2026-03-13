@@ -506,9 +506,9 @@ function getResourceInfo(item, start, duration, motivation) {
         // Mark VideoJS 'descriptions' kind for audio description tracks
         source.kind = 'descriptions';
       } else {
-        // Specify kind to subtitles for VTT annotations. Without this VideoJS
-        // resolves the kind to metadata for subtitles file, resulting in empty
-        // subtitles lists in iOS devices' native players
+        // And the rest as 'subtitles' for VTT annotations and others as 'metadata'
+        // Without this VideoJS resolves the kind='metadata' for subtitles file, 
+        // resulting in empty subtitles lists in iOS devices' native players.
         source.kind = item.format.toLowerCase().includes('text/vtt')
           ? 'subtitles'
           : 'metadata';

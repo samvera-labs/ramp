@@ -8,14 +8,15 @@ import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
 import audiannotateTest from '@TestData/audiannotate-test';
+import adManifest from '@TestData/ad-annotation';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
 describe('iiif-parser', () => {
   describe('canvasesInManifest()', () => {
-    it('returns a list canvases in the manifest', () => {
+    it('returns a list of canvases in the manifest', () => {
       const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
-      expect(canvases).toHaveLength(3);
+      expect(canvases).toHaveLength(2);
     });
 
     it('returns information related to each canvas', () => {
@@ -273,8 +274,8 @@ describe('iiif-parser', () => {
 
         it('separates audio description tracks into audioDescTracks', () => {
           const { tracks, audioDescTracks } = iiifParser.getMediaInfo({
-            manifest: lunchroomManifest,
-            canvasIndex: 2,
+            manifest: adManifest,
+            canvasIndex: 0,
           });
           expect(audioDescTracks).toHaveLength(1);
           expect(audioDescTracks[0].kind).toEqual('descriptions');
