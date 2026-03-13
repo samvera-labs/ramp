@@ -32,6 +32,7 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+import VideoJSADButton from './components/js/VideoJSADButton';
 
 /**
  * Module to setup VideoJS instance on initial page load and update
@@ -694,15 +695,6 @@ function VideoJSPlayer({
         player.trigger('volumechange');
       }
 
-      if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
-        let subsCapBtn = controlBar.addChild(
-          'subsCapsButton', {}, volumeIndex + 1
-        );
-        // Add CSS to mark captions-on
-        subsCapBtn.children_[0].addClass('captions-on');
-      }
-
-
       /*
         Change player's appearance when switching between audio and video canvases.
         For audio: player height is reduced and big play button is removed
@@ -832,44 +824,13 @@ function VideoJSPlayer({
       if (isVideo) {
         setUpCaptions(player);
         if (audioDescTracksRef.current?.length > 0) {
-          // Find the AD text-track from player's textTracks list
-          var adTrack = Array.from(player.textTracks()).find(t => t.kind === 'descriptions');
-
-          if (adTrack) {
-            // Set AD track mode to 'hidden' to enable display of captions simultaneously
-            adTrack.mode = 'hidden';
-            // Cleanup any existing event listeners
-            adTrack.removeEventListener('cuechange');
-
-            // Use 'cuechange' event in the AD text-track to activate speech synthesis
-            adTrack.addEventListener('cuechange', function () {
-              // Access the currently active cues
-              var activeCues = adTrack.activeCues;
-
-              if (activeCues && activeCues.length > 0) {
-                // If AD is off do nothing
-                if (!adOnRef.current) return;
-                const wasPlaying = !player.paused();
-                const text = activeCues[0].text;
-
-                /**
-                 * If the active AD cue is encountered during playback; 
-                 * 1. pause the player 
-                 * 2. read the active AD cue
-                 * 3. continue playback
-                 */
-                if (wasPlaying) {
-                  player.pause();
-                  const utterance = new SpeechSynthesisUtterance(text);
-                  window.speechSynthesis.cancel();
-                  utterance.onend = () => {
-                    if (player.paused()) player.play();
-                  };
-                  window.speechSynthesis.speak(utterance);
-                }
-              }
-            });
-          }
+          /** 
+           * Refresh the AD track cuechange listener after new tracks are loaded.
+           * This is needs to go here, because the VideoJS custom components are not able
+           * to catch the loadedmetadata player event somehow.
+          */
+          const adBtn = player.getChild('controlBar')?.getChild('VideoJSADButton');
+          if (adBtn?.refreshTrack) adBtn.refreshTrack();
         }
       }
 
@@ -982,7 +943,6 @@ function VideoJSPlayer({
         }
       }
 
-<<<<<<< HEAD
       /**
        * Find if there is a forced text track for the Canvas. Use tracksRef built from the parsed
        * information from Manifest to identify the forced subtitle/caption file and then, find the relevant
@@ -1009,12 +969,6 @@ function VideoJSPlayer({
          */
         activeTextTrackRef.current = trackToEnable;
         trackToEnable.mode = 'showing';
-=======
-      // Enable the first caption when captions are enabled in the session
-      if (firstSubCap && startCaptioned) {
-        firstSubCap.mode = 'showing';
-        activeTextTrackRef.current = firstSubCap;
->>>>>>> 5d5ca2c (Use speech synthesis to read AD text-tracks enabled by VideoJS AD)
         handleCaptionChange(true);
       }
 

@@ -159,7 +159,7 @@ const MediaPlayer = ({
             'customControlSpacer', // Spacer element from VideoJS
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
-            (audioDescTracks.length > 0) ? 'descriptionsButton' : '',
+            (audioDescTracks.length > 0 && isVideo) ? 'videoJSADButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
             'qualitySelector',
             enablePlaybackRate ? 'playbackRateMenuButton' : '',
@@ -184,7 +184,8 @@ const MediaPlayer = ({
           videoJSNextButton: isMultiCanvased &&
             { canvasIndex, lastCanvasIndex, switchPlayer },
           videoJSTrackScrubber: (hasStructure || isPlaylist) &&
-            { trackScrubberRef, timeToolRef, isPlaylist }
+            { trackScrubberRef, timeToolRef, isPlaylist },
+          videoJSADButton: (audioDescTracks.length > 0) && { audioDescTracks }
         },
         sources: isMultiSourced
           ? [sources[srcIndex]]
