@@ -21,11 +21,11 @@ export default {
     },
     {
       label: { en: ["Date"] },
-      value: { en: ["2023 (Creation date: 2023)"] }
+      value: { en: ["2023 (Creation date: 2023)", "<a href=\"javascript:alert(1)\">xss</a>"] }
     },
     {
       label: { en: ["Main contributors"] },
-      value: { en: ["John Doe", "The <nav>Avalon</nav> Media System Team"] }
+      value: { en: ["<a href=\"mailto:johndoe@example.com\">John Doe</a>", "The <nav>Avalon</nav> Media System Team"] }
     },
     {
       label: { en: ["Summary"] },
@@ -33,7 +33,7 @@ export default {
     },
     {
       label: { en: ["Contributors"] },
-      value: { en: ["Jon's Cats", "Adorable Dogs"] }
+      value: { en: ["Jon's Cats", "Adorable Dogs", "<a href=\"data:text/html,<script>alert(1)</script>\">Cats & Dogs</a>"] }
     },
     {
       label: { en: ["Collection"] },
