@@ -70,7 +70,7 @@ export default defineConfig({
           'react-dom': 'ReactDOM',
           'manifesto.js': 'manifesto',
           'mime-db': 'mimeDB',
-          'sanitize-html': 'sanitizeHTML',
+          'dompurify': 'DOMPurify',
           'mammoth': 'mammoth',
           'classnames': 'cx'
         },
