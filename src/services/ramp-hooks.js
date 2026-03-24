@@ -1291,7 +1291,8 @@ export const useSyncPlayback = ({
   const manifestDispatch = useContext(ManifestDispatchContext);
   const playerDispatch = useContext(PlayerDispatchContext);
 
-  const { clickedAnnotation } = manifestState;
+  // Check for manifestState, as Transcript component can exist without state provider
+  const clickedAnnotation = manifestState ? manifestState.clickedAnnotation : null;
   const { startTime, endTime, currentTime } = times;
 
   useEffect(() => {

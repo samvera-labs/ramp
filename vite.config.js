@@ -20,8 +20,8 @@ export default defineConfig({
   // Handle .js files that contains JSX: this allows to not rename them to .jsx
   esbuild: {
     loader: 'jsx',
-    include: /src\/.*\.[jt]sx?$/,
-    exclude: [],
+    include: /.*\.[jt]sx?$/,
+    exclude: /node_modules/,
   },
   // Resolve path aliases and Node.js polyfills
   resolve: {
