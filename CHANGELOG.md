@@ -1,5 +1,42 @@
 # @samvera/ramp
 
+## v5.0.0 tag (03/24/2026)
+* Fix search highlights for searches with punctuation in untimed transcripts by @Dananji in https://github.com/samvera-labs/ramp/pull/858
+* Add show more/less functionality to transcript cues by @Dananji in https://github.com/samvera-labs/ramp/pull/860
+* Upgrade react and react-dom to v19 by @Dananji in https://github.com/samvera-labs/ramp/pull/861
+* Set player time accurately when switching between canvases by @Dananji in https://github.com/samvera-labs/ramp/pull/863
+* Display inline supplementing annotations in transcript component by @Dananji in https://github.com/samvera-labs/ramp/pull/864
+* Fix close/expand for cookbook ToC recipes by @Dananji in https://github.com/samvera-labs/ramp/pull/865
+* Remove deprecation warnings in the build logs by @Dananji in https://github.com/samvera-labs/ramp/pull/866
+* Vite config: Replace Rollup with Vite for bundling, bundle VideoJS as direct dependency by @Dananji in https://github.com/samvera-labs/ramp/pull/867
+* Change language in collapse/expand button and heading in structure by @Dananji in https://github.com/samvera-labs/ramp/pull/868
+* Bump serialize-javascript from 6.0.1 to 6.0.2 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/870
+* Bump mammoth from 1.5.1 to 1.11.0 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/874
+* Bump vite from 7.1.4 to 7.1.11 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/875
+* Fix structure nav for multi-sectioned IA manifests by @Dananji in https://github.com/samvera-labs/ramp/pull/876
+* Adjust the big-play-button in video player by @Dananji in https://github.com/samvera-labs/ramp/pull/877
+* Fix indefinite loading spinner in transcripts tab by @Dananji in https://github.com/samvera-labs/ramp/pull/881
+* Bump min-document from 2.19.0 to 2.19.1 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/882
+* Fix missing label parsing in annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/883
+* Fix layout shift for vertical scrollbar appearance by @Dananji in https://github.com/samvera-labs/ramp/pull/885
+* Bump js-yaml from 3.14.1 to 3.14.2 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/886
+* Fix MIME type for resources by @Dananji in https://github.com/samvera-labs/ramp/pull/887
+* Bump node-forge from 1.3.1 to 1.3.2 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/888
+* Fix transcript/annotation sync with playback for multi-source Canvas by @Dananji in https://github.com/samvera-labs/ramp/pull/889
+* Add fallback strategy for source selection by @Dananji in https://github.com/samvera-labs/ramp/pull/890
+* Fixes progressbar for clipped playlist items, MIME type support by @Dananji in https://github.com/samvera-labs/ramp/pull/891
+* Display player controls in error state by @Dananji in https://github.com/samvera-labs/ramp/pull/893
+* Multisrc caption sync: fix caption sync and duration for multi-source canvases by @Dananji in https://github.com/samvera-labs/ramp/pull/895
+* Bump lodash from 4.17.21 to 4.17.23 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/896
+* Sort markers chronologically on load and updates by @Dananji in https://github.com/samvera-labs/ramp/pull/898
+* Bump webpack from 5.102.1 to 5.104.1 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/899
+* Change markers table layout by @Dananji in https://github.com/samvera-labs/ramp/pull/902
+* Bump minimatch from 3.1.2 to 3.1.5 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/907
+* Bump rollup from 4.50.0 to 4.59.0 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/908
+* Bump immutable from 5.1.3 to 5.1.5 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/910
+* Forced captions: auto-enable forced text tracks, fix Safari captions handling by @Dananji in https://github.com/samvera-labs/ramp/pull/911
+* Replace sanitize-html with dompurify by @Dananji in https://github.com/samvera-labs/ramp/pull/918
+
 ## v4.0.2 tag (08/05/2025)
 * Fix voiceover and a11y for cues in transcripts & annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/859
 

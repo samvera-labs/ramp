@@ -18,12 +18,12 @@ Demo site built show-casing all the components at https://ramp.avalonmediasystem
 
 Please ensure you have the following installed:
 - Node.js (>= 16.x)
-- `react` and `react-dom` (>= 17.x)
+- `react` and `react-dom` (version compatibility with each Ramp version listed below)
 - NPM or Yarn
 
 **React Version Compatibility**
- - `@samvera/ramp` versions later than **v4.0.2** will only work with **React 19**
- - `@samvera/ramp` **v3.3.0 and later** support **React 18**. **Note:** `@samvera/ramp` v3.3.0 works with both React 17 and React 18. If upgrading to React 18, update both `react` and `react-dom` to the same version.
+ - `@samvera/ramp` **v5.0.0 and later** require **React 19**
+ - `@samvera/ramp` **v3.3.0** to **v4.0.2** support **React 18**. **Note:** `@samvera/ramp` v3.3.0 works with both React 17 and React 18. If upgrading to React 18, update both `react` and `react-dom` to the same version.
  - For **older versions** of `@samvera/ramp`, use **React 17**.
 
 
@@ -40,11 +40,11 @@ OR
 npm install @samvera/ramp
 ```
 
-**Important**:  
+**Important**:
 - Post `@samvera/ramp v4.0.2`, VideoJS is included as a dependency and does **not** need to be installed separately.
 - For older versions:
-  - `@samvera/ramp <= v3.1.2`: Install `video.js@7.21.3`
-  - `@samvera/ramp v3.1.3` to `v4.0.2`: Install `video.js@8.10.0`
+  - `@samvera/ramp` versions < `v3.1.3`: Install `video.js@7.21.3`
+  - `@samvera/ramp` versions between (inclusive) `v3.1.3` and `v4.0.2`: Install `video.js@8.10.0`
 - For best results, use the recommended VideoJS version for your Ramp version.
 
 2. Import the library into your application:
