@@ -57989,9 +57989,7 @@ const fc = (i, e) => {
   setCurrentTime: r,
   times: a = {}
 }) => {
-  const s = Dt(Pn), o = Dt(vr), c = Dt(Yr), {
-    clickedAnnotation: l
-  } = s, {
+  const s = Dt(Pn), o = Dt(vr), c = Dt(Yr), l = s ? s.clickedAnnotation : null, {
     startTime: u,
     endTime: d,
     currentTime: f
