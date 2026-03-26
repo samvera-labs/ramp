@@ -6,6 +6,7 @@ import annotationTranscript from '@TestData/transcript-annotation';
 import multiSourceManifest from '@TestData/multi-source-manifest';
 import paintingAnnotationManifest from '@TestData/transcript-multiple-canvas';
 import noSupplementingManifest from '@TestData/single-canvas';
+import adManifest from '@TestData/ad-annotation';
 import mammoth from 'mammoth';
 import { cleanup } from '@testing-library/react';
 import * as utils from '@Services/utility-helpers';
@@ -167,6 +168,22 @@ describe('transcript-parser', () => {
             format: ''
           }
         ]);
+      });
+
+      test('includes audio description annotations in transcript list', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+          status: 200,
+          headers: { get: jest.fn(() => 'application/json') },
+          json: jest.fn(() => adManifest),
+        });
+
+        const transcripts = await transcriptParser.readSupplementingAnnotations(
+          'https://example.com/ad-manifest.json', '', signal
+        );
+        expect(fetchSpy).toHaveBeenCalledTimes(1);
+        expect(transcripts[0].items).toHaveLength(1);
+        expect(transcripts[0].items[0].url).toContain('/descriptions');
+        expect(transcripts[0].items[0].title).toEqual('AD in WebVTT format');
       });
     });
   });

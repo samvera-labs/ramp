@@ -32,11 +32,13 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+import VideoJSADButton from './components/js/VideoJSADButton';
 
 /**
  * Module to setup VideoJS instance on initial page load and update
  * on successive player reloads on Canvas changes.
  * @param {Object} props
+ * @param {Array} props.audioDescTracks
  * @param {Boolean} props.isVideo
  * @param {Boolean} props.isPlaylist
  * @param {Object} props.trackScrubberRef
@@ -52,6 +54,7 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
  * @param {Object} props.options
  */
 function VideoJSPlayer({
+  audioDescTracks,
   enableFileDownload,
   enableTitleLink,
   isVideo,
@@ -115,6 +118,9 @@ function VideoJSPlayer({
 
   const tracksRef = useRef();
   tracksRef.current = useMemo(() => { return tracks; }, [tracks]);
+
+  const audioDescTracksRef = useRef();
+  audioDescTracksRef.current = useMemo(() => { return audioDescTracks; }, [audioDescTracks]);
 
   const clickedUrlRef = useRef();
   clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
@@ -292,6 +298,11 @@ function VideoJSPlayer({
         && player.currentTime() != currentTimeRef.current) {
         player.currentTime(currentTimeRef.current);
       }
+      // Cancel any active speech synthesis on seek action when it is NOT the initial 'seek' on player load
+      if (window.speechSynthesis && player.readyState() == 4 && player.currentTime() != 0) {
+        window.speechSynthesis.cancel();
+      }
+
       /**
        * Use setTimeout to add dispatch action to update global state with the current time from 'seek' action,
        * to the event queue to be called when the current call stack is empty. 
@@ -626,12 +637,23 @@ function VideoJSPlayer({
       }
     }
 
+    // Add audio description tracks to the player
+    if (audioDescTracksRef.current?.length > 0 && isVideo) {
+      audioDescTracksRef.current.forEach(function (track) {
+        player.addRemoteTextTrack(track, false);
+      });
+    }
+
+    // Cancel any active speech synthesis on Canvas change
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
     /*
       Update player control bar for;
        - track scrubber button
        - volume panel
-       - if tracks exists: captions button for video players
-       - appearance of the player: big play button and aspect ratio of the player 
+       - appearance of the player: big play button and aspect ratio of the player
         based on media type
        - file download menu
     */
@@ -672,14 +694,6 @@ function VideoJSPlayer({
           is set on either 'ready' or 'volumechange' events.
         */
         player.trigger('volumechange');
-      }
-
-      if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
-        let subsCapBtn = controlBar.addChild(
-          'subsCapsButton', {}, volumeIndex + 1
-        );
-        // Add CSS to mark captions-on
-        subsCapBtn.children_[0].addClass('captions-on');
       }
 
       /*
@@ -808,7 +822,18 @@ function VideoJSPlayer({
         }
       }
 
-      if (isVideo) { setUpCaptions(player); }
+      if (isVideo) {
+        setUpCaptions(player);
+        if (audioDescTracksRef.current?.length > 0) {
+          /** 
+           * Refresh the AD track cuechange listener after new tracks are loaded.
+           * This needs to be addressed here, because the VideoJS custom components
+           * are not able to catch the 'loadedmetadata' player event to do this.
+          */
+          const adBtn = player.getChild('controlBar')?.getChild('VideoJSADButton');
+          if (adBtn?.refreshTrack) adBtn.refreshTrack();
+        }
+      }
 
       /*
         Set playable duration within the given media file and alternate start time as
@@ -844,7 +869,7 @@ function VideoJSPlayer({
   const {
     activeId, fragmentMarker, isReadyRef, playerRef, setActiveId, setFragmentMarker, setIsReady
   } = useVideoJSPlayer({
-    options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
+    audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
   });
 
   let cIndexRef = useRef();
@@ -911,9 +936,10 @@ function VideoJSPlayer({
       // Disable all text tracks to avoid multiple selections and pick the first one as default
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         let t = textTracks.tracks_[i];
-        if ((t.kind === 'subtitles' || t.kind === 'captions') && (t.language != '' && t.label != '')) {
+        if ((t.kind === 'subtitles' || t.kind === 'captions' || t.kind === 'descriptions') &&
+          (t.language != '' && t.label != '')) {
           t.mode = 'disabled';
-          if (!onFirstCap) firstSubCap = t;
+          if (!onFirstCap && t.kind !== 'descriptions') firstSubCap = t;
           onFirstCap = true;
         }
       }
@@ -970,7 +996,6 @@ function VideoJSPlayer({
       }
     }
 
-    // Add/remove CSS to indicate captions/subtitles is turned on
     textTracks.on('change', () => {
       /**
        * Safari/WebKit can asynchronously enable additional text tracks as a 'nativeTextTracks'
@@ -1003,12 +1028,14 @@ function VideoJSPlayer({
       let trackModes = [];
       for (let i = 0; i < textTracks.tracks_.length; i++) {
         const { mode, label, kind } = textTracks[i];
-        trackModes.push(textTracks[i].mode);
+        // Collect track modes
+        if (kind != 'descriptions') trackModes.push(mode);
         if (mode === 'showing' && label != ''
           && (kind === 'subtitles' || kind === 'captions')) {
           activeTextTrackRef.current = textTracks[i];
         }
       }
+      // Add/remove CSS to indicate captions/subtitles is turned on
       const subsOn = trackModes.includes('showing') ? true : false;
       handleCaptionChange(subsOn);
       /**
@@ -1381,6 +1408,7 @@ function VideoJSPlayer({
 };
 
 VideoJSPlayer.propTypes = {
+  audioDescTracks: PropTypes.array,
   enableFileDownload: PropTypes.bool,
   enableTitleLink: PropTypes.bool,
   isVideo: PropTypes.bool,

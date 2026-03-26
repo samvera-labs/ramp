@@ -10,6 +10,7 @@ import emptyCanvasManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import forcedTextTracksManifest from '@TestData/forced-text-tracks';
+import adManifest from '@TestData/ad-annotation';
 import * as hooks from '@Services/ramp-hooks';
 
 // Mock the Video.js language loader
@@ -413,6 +414,59 @@ describe('MediaPlayer component', () => {
           screen.queryAllByTestId('videojs-video-element').length
         ).toBeGreaterThan(0);
         expect(screen.queryByTitle('Captions')).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('AD button in the control bar', () => {
+    test('renders with a video canvas with supplementing descriptions annotation', async () => {
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState(adManifest) },
+        initialPlayerState: {},
+      });
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.queryByTitle('Toggle Audio Description')).toBeInTheDocument();
+      });
+    });
+
+    describe('does not render', () => {
+      test('with an audio canvas', () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(adManifest, 1) },
+          initialPlayerState: {},
+        });
+        render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        );
+        expect(screen.queryByTitle('Toggle Audio Description')).not.toBeInTheDocument();
+      });
+
+      test('with a video canvas w/o supplementing descriptions annotations', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(adManifest, 2) },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(
+          screen.queryAllByTestId('videojs-video-element').length
+        ).toBeGreaterThan(0);
+        await waitFor(() => {
+          expect(screen.queryByTitle('Toggle Audio Description')).not.toBeInTheDocument();
+        });
       });
     });
   });

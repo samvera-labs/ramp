@@ -792,6 +792,11 @@ describe('util helper', () => {
       expect(value).toEqual(2);
     });
 
+    test('with descriptions at the end of URI', () => {
+      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/descriptions');
+      expect(value).toEqual(4);
+    });
+
     test('with generic URI', () => {
       const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/lunchroom-manners.vtt');
       expect(value).toEqual(3);

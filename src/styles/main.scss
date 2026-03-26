@@ -131,7 +131,9 @@
   border-bottom: 0.3rem ridge vars.$primaryGreen !important;
 }
 
-.captions-on {
+/* styling for captions/audio-description turned ON */
+.captions-on,
+.ad-active {
   border-bottom: 0.35rem ridge vars.$primaryGreen !important;
 }
 

@@ -126,9 +126,9 @@ export const useMediaPlayer = () => {
  * Read Canvas information and update state to reload player on
  * Canvas changes
  * @param {Object} obj
- * @param {Boolean} obj.enableFileDownload
- * @param {Boolean} obj.withCredentials
- * @param {Number} obj.lastCanvasIndex
+ * @param {Boolean} obj.enableFileDownload turn ON/OFF file download in player controls
+ * @param {Boolean} obj.withCredentials turn ON/OFF credentials for source elements
+ * @param {Number} obj.lastCanvasIndex last canvas index in the curernt Manifest
  * @returns  {
  * isMultiSourced: bool,
  * isPlaylist: bool,
@@ -165,6 +165,7 @@ export const useSetupPlayer = ({
     error: '',
     sources: [],
     tracks: [],
+    audioDescTracks: [],
     poster: null,
     targets: [],
   });
@@ -207,7 +208,7 @@ export const useSetupPlayer = ({
    */
   const initCanvas = (canvasId, fromStart) => {
     const {
-      isMultiSource, sources, tracks, canvasTargets, mediaType, error, poster
+      isMultiSource, sources, tracks, audioDescTracks, canvasTargets, mediaType, error, poster
     } = getMediaInfo({
       manifest,
       canvasIndex: canvasId,
@@ -237,7 +238,7 @@ export const useSetupPlayer = ({
 
     setPlayerConfig({
       ...playerConfig,
-      error, sources, tracks, poster, targets: canvasTargets
+      error, sources, tracks, audioDescTracks, poster, targets: canvasTargets
     });
 
     const currentCanvas = allCanvases.find((c) => c.canvasIndex === canvasId);
@@ -312,6 +313,7 @@ export const useSetupPlayer = ({
  * Initialize and update VideoJS instance on global state changes when
  * Canvas changes
  * @param {Object} obj
+ * @param {Array} obj.audioDescTracks text-tracks for audioDescription functionality
  * @param {Object} obj.options VideoJS options
  * @param {Function} obj.playerInitSetup VideoJS initialize setup func
  * @param {String} obj.startQuality selected quality stored in local storage
@@ -330,6 +332,7 @@ export const useSetupPlayer = ({
  * }
  */
 export const useVideoJSPlayer = ({
+  audioDescTracks,
   options,
   playerInitSetup,
   startQuality,
@@ -587,11 +590,13 @@ export const useVideoJSPlayer = ({
   };
 
   /**
-   * Build track HTML for Video.js player on initial page load
+   * Build track HTML for Video.js player on initial page load for both
+   * subtitle/caption and audio-description text-tracks
    */
   const buildTracksHTML = () => {
-    if (tracks?.length > 0 && videoJSRef.current) {
-      tracks.map((t) => {
+    const allTracks = [...(tracks ?? []), ...(audioDescTracks ?? [])];
+    if (allTracks.length > 0 && videoJSRef.current) {
+      allTracks.map((t) => {
         let trackEl = document.createElement('track');
         trackEl.setAttribute('key', t.key);
         trackEl.setAttribute('src', t.src);
@@ -1025,9 +1030,9 @@ export const useTranscripts = ({
       transcriptParseAbort?.current?.abort();
       const canvasAnnotations = annotations
         .filter((a) => a.canvasIndex == canvasIndexRef.current);
-      if (canvasAnnotations?.length > 0 && canvasAnnotations[canvasIndexRef.current]?.annotationSets?.length > 0) {
+      if (canvasAnnotations?.length > 0 && canvasAnnotations[0]?.annotationSets?.length > 0) {
         // Filter supplementing annotations from all annotations in the Canvas
-        const transcriptAnnotations = canvasAnnotations[canvasIndexRef.current].annotationSets
+        const transcriptAnnotations = canvasAnnotations[0].annotationSets
           .filter((as) => as.motivation?.includes(TRANSCRIPT_MOTIVATION) || as.isSupplementing);
         // Convert annotations into Transcript component friendly format
         const transcriptItems = transcriptAnnotations?.length > 0

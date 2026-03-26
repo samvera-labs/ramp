@@ -8,12 +8,13 @@ import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
 import audiannotateTest from '@TestData/audiannotate-test';
+import adManifest from '@TestData/ad-annotation';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
 describe('iiif-parser', () => {
   describe('canvasesInManifest()', () => {
-    it('returns a list canvases in the manifest', () => {
+    it('returns a list of canvases in the manifest', () => {
       const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
       expect(canvases).toHaveLength(2);
     });
@@ -269,6 +270,17 @@ describe('iiif-parser', () => {
             canvasIndex: 0,
           });
           expect(tracks).toEqual([]);
+        });
+
+        it('separates audio description tracks into audioDescTracks', () => {
+          const { tracks, audioDescTracks } = iiifParser.getMediaInfo({
+            manifest: adManifest,
+            canvasIndex: 0,
+          });
+          expect(audioDescTracks).toHaveLength(1);
+          expect(audioDescTracks[0].kind).toEqual('descriptions');
+          expect(audioDescTracks[0].src).toContain('/descriptions');
+          expect(tracks).toHaveLength(0);
         });
       });
     });
