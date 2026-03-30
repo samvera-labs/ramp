@@ -6,7 +6,7 @@ import throttle from 'lodash/throttle';
 import 'videojs-markers-plugin/dist/videojs-markers-plugin';
 import 'videojs-markers-plugin/dist/videojs.markers.plugin.css';
 
-require('@silvermine/videojs-quality-selector')(videojs);
+import silvermine from '@silvermine/videojs-quality-selector';
 import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
@@ -124,6 +124,9 @@ function VideoJSPlayer({
 
   const clickedUrlRef = useRef();
   clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
+
+  // Register the videojs-quality-selector plugin before initialization
+  silvermine(videojs);
 
   /**
    * Setup player with player-related information parsed from the IIIF
