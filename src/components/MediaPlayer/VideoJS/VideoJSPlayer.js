@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import videojs from 'video.js';
@@ -11,12 +11,13 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment, offsetTextTrackCues, roundToPrecision } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, offsetTextTrackCues, roundToPrecision, timeToHHmmss } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
+import { usePlaybackPositions } from '@Services/save-playback-positions';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import {
   useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
@@ -60,6 +61,7 @@ function VideoJSPlayer({
   isVideo,
   options,
   placeholderText,
+  resumeCache,
   scrubberTooltipRef,
   tracks,
   trackScrubberRef,
@@ -72,6 +74,7 @@ function VideoJSPlayer({
   const manifestDispatch = useManifestDispatch();
 
   const {
+    allCanvases,
     canvasDuration,
     canvasLink,
     hasMultiItems,
@@ -87,6 +90,11 @@ function VideoJSPlayer({
   const [startMuted, setStartMuted] = useLocalStorage('startMuted', false);
   const [startCaptioned, setStartCaptioned] = useLocalStorage('startCaptioned', true);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
+
+  const { savePosition, getPosition, clearPosition } = usePlaybackPositions({
+    maxSize: resumeCache.maxItems,
+    ttlDays: resumeCache.ttlDays,
+  });
 
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
@@ -127,6 +135,19 @@ function VideoJSPlayer({
 
   // Register the videojs-quality-selector plugin before initialization
   silvermine(videojs);
+
+  const canvasDurationRef = useRef();
+  canvasDurationRef.current = useMemo(() => { return canvasDuration; }, [canvasDuration]);
+
+  // Refs so the throttled handleTimeUpdate closure always reads current values
+  const canvasURLRef = useRef(null);
+  useEffect(() => {
+    canvasURLRef.current = allCanvases[canvasIndex]?.canvasURL ?? null;
+  }, [allCanvases, canvasIndex]);
+
+  const savePositionRef = useRef();
+  savePositionRef.current = savePosition;
+
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -238,6 +259,8 @@ function VideoJSPlayer({
         if (isReadyRef.current && isPlayingRef.current) {
           playerDispatch({ isEnded: true, type: 'setIsEnded' });
           player.pause();
+          // Clear the saved playback position when media ends
+          if (canvasURLRef.current) clearPosition(canvasURLRef.current);
           if (!canvasIsEmptyRef.current) handleEnded();
         }
       }, 100);
@@ -465,6 +488,15 @@ function VideoJSPlayer({
       e.stopPropagation();
     });
     playerLoadedMetadata(player);
+    /**
+     * Show resume prompt only for the initial page load, not on Canvas switches.
+     * This first loaded Canvas can be either the first Canvas in the Manifest or the
+     * Canvas corresponding to the 'startCanavasId' prop if it is provided.
+     * With the use of 'player.one' this is scoped only to the first load.
+     */
+    player.one('loadedmetadata', () => {
+      resumePlaybackModal(player);
+    });
   };
 
   /**
@@ -771,6 +803,49 @@ function VideoJSPlayer({
     player.structStart = currentTimeRef.current;
 
     playerLoadedMetadata(player);
+  };
+
+  /**
+   * Show resume prompt if a saved position exists for the current Canvas
+   * @param {Object} player player
+   */
+  const resumePlaybackModal = (player) => {
+    const currentCanvasURL = canvasURLRef.current;
+    // Skip the resume playback prompt when there is a custom start indicated via 'startCanvasTime' prop
+    if (manifestState.customStart?.startTime > 0) return;
+    if (currentCanvasURL) {
+      const savedTime = getPosition(currentCanvasURL);
+      if (savedTime !== null && savedTime > 0) {
+        const resumeLabel = `Resume playback from ${timeToHHmmss(savedTime)}?`;
+        const modal = player.createModal(resumeLabel, { temporary: false, uncloseable: true });
+        modal.addClass('vjs-resume-prompt');
+        // Make the modal accessible by setting appropriate ARIA attributes
+        modal.el().setAttribute('role', 'alertdialog');
+        modal.el().setAttribute('aria-label', resumeLabel);
+        modal.contentEl().setAttribute('aria-live', 'assertive');
+        modal.contentEl().setAttribute('aria-atomic', 'true');
+        // Create buttons for resuming or dismissing the prompt
+        const dismiss = (seekTo) => {
+          // Set the player's current time to the saved time if user chooses to resume
+          if (seekTo) player.currentTime(seekTo);
+          /* Clear the cache entry for the Canvas on user confirmation,
+          to avoid resuming from an outdated position in the future */
+          clearPosition(currentCanvasURL);
+          modal.close();
+          player.play();
+        };
+        const resumeBtn = document.createElement('button');
+        resumeBtn.textContent = 'Yes';
+        resumeBtn.className = 'vjs-resume-button';
+        resumeBtn.addEventListener('click', () => dismiss(savedTime));
+        const dismissBtn = document.createElement('button');
+        dismissBtn.textContent = 'No, start from beginning';
+        dismissBtn.className = 'vjs-resume-dismiss-button';
+        dismissBtn.addEventListener('click', () => dismiss());
+        modal.contentEl().appendChild(resumeBtn);
+        modal.contentEl().appendChild(dismissBtn);
+      }
+    }
   };
 
   /**
@@ -1205,6 +1280,12 @@ function VideoJSPlayer({
       if (hasMultiItems && srcIndexRef.current > 0) {
         playerTime = playerTime + targets[srcIndexRef.current].altStart;
       }
+
+      // Persist playback position, skip near-start and near-end to avoid unhelpful resumes
+      if (canvasURLRef.current && playerTime > 5 && playerTime < canvasDurationRef.current - 5) {
+        savePositionRef.current(canvasURLRef.current, playerTime);
+      }
+
       const activeSegment = getActiveSegment(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
@@ -1446,6 +1527,7 @@ VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   options: PropTypes.object,
   placeholderText: PropTypes.string,
+  resumeCache: PropTypes.object,
   scrubberTooltipRef: PropTypes.object,
   tracks: PropTypes.array,
   trackScrubberRef: PropTypes.object,

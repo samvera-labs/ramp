@@ -28,7 +28,8 @@ const MediaPlayer = ({
   enablePlaybackRate = false,
   enableTitleLink = false,
   withCredentials = false,
-  language = 'en'
+  language = 'en',
+  resumeCache = { ttlDays: 30, maxItems: 200 },
 }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -213,6 +214,7 @@ const MediaPlayer = ({
           isVideo={isVideo}
           options={videoJSOptions}
           placeholderText={error}
+          resumeCache={resumeCache}
           scrubberTooltipRef={timeToolRef}
           tracks={tracks}
           trackScrubberRef={trackScrubberRef}
@@ -233,6 +235,10 @@ MediaPlayer.propTypes = {
   enableTitleLink: PropTypes.bool,
   withCredentials: PropTypes.bool,
   language: PropTypes.string,
+  resumeCache: PropTypes.shape({
+    ttlDays: PropTypes.number,
+    maxItems: PropTypes.number,
+  }),
 };
 
 export default MediaPlayer;

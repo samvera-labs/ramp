@@ -291,3 +291,37 @@ and outside of the player (e.g. when quality selector opens downwards of the pla
     padding-right: 0.5em;
   }
 }
+
+/* Resume playback prompt modal */
+.vjs-resume-prompt .vjs-modal-dialog-content {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 1.2em 2.5em;
+  border-radius: 8px;
+  font-size: 1.5em;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8em;
+}
+
+.vjs-resume-button,
+.vjs-resume-dismiss-button {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0.5em 1.5em;
+  font-size: 0.9em;
+  font-weight: 600;
+  background-color: transparent;
+  color: #ccc;
+  border: 1px solid #ccc !important;
+  flex-shrink: 0;
+}
+
+// Smaller buttons for audio-only mode
+.vjs-audio-only-mode .vjs-resume-button,
+.vjs-audio-only-mode .vjs-resume-dismiss-button {
+  padding: 0.4em 1em;
+  font-size: 0.85em;
+}
