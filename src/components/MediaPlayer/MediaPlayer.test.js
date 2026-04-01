@@ -225,6 +225,62 @@ describe('MediaPlayer component', () => {
         expect(screen.queryByTestId('videojs-title-link')).toBeInTheDocument();
       });
     });
+
+    describe('resumeCache', () => {
+      beforeEach(() => {
+        localStorage.setItem(
+          'playbackPositions',
+          JSON.stringify([
+            { key: 'https://example.com/manifest/lunchroom_manners/canvas/1', value: { time: 120, savedAt: Date.now() } },
+            { key: 'http://example.com/volleyball-for-boys/manifest/canvas/1', value: { time: 60, savedAt: Date.now() } }
+          ])
+        );
+      });
+
+      test('with default value renders player successfully', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(videoManifest) },
+          initialPlayerState: {},
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('media-player')).toBeInTheDocument();
+        // Clears the existing cache since enable is false by default
+        expect(localStorage.getItem('playbackPositions')).toBe('[]');
+      });
+
+      test('with enable=true and default values for others renders player successfully', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(videoManifest) },
+          initialPlayerState: {},
+          resumeCache: { enable: true },
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('media-player')).toBeInTheDocument();
+        expect(localStorage.getItem('playbackPositions')).not.toBe('[]');
+      });
+
+      test('with custom ttlDays and maxItems renders player successfully', async () => {
+        const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+          initialManifestState: { ...manifestState(videoManifest) },
+          initialPlayerState: {},
+          resumeCache: { ttlDays: 7, maxItems: 50 },
+        });
+        await act(async () => render(
+          <ErrorBoundary>
+            <PlayerWithManifest />
+          </ErrorBoundary>
+        ));
+        expect(screen.queryByTestId('media-player')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('withCredentials', () => {

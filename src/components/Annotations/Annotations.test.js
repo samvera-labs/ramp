@@ -268,7 +268,7 @@ describe('Annotations component', () => {
       const AnnotationsWrapped = withManifestAndPlayerProvider(Annotations, {
         initialManifestState: {
           ...manifestState(manifestWoMarkers),
-          playlist: { isPlaylist: true }
+          playlist: { isPlaylist: true, markers: [] }
         },
         initialPlayerState: { player: { currentTime: jest.fn() } },
       });

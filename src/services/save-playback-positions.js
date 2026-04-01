@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useLocalStorage } from '@Services/local-storage';
 
 /**
@@ -15,17 +15,17 @@ function readCacheEntry(cache, key) {
  * Set the cache entry with the most recent playback position for the
  * current canvasId. If the canvasId already exists in the cache, it is
  * replaced and moved to the front. If not, a new entry is created and
- * maxSize is enforced by evicting the least-recently-used entry at the end.
+ * maxItems is enforced by evicting the least-recently-used entry at the end.
  * @param {Array} cache cached playback position array in localStorage
  * @param {String} key canvasId of the current Canvas
  * @param {Object} value { time: float, savedAt: Date() } for the Canvas
- * @param {Number} maxSize maximum size of the LRU cache
+ * @param {Number} maxItems maximum size of the LRU cache
  * @returns 
  */
-function setCacheEntry(cache, key, value, maxSize) {
+function setCacheEntry(cache, key, value, maxItems) {
   const filtered = cache.filter((entry) => entry.key !== key);
   const updated = [{ key, value }, ...filtered];
-  return updated.length > maxSize ? updated.slice(0, maxSize) : updated;
+  return updated.length > maxItems ? updated.slice(0, maxItems) : updated;
 }
 
 /**
@@ -56,22 +56,36 @@ function isExpired(savedAt, ttlDays) {
  * All positions are stored under a single storage key. Provides methods to,
  * - read the saved playback position
  * - update an entry for the latest playback position and moves it to the front (most recently used)
- * of the cache and evict least recently used entry (if maxSize is exceeded) from cache
+ * of the cache and evict least recently used entry (if maxItems is exceeded) from cache
  * - clear an existing playback position
- * for a given canvasId (key). The cache is bounded by maxSize and TTL (set as # of days)
+ * for a given canvasId (key). The cache is bounded by maxItems and TTL (set as # of days)
  * @param {Object} obj
- * @param {number}  obj.maxSize LRU capacity (number of max entries) -> default: 200
- * @param {number}  obj.ttlDays days before an entry expires -> default: 30
+ * @param {Boolean} obj.enable whether to enable saving playback positions
+ * @param {Number}  obj.maxItems LRU capacity (number of max entries) -> default: 200
+ * @param {Number}  obj.ttlDays days before an entry expires -> default: 30
  * @returns {{ savePosition, getPosition, clearPosition }}
  */
-export const usePlaybackPositions = ({ maxSize = 200, ttlDays = 30 } = {}) => {
+export const usePlaybackPositions = ({ enable, maxItems, ttlDays } = {}) => {
   const [cache, setCache] = useLocalStorage('playbackPositions', []);
 
+  /* When caching is disabled, clear the cache. This ensures that when users toggle
+  off the resume feature, all saved positions are cleared and they won't be resumed
+  accidentally from previous settings. */
+  useEffect(() => {
+    if (!enable) {
+      setCache([]);
+    }
+  }, [enable, setCache]);
+
   const savePosition = useCallback((canvasURL, time) => {
-    setCache((current) => setCacheEntry(current, canvasURL, { time, savedAt: Date.now() }, maxSize));
-  }, [maxSize, setCache]);
+    // Do nothing when caching is disabled
+    if (!enable) return;
+    setCache((current) => setCacheEntry(current, canvasURL, { time, savedAt: Date.now() }, maxItems));
+  }, [enable, maxItems, setCache]);
 
   const getPosition = useCallback((canvasURL) => {
+    // Do nothing when caching is disabled
+    if (!enable) return null;
     const entry = readCacheEntry(cache, canvasURL);
     if (!entry) return null;
     if (isExpired(entry.savedAt, ttlDays)) {
@@ -79,11 +93,13 @@ export const usePlaybackPositions = ({ maxSize = 200, ttlDays = 30 } = {}) => {
       return null;
     }
     return entry.time;
-  }, [cache, ttlDays, setCache]);
+  }, [enable, cache, ttlDays, setCache]);
 
   const clearPosition = useCallback((canvasURL) => {
+    // Do nothing when caching is disabled
+    if (!enable) return;
     setCache((current) => deleteCacheEntry(current, canvasURL));
-  }, [setCache]);
+  }, [enable, setCache]);
 
   return { savePosition, getPosition, clearPosition };
 };

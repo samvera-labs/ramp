@@ -21,6 +21,10 @@ const PLAYER_ID = 'iiif-media-player';
  * @param {Boolean} props.enableTitleLink
  * @param {Boolean} props.withCredentials
  * @param {String} props.language
+ * @param {Object} props.resumeCache
+ * @param {Boolean} props.resumeCache.enable whether to enable caching of playback positions
+ * @param {Number} props.resumeCache.ttlDays number of days before a cached entry expires, default: 30 days
+ * @param {Number} props.resumeCache.maxItems maximum number of entries to be stored in the cache, default: 200 entries
  */
 const MediaPlayer = ({
   enableFileDownload = false,
@@ -29,7 +33,7 @@ const MediaPlayer = ({
   enableTitleLink = false,
   withCredentials = false,
   language = 'en',
-  resumeCache = { ttlDays: 30, maxItems: 200 },
+  resumeCache = { enable: false, ttlDays: 30, maxItems: 200 },
 }) => {
   const manifestState = useManifestState();
   const playerState = usePlayerState();
@@ -236,6 +240,7 @@ MediaPlayer.propTypes = {
   withCredentials: PropTypes.bool,
   language: PropTypes.string,
   resumeCache: PropTypes.shape({
+    enable: PropTypes.bool,
     ttlDays: PropTypes.number,
     maxItems: PropTypes.number,
   }),

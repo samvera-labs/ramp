@@ -92,14 +92,16 @@ function VideoJSPlayer({
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
 
   const { savePosition, getPosition, clearPosition } = usePlaybackPositions({
-    maxSize: resumeCache.maxItems,
-    ttlDays: resumeCache.ttlDays,
+    enable: resumeCache?.enable,
+    maxItems: resumeCache?.maxItems,
+    ttlDays: resumeCache?.ttlDays,
   });
 
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
   const isForcedTextTrackRef = useRef(false);
+  const resumeModalRef = useRef(null);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -489,7 +491,7 @@ function VideoJSPlayer({
     });
     playerLoadedMetadata(player);
     /**
-     * Show resume prompt only for the initial page load, not on Canvas switches.
+     * Show resume modal only for the initial page load, not on Canvas switches.
      * This first loaded Canvas can be either the first Canvas in the Manifest or the
      * Canvas corresponding to the 'startCanavasId' prop if it is provided.
      * With the use of 'player.one' this is scoped only to the first load.
@@ -668,6 +670,13 @@ function VideoJSPlayer({
       });
     }
 
+    /* Remove any resume playback modal in the DOM. Call close() to restore
+    player controls before removing the modal element from the DOM. */
+    if (resumeModalRef.current) {
+      resumeModalRef.current.close();
+      resumeModalRef.current.el()?.remove();
+    }
+
     player.duration(canvasDuration);
     player.src(options.sources);
     player.poster(options.poster);
@@ -806,25 +815,27 @@ function VideoJSPlayer({
   };
 
   /**
-   * Show resume prompt if a saved position exists for the current Canvas
-   * @param {Object} player player
+   * Show resume modal if a saved position exists for the current Canvas
+   * @param {Object} player
    */
   const resumePlaybackModal = (player) => {
     const currentCanvasURL = canvasURLRef.current;
-    // Skip the resume playback prompt when there is a custom start indicated via 'startCanvasTime' prop
+    // Skip the resume playback modal when there is a custom start indicated via 'startCanvasTime' prop
     if (manifestState.customStart?.startTime > 0) return;
     if (currentCanvasURL) {
       const savedTime = getPosition(currentCanvasURL);
       if (savedTime !== null && savedTime > 0) {
         const resumeLabel = `Resume playback from ${timeToHHmmss(savedTime)}?`;
         const modal = player.createModal(resumeLabel, { temporary: false, uncloseable: true });
-        modal.addClass('vjs-resume-prompt');
+        resumeModalRef.current = modal;
+        modal.addClass('vjs-resume-modal');
+        modal.setAttribute('data-testid', 'resume-playback-modal');
         // Make the modal accessible by setting appropriate ARIA attributes
         modal.el().setAttribute('role', 'alertdialog');
         modal.el().setAttribute('aria-label', resumeLabel);
         modal.contentEl().setAttribute('aria-live', 'assertive');
         modal.contentEl().setAttribute('aria-atomic', 'true');
-        // Create buttons for resuming or dismissing the prompt
+        // Create buttons for resuming or dismissing the modal
         const dismiss = (seekTo) => {
           // Set the player's current time to the saved time if user chooses to resume
           if (seekTo) player.currentTime(seekTo);
@@ -1282,7 +1293,8 @@ function VideoJSPlayer({
       }
 
       // Persist playback position, skip near-start and near-end to avoid unhelpful resumes
-      if (canvasURLRef.current && playerTime > 5 && playerTime < canvasDurationRef.current - 5) {
+      const isHelpfulResume = playerTime > 5 && playerTime < canvasDurationRef.current - 5;
+      if (canvasURLRef.current && isHelpfulResume) {
         savePositionRef.current(canvasURLRef.current, playerTime);
       }
 
