@@ -135,6 +135,23 @@
   z-index: 1;
 }
 
+/* When audio player is placed near the top of the page (e.g. in Avalon), the playback rate
+menu that opens upwards gets clipped by the top of the viewport. To prevent this, open the
+menu downwards on mobile audio players. */
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone,
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-android {
+  .vjs-playback-rate .vjs-menu {
+    bottom: auto;
+    top: 3em;
+    margin-bottom: 0;
+  }
+
+  .vjs-playback-rate .vjs-menu .vjs-menu-content {
+    bottom: auto;
+    top: 0;
+  }
+}
+
 // Show volume control panel on top time-tooltip
 .vjs-volume-panel-vertical .vjs-volume-control {
   z-index: 1;
