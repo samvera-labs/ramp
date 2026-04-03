@@ -820,8 +820,11 @@ function VideoJSPlayer({
    */
   const resumePlaybackModal = (player) => {
     const currentCanvasURL = canvasURLRef.current;
-    // Skip the resume playback modal when there is a custom start indicated via 'startCanvasTime' prop
-    if (manifestState.customStart?.startTime > 0) return;
+    /* Skip the resume playback modal when,
+    - there is a custom start indicated via 'startCanvasTime' prop
+    - the Manifst is a playlist
+    */
+    if (manifestState.customStart?.startTime > 0 || isPlaylist) return;
     if (currentCanvasURL) {
       const savedTime = getPosition(currentCanvasURL);
       if (savedTime !== null && savedTime > 0) {

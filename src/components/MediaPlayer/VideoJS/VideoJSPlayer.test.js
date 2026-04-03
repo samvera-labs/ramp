@@ -4,6 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import { withManifestAndPlayerProvider, manifestState } from '@Services/testing-helpers';
 import videoManifest from '@TestData/lunchroom-manners';
+import playlistManifest from '@TestData/playlist';
 
 describe('VideoJSPlayer component', () => {
   const CANVAS_URL = 'https://example.com/manifest/lunchroom_manners/canvas/1';
@@ -59,9 +60,9 @@ describe('VideoJSPlayer component', () => {
   describe('feature: resume playback modal', () => {
     // Helper function to render player with resume cache enabled
     const playerWithResumeCache = async ({
-      canvasIndex = 0, manifestOverrides = {},
+      manifest = videoManifest, canvasIndex = 0, manifestOverrides = {},
       props = { resumeCache: { enable: true } } } = {}) => {
-      await renderPlayer({ manifest: videoManifest, canvasIndex, manifestOverrides, props });
+      await renderPlayer({ manifest, canvasIndex, manifestOverrides, props });
       await triggerLoadedMetadata();
     };
 
@@ -74,6 +75,20 @@ describe('VideoJSPlayer component', () => {
 
       // Override the helper function's props to mimic the default props where resumeCache is disabled
       await playerWithResumeCache({ props: { resumeCache: { enable: false } } });
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+      });
+    });
+
+    test('doesn\'t render resume modal for a playlist', async () => {
+      // Insert a saved playback position at 120s for the Canvas into localStorage cache
+      localStorage.setItem(
+        'playbackPositions',
+        JSON.stringify([{ key: 'http://example.com/playlists/1/canvas/3', value: { time: 10, savedAt: Date.now() } }])
+      );
+
+      await playerWithResumeCache({ manifest: playlistManifest, canvasIndex: 2, manifestOverrides: { playlist: { isPlaylist: true } } });
 
       await waitFor(() => {
         expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
