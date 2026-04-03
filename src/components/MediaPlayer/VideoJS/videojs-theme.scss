@@ -155,6 +155,13 @@ To keep the menus consistent apply the same styling for quality selector menu as
   }
 }
 
+/* Set the selected option color for it to be visible when the menu is overlaying the player
+and outside of the player (e.g. when quality selector opens downwards of the player) */
+.vjs-quality-selector .vjs-menu li.vjs-selected,
+.vjs-quality-selector .vjs-menu li.vjs-selected:focus {
+  background-color: #80a590 !important;
+}
+
 // Show volume control panel on top time-tooltip
 .vjs-volume-panel-vertical .vjs-volume-control {
   z-index: 1;
