@@ -439,16 +439,28 @@ function VideoJSPlayer({
       if (errorDisplay) {
         errorDisplay.contentEl().innerText = errorMessage;
         errorDisplay.removeClass('vjs-hidden');
+        errorDisplay.el().removeAttribute('aria-hidden');
+        errorDisplay.el().setAttribute('tabindex', '0');
         player.removeClass('vjs-error');
         player.removeClass('vjs-disabled');
 
         if (isMultiCanvased) {
           // Show control bar in error state for multi-canvased manifests
           setControlBar(player, true);
+          /* Remove all focusable elements in the player's control bar from the tab
+          order except previous/next buttons for easy navigation away from invalid Canvas */
+          player.controlBar.el().querySelectorAll('button, [tabindex]').forEach((focusable) => {
+            if (!focusable.closest('.vjs-previous-button')
+              && !focusable.closest('.vjs-next-button')) {
+              focusable.setAttribute('tabindex', '-1');
+            }
+          });
         } else {
           // Hide control bar for single-canvas manifests
           player.controlBar.hide();
         }
+        // Focus modal so screen readers announce the error
+        errorDisplay.el().focus();
       }
       e.stopPropagation();
     });
@@ -478,6 +490,10 @@ function VideoJSPlayer({
       .filter(s => !player.failedSources.includes(s.src));
 
     if (availableSources.length === 0) {
+      /* When all sources fail sequentially, make the error display modal uncloseable
+      and keep it visible until the user navigates away or reloads */
+      player.getChild('ErrorDisplay').closeable(false);
+
       console.error('All sources in the Canvas have failed to load.');
       return {
         shouldFallback: false,
@@ -612,6 +628,13 @@ function VideoJSPlayer({
     // Hide error display modal if it is still visible
     const errorDisplay = player.getChild('ErrorDisplay');
     if (errorDisplay) errorDisplay.addClass('vjs-hidden');
+
+    // Restore tab order for all player controls that were removed during error state
+    if (player.controlBar) {
+      player.controlBar.el().querySelectorAll('button, [tabindex]').forEach((focusable) => {
+        focusable.removeAttribute('tabindex');
+      });
+    }
 
     player.duration(canvasDuration);
     player.src(options.sources);
@@ -1326,9 +1349,11 @@ function VideoJSPlayer({
    * @param {String} btnName name of the pressed button
    */
   const handlePrevNextKeydown = (e, c, btnName) => {
+    e.preventDefault();
     if (e.which === 32 || e.which === 13) {
       switchPlayer(c, true, btnName);
     }
+    e.stopPropagation();
   };
 
   return (
@@ -1356,7 +1381,9 @@ function VideoJSPlayer({
                   <button aria-label="Go back to previous item"
                     onClick={() => handlePrevNextClick(canvasIndex - 1)}
                     onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn')}
-                    data-testid="inaccessible-previous-button">
+                    data-testid="inaccessible-previous-button"
+                    className="placeholder-previous-button"
+                    role="button">
                     <SectionButtonIcon flip={true} /> Previous
                   </button>
                 }
@@ -1364,7 +1391,9 @@ function VideoJSPlayer({
                   <button aria-label="Go to next item"
                     onClick={() => handlePrevNextClick(canvasIndex + 1)}
                     onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn')}
-                    data-testid="inaccessible-next-button">
+                    data-testid="inaccessible-next-button"
+                    className="placeholder-next-button"
+                    role="button">
                     Next <SectionButtonIcon />
                   </button>
                 }
