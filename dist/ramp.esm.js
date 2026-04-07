@@ -28,20 +28,11 @@ function ou(i) {
   }), t;
 }
 var md = { exports: {} }, zs = {};
-/**
- * @license React
- * react-jsx-runtime.production.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 var Ov;
 function oC() {
   if (Ov) return zs;
   Ov = 1;
-  var i = Symbol.for("react.transitional.element"), e = Symbol.for("react.fragment");
+  var i = /* @__PURE__ */ Symbol.for("react.transitional.element"), e = /* @__PURE__ */ Symbol.for("react.fragment");
   function t(n, r, a) {
     var s = null;
     if (a !== void 0 && (s = "" + a), r.key !== void 0 && (s = "" + r.key), "key" in r) {
@@ -64,15 +55,6 @@ function cC() {
   return Lv || (Lv = 1, md.exports = oC()), md.exports;
 }
 var J = cC(), gd = { exports: {} }, vd = {};
-/**
- * @license React
- * react-compiler-runtime.production.js
- *
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 var Fv;
 function lC() {
   if (Fv) return vd;
@@ -4745,12 +4727,6 @@ const JC = {
   "x-shader/x-fragment": { compressible: !0 },
   "x-shader/x-vertex": { compressible: !0 }
 };
-/*!
- * mime-db
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015-2022 Douglas Christopher Wilson
- * MIT Licensed
- */
 var jd, ay;
 function eA() {
   return ay || (ay = 1, jd = JC), jd;
@@ -4978,12 +4954,6 @@ function nA() {
     return l + u + d + f;
   }, Wd;
 }
-/*!
- * mime-types
- * Copyright(c) 2014 Jonathan Ong
- * Copyright(c) 2015 Douglas Christopher Wilson
- * MIT Licensed
- */
 var cy;
 function iA() {
   return cy || (cy = 1, (function(i) {
@@ -5049,7 +5019,6 @@ function iA() {
 }
 var rA = iA();
 const S1 = /* @__PURE__ */ On(rA);
-/*! @license DOMPurify 3.3.3 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.3.3/LICENSE */
 const {
   entries: w1,
   setPrototypeOf: ly,
@@ -11752,17 +11721,6 @@ function Mc(i) {
   throw new Error('Could not dynamically require "' + i + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
 }
 var th = { exports: {} };
-/*!
-
-JSZip v3.10.1 - A JavaScript class for generating and reading zip files
-<http://stuartk.com/jszip>
-
-(c) 2009-2016 Stuart Knightley <stuart [at] stuartk.com>
-Dual licenced under the MIT license or GPLv3. See https://raw.github.com/Stuk/jszip/main/LICENSE.markdown.
-
-JSZip uses the library pako released under the MIT license :
-https://github.com/nodeca/pako/blob/main/LICENSE
-*/
 var Gb;
 function C3() {
   return Gb || (Gb = 1, (function(i, e) {
@@ -13790,7 +13748,6 @@ function C3() {
               break e;
             case 31:
               return -4;
-            case 32:
             default:
               return h;
           }
@@ -24722,7 +24679,7 @@ function ec() {
 const Fu = () => {
   const i = Jt.c(1);
   let e;
-  return i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = /* @__PURE__ */ J.jsxs("div", { className: "lds-spinner", children: [
+  return i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = /* @__PURE__ */ J.jsxs("div", { className: "lds-spinner", children: [
     /* @__PURE__ */ J.jsx("div", {}),
     /* @__PURE__ */ J.jsx("div", {}),
     /* @__PURE__ */ J.jsx("div", {}),
@@ -24850,7 +24807,7 @@ function SU(i) {
   } = i;
   if (!t && !n) {
     let u;
-    return e[0] === Symbol.for("react.memo_cache_sentinel") ? (u = /* @__PURE__ */ J.jsx("p", { children: "Please provide a valid manifest." }), e[0] = u) : u = e[0], u;
+    return e[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (u = /* @__PURE__ */ J.jsx("p", { children: "Please provide a valid manifest." }), e[0] = u) : u = e[0], u;
   }
   let l;
   return e[1] !== c || e[2] !== r || e[3] !== a || e[4] !== n || e[5] !== t || e[6] !== s || e[7] !== o ? (l = /* @__PURE__ */ J.jsx(W2, { children: /* @__PURE__ */ J.jsx(hU, { children: /* @__PURE__ */ J.jsx(mU, { children: /* @__PURE__ */ J.jsx(q2, { manifestUrl: t, manifest: n, customErrorMessage: r, emptyManifestMessage: a, startCanvasId: s, startCanvasTime: o, children: c }) }) }) }), e[1] = c, e[2] = r, e[3] = a, e[4] = n, e[5] = t, e[6] = s, e[7] = o, e[8] = l) : l = e[8], l;
@@ -24865,11 +24822,6 @@ SU.propTypes = {
   startCanvasTime: Re.number
 };
 var Oh = { exports: {} };
-/*!
-	Copyright (c) 2018 Jed Watson.
-	Licensed under the MIT License (MIT), see
-	http://jedwatson.github.io/classnames
-*/
 var Cx;
 function wU() {
   return Cx || (Cx = 1, (function(i) {
@@ -25135,13 +25087,6 @@ function NU() {
   Fx = 1;
   var i = Pu(), e = OU(), t = LU(), n = FU(), r = PU();
   l.httpHandler = MU(), l.requestInterceptorsStorage = new n(), l.responseInterceptorsStorage = new n(), l.retryManager = new r();
-  /**
-   * @license
-   * slighly modified parse-headers 2.0.2 <https://github.com/kesla/parse-headers/>
-   * Copyright (c) 2014 David Björklund
-   * Available under the MIT license
-   * <https://github.com/kesla/parse-headers/blob/master/LICENCE>
-   */
   var a = function(m) {
     var p = {};
     return m && m.trim().split(`
@@ -25989,17 +25934,9 @@ function jU() {
       }
       function k(M) {
         M.match(/X-TIMESTAMP-MAP/) ? a(M, function(q, B) {
-          switch (q) {
-            case "X-TIMESTAMP-MAP":
-              P(B);
-              break;
-          }
+          q === "X-TIMESTAMP-MAP" && P(B);
         }, /=/) : a(M, function(q, B) {
-          switch (q) {
-            case "Region":
-              I(B);
-              break;
-          }
+          q === "Region" && I(B);
         }, /:/);
       }
       try {
@@ -26442,7 +26379,6 @@ function GU(i) {
     t[n] = e.charCodeAt(n);
   return t;
 }
-/*! @name m3u8-parser @version 7.2.0 @license Apache-2.0 */
 class XU extends vg {
   constructor() {
     super(), this.buffer = "";
@@ -27548,7 +27484,6 @@ function g8(i) {
   return t;
 }
 var v8 = T2();
-/*! @name mpd-parser @version 1.3.1 @license Apache-2.0 */
 const Xx = (i) => !!i && typeof i == "object", Dn = (...i) => i.reduce((e, t) => (typeof t != "object" || Object.keys(t).forEach((n) => {
   Array.isArray(e[n]) && Array.isArray(t[n]) ? e[n] = e[n].concat(t[n]) : Xx(e[n]) && Xx(t[n]) ? e[n] = Dn(e[n], t[n]) : e[n] = t[n];
 }), e), {}), Y2 = (i) => Object.keys(i).map((e) => i[e]), y8 = (i, e) => {
@@ -28616,9 +28551,6 @@ const qo = ({
     case "urn:mpeg:dash:utc:direct:2012":
       t.method = "DIRECT", t.value = Date.parse(t.value);
       break;
-    case "urn:mpeg:dash:utc:http-ntp:2014":
-    case "urn:mpeg:dash:utc:ntp:2014":
-    case "urn:mpeg:dash:utc:sntp:2014":
     default:
       throw new Error(ps.UNSUPPORTED_UTC_TIMING_SCHEME);
   }
@@ -28974,17 +28906,6 @@ function I4() {
   }, Zh;
 }
 var la = I4();
-/**
- * @license
- * Video.js 8.23.4 <http://videojs.com/>
- * Copyright Brightcove, Inc. <https://www.brightcove.com/>
- * Available under Apache License Version 2.0
- * <https://github.com/videojs/video.js/blob/main/LICENSE>
- *
- * Includes vtt.js <https://github.com/mozilla/vtt.js>
- * Available under Apache License Version 2.0
- * <https://github.com/mozilla/vtt.js/blob/main/LICENSE>
- */
 var Gf = "8.23.4";
 const ur = {}, Mr = function(i, e) {
   return ur[i] = ur[i] || [], e && (ur[i] = ur[i].concat(e)), ur[i];
@@ -43673,7 +43594,6 @@ Te.num = wR;
 Te.str = X4;
 Te.url = iR;
 Te.Error = QR;
-/*! @name videojs-contrib-quality-levels @version 4.1.0 @license Apache-2.0 */
 class ZR {
   /**
    * Creates a QualityLevel
@@ -43813,7 +43733,6 @@ const JR = function(i, e) {
 };
 Te.registerPlugin("qualityLevels", SE);
 SE.VERSION = EE;
-/*! @name @videojs/http-streaming @version 3.17.2 @license Apache-2.0 */
 const Gn = zU, nu = (i, e) => e && e.responseURL && i !== e.responseURL ? e.responseURL : i, Ci = (i) => Te.log.debug ? Te.log.debug.bind(Te, "VHS:", `${i} >`) : function() {
 };
 function Bt(...i) {
@@ -49155,12 +49074,7 @@ browserWorkerPolyFill(self);
   }, Uv = function(y, _, S) {
     for (var E = 0, U = Fn, N, Z, ee, ie, ce, De = !1; U <= y.byteLength; ) {
       if (y[E] === Hi && (y[U] === Hi || U === y.byteLength)) {
-        switch (N = y.subarray(E, U), Z = Wt.ts.parseType(N, _.pid), Z) {
-          case "pes":
-            ee = Wt.ts.parsePesType(N, _.table), ie = Wt.ts.parsePayloadUnitStartIndicator(N), ee === "audio" && ie && (ce = Wt.ts.parsePesTime(N), ce && (ce.type = "audio", S.audio.push(ce), De = !0));
-            break;
-        }
-        if (De)
+        if (N = y.subarray(E, U), Z = Wt.ts.parseType(N, _.pid), Z === "pes" && (ee = Wt.ts.parsePesType(N, _.table), ie = Wt.ts.parsePayloadUnitStartIndicator(N), ee === "audio" && ie && (ce = Wt.ts.parsePesTime(N), ce && (ce.type = "audio", S.audio.push(ce), De = !0))), De)
           break;
         E += Fn, U += Fn;
         continue;
@@ -49169,12 +49083,7 @@ browserWorkerPolyFill(self);
     }
     for (U = y.byteLength, E = U - Fn, De = !1; E >= 0; ) {
       if (y[E] === Hi && (y[U] === Hi || U === y.byteLength)) {
-        switch (N = y.subarray(E, U), Z = Wt.ts.parseType(N, _.pid), Z) {
-          case "pes":
-            ee = Wt.ts.parsePesType(N, _.table), ie = Wt.ts.parsePayloadUnitStartIndicator(N), ee === "audio" && ie && (ce = Wt.ts.parsePesTime(N), ce && (ce.type = "audio", S.audio.push(ce), De = !0));
-            break;
-        }
-        if (De)
+        if (N = y.subarray(E, U), Z = Wt.ts.parseType(N, _.pid), Z === "pes" && (ee = Wt.ts.parsePesType(N, _.table), ie = Wt.ts.parsePayloadUnitStartIndicator(N), ee === "audio" && ie && (ce = Wt.ts.parsePesTime(N), ce && (ce.type = "audio", S.audio.push(ce), De = !0))), De)
           break;
         E -= Fn, U -= Fn;
         continue;
@@ -49212,12 +49121,7 @@ browserWorkerPolyFill(self);
     }
     for (U = y.byteLength, E = U - Fn, Le = !1; E >= 0; ) {
       if (y[E] === Hi && y[U] === Hi) {
-        switch (N = y.subarray(E, U), Z = Wt.ts.parseType(N, _.pid), Z) {
-          case "pes":
-            ee = Wt.ts.parsePesType(N, _.table), ie = Wt.ts.parsePayloadUnitStartIndicator(N), ee === "video" && ie && (ce = Wt.ts.parsePesTime(N), ce && (ce.type = "video", S.video.push(ce), Le = !0));
-            break;
-        }
-        if (Le)
+        if (N = y.subarray(E, U), Z = Wt.ts.parseType(N, _.pid), Z === "pes" && (ee = Wt.ts.parsePesType(N, _.table), ie = Wt.ts.parsePayloadUnitStartIndicator(N), ee === "video" && ie && (ce = Wt.ts.parsePesTime(N), ce && (ce.type = "video", S.video.push(ce), Le = !0))), Le)
           break;
         E -= Fn, U -= Fn;
         continue;
@@ -53735,11 +53639,9 @@ const QO = eS(tS(function() {
       });
     }, p;
   })();
-  /*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
   function e(p) {
     return p.subarray(0, p.byteLength - p[p.byteLength - 1]);
   }
-  /*! @name aes-decrypter @version 4.0.2 @license Apache-2.0 */
   const t = function() {
     const p = [[[], [], [], [], []], [[], [], [], [], []]], g = p[0], b = p[1], v = g[4], x = b[4];
     let w, T, C;
@@ -58152,7 +58054,7 @@ const tl = (i, e) => {
 }, eF = () => {
   const i = Jt.c(1);
   let e;
-  return i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", style: {
+  return i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", style: {
     fill: "white",
     height: "1rem",
     width: "1rem",
@@ -58174,13 +58076,13 @@ const tl = (i, e) => {
 }, tF = () => {
   const i = Jt.c(2);
   let e;
-  i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = {
+  i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = {
     height: "1rem",
     width: "1rem",
     scale: 0.8
   }, i[0] = e) : e = i[0];
   let t;
-  return i[1] === Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", stroke: "#ffffff", style: e, children: /* @__PURE__ */ J.jsxs("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: [
+  return i[1] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", stroke: "#ffffff", style: e, children: /* @__PURE__ */ J.jsxs("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: [
     /* @__PURE__ */ J.jsx("path", { d: "M10 12V17", stroke: "#ffffff", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }),
     /* @__PURE__ */ J.jsx("path", { d: "M14 12V17", stroke: "#ffffff", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }),
     /* @__PURE__ */ J.jsx("path", { d: "M4 7H20", stroke: "#ffffff", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }),
@@ -58190,23 +58092,23 @@ const tl = (i, e) => {
 }, vm = () => {
   const i = Jt.c(2);
   let e;
-  i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = {
+  i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = {
     height: "1rem",
     width: "1rem",
     scale: 0.8
   }, i[0] = e) : e = i[0];
   let t;
-  return i[1] === Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", style: e, children: /* @__PURE__ */ J.jsx("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ J.jsx("path", { id: "Vector", d: "M6 12L10.2426 16.2426L18.727 7.75732", stroke: "#ffffff", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }) }), i[1] = t) : t = i[1], t;
+  return i[1] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", style: e, children: /* @__PURE__ */ J.jsx("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ J.jsx("path", { id: "Vector", d: "M6 12L10.2426 16.2426L18.727 7.75732", stroke: "#ffffff", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round" }) }) }), i[1] = t) : t = i[1], t;
 }, ym = () => {
   const i = Jt.c(2);
   let e;
-  i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = {
+  i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = {
     height: "1rem",
     width: "1rem",
     scale: 0.8
   }, i[0] = e) : e = i[0];
   let t;
-  return i[1] === Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { fill: "#ffffff", viewBox: "0 0 32 32", version: "1.1", xmlns: "http://www.w3.org/2000/svg", style: e, children: /* @__PURE__ */ J.jsx("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ J.jsx("path", { d: `M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 
+  return i[1] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { fill: "#ffffff", viewBox: "0 0 32 32", version: "1.1", xmlns: "http://www.w3.org/2000/svg", style: e, children: /* @__PURE__ */ J.jsx("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ J.jsx("path", { d: `M19.587 16.001l6.096 6.096c0.396 0.396 0.396 1.039 0 1.435l-2.151 2.151c-0.396 
         0.396-1.038 0.396-1.435 0l-6.097-6.096-6.097 6.096c-0.396 0.396-1.038 
         0.396-1.434 0l-2.152-2.151c-0.396-0.396-0.396-1.038 
         0-1.435l6.097-6.096-6.097-6.097c-0.396-0.396-0.396-1.039 0-1.435l2.153-2.151c0.396-0.396 
@@ -58224,7 +58126,7 @@ const tl = (i, e) => {
     transform: r
   }, e[0] = r, e[1] = a) : a = e[1];
   let s;
-  e[2] === Symbol.for("react.memo_cache_sentinel") ? (s = /* @__PURE__ */ J.jsxs("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: [
+  e[2] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (s = /* @__PURE__ */ J.jsxs("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: [
     /* @__PURE__ */ J.jsx("path", { d: "M4 20L15.3333 12L4 4V20Z", fill: "#ffffff" }),
     /* @__PURE__ */ J.jsx("path", { d: "M20 4H17.3333V20H20V4Z", fill: "#ffffff" })
   ] }), e[2] = s) : s = e[2];
@@ -58233,12 +58135,12 @@ const tl = (i, e) => {
 }, nF = () => {
   const i = Jt.c(2);
   let e;
-  i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = {
+  i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = {
     height: "0.75rem",
     width: "0.75rem"
   }, i[0] = e) : e = i[0];
   let t;
-  return i[1] === Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", style: e, className: "structure-item-locked", children: /* @__PURE__ */ J.jsx("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ J.jsx("path", { fillRule: "evenodd", clipRule: "evenodd", d: `M5.25 10.0546V8C5.25 4.27208 8.27208 
+  return i[1] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (t = /* @__PURE__ */ J.jsx("svg", { viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg", style: e, className: "structure-item-locked", children: /* @__PURE__ */ J.jsx("g", { strokeWidth: "0", strokeLinecap: "round", strokeLinejoin: "round", children: /* @__PURE__ */ J.jsx("path", { fillRule: "evenodd", clipRule: "evenodd", d: `M5.25 10.0546V8C5.25 4.27208 8.27208 
           1.25 12 1.25C15.7279 1.25 18.75 4.27208 18.75 8V10.0546C19.8648 10.1379 20.5907 
           10.348 21.1213 10.8787C22 11.7574 22 13.1716 22 16C22 18.8284 22 20.2426 21.1213 
           21.1213C20.2426 22 18.8284 22 16 22H8C5.17157 22 3.75736 22 2.87868 21.1213C2 
@@ -58258,9 +58160,9 @@ const tl = (i, e) => {
     transform: r
   }, e[0] = r, e[1] = a) : a = e[1];
   let s, o;
-  e[2] === Symbol.for("react.memo_cache_sentinel") ? (s = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_bgCarrier", strokeWidth: "0" }), o = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_tracerCarrier", strokeLinecap: "round", strokeLinejoin: "round" }), e[2] = s, e[3] = o) : (s = e[2], o = e[3]);
+  e[2] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (s = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_bgCarrier", strokeWidth: "0" }), o = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_tracerCarrier", strokeLinecap: "round", strokeLinejoin: "round" }), e[2] = s, e[3] = o) : (s = e[2], o = e[3]);
   let c;
-  e[4] === Symbol.for("react.memo_cache_sentinel") ? (c = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_iconCarrier", children: /* @__PURE__ */ J.jsx("path", { d: "M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z", fill: "#ffffff" }) }), e[4] = c) : c = e[4];
+  e[4] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (c = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_iconCarrier", children: /* @__PURE__ */ J.jsx("path", { d: "M256 120.768L306.432 64 768 512l-461.568 448L256 903.232 659.072 512z", fill: "#ffffff" }) }), e[4] = c) : c = e[4];
   let l;
   return e[5] !== a ? (l = /* @__PURE__ */ J.jsxs("svg", { viewBox: "0 0 1024 1024", fill: "#ffffff", xmlns: "http://www.w3.org/2000/svg", style: a, children: [
     s,
@@ -58270,13 +58172,13 @@ const tl = (i, e) => {
 }, iF = () => {
   const i = Jt.c(4);
   let e, t, n;
-  i[0] === Symbol.for("react.memo_cache_sentinel") ? (e = {
+  i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (e = {
     fill: "none",
     height: "1.25rem",
     width: "1.25rem"
   }, t = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_bgCarrier", strokeWidth: "0" }), n = /* @__PURE__ */ J.jsx("g", { id: "SVGRepo_tracerCarrier", strokeLinecap: "round", strokeLinejoin: "round" }), i[0] = e, i[1] = t, i[2] = n) : (e = i[0], t = i[1], n = i[2]);
   let r;
-  return i[3] === Symbol.for("react.memo_cache_sentinel") ? (r = /* @__PURE__ */ J.jsxs("svg", { viewBox: "0 0 24 24", fill: "#fffff", xmlns: "http://www.w3.org/2000/svg", style: e, children: [
+  return i[3] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (r = /* @__PURE__ */ J.jsxs("svg", { viewBox: "0 0 24 24", fill: "#fffff", xmlns: "http://www.w3.org/2000/svg", style: e, children: [
     t,
     n,
     /* @__PURE__ */ J.jsxs("g", { id: "SVGRepo_iconCarrier", children: [
@@ -58304,7 +58206,7 @@ const tl = (i, e) => {
     canvasIsEmpty: s
   } = e, [o, c] = it(-1);
   let l;
-  i[0] === Symbol.for("react.memo_cache_sentinel") ? (l = su(c, 50), i[0] = l) : l = i[0];
+  i[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (l = su(c, 50), i[0] = l) : l = i[0];
   const u = l, d = tt(null), f = r.length > 0 ? r.length - 1 : 0, h = r?.length - 1 > 0;
   let m;
   i[1] !== n ? (m = () => n ? n.currentTime() : 0, i[1] = n, i[2] = m) : m = i[2];
@@ -58553,11 +58455,7 @@ const tl = (i, e) => {
     }), M.on("pointerdown", (q) => {
       q.target.nodeName.toLowerCase() == "video" && F();
     }), document.addEventListener("keydown", (q) => {
-      switch (Nf(q, I.current, h)) {
-        case Oi.pause:
-          F();
-          break;
-      }
+      Nf(q, I.current, h) === Oi.pause && F();
     }), window.addEventListener("resize", () => {
       M?.player_ && M.trigger("resize");
     }), window.visualViewport && window.visualViewport.addEventListener("resize", () => {
@@ -60818,7 +60716,7 @@ const EP = (i) => {
     numberOfSections: t
   } = i;
   let n;
-  e[0] === Symbol.for("react.memo_cache_sentinel") ? (n = {}, e[0] = n) : n = e[0];
+  e[0] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (n = {}, e[0] = n) : n = e[0];
   const {
     collapseExpandAll: r,
     isCollapsed: a
@@ -60944,7 +60842,7 @@ const EP = (i) => {
   const ue = X;
   let be;
   if (e[61] !== je || e[62] !== ue || e[63] !== r || e[64] !== P || e[65] !== Q || e[66] !== ut || e[67] !== ve || e[68] !== M || e[69] !== f || e[70] !== a || e[71] !== k || e[72] !== z || e[73] !== c || e[74] !== l || e[75] !== F || e[76] !== h || e[77] !== G || e[78] !== s || e[79] !== p || e[80] !== m || e[81] !== u || e[82] !== g || e[83] !== b || e[84] !== D || e[85] !== v || e[86] !== T || e[87] !== x || e[88] !== d) {
-    be = Symbol.for("react.early_return_sentinel");
+    be = /* @__PURE__ */ Symbol.for("react.early_return_sentinel");
     e: {
       const Se = () => /* @__PURE__ */ J.jsx(Il, { children: G ? /* @__PURE__ */ J.jsxs("div", { className: qn("ramp--structured-nav__section", "ramp--structured-nav__section-head-buttons", z ? "active" : ""), "data-testid": "treeitem-section", "data-mediafrag": a ?? "", tabIndex: -1, children: [
         /* @__PURE__ */ J.jsx("button", { "data-testid": a == null ? "treeitem-section-span" : "treeitem-section-button", ref: v, onClick: a != null ? ut : null, onKeyDown: ve, "aria-label": je, role: "button", className: qn("ramp--structured-nav__section-title", a == null && "not-clickable", z ? "active" : ""), tabIndex: -1, children: /* @__PURE__ */ J.jsxs("span", { className: "ramp--structured-nav__title", "aria-label": u, children: [
@@ -60983,7 +60881,7 @@ const EP = (i) => {
     e[61] = je, e[62] = ue, e[63] = r, e[64] = P, e[65] = Q, e[66] = ut, e[67] = ve, e[68] = M, e[69] = f, e[70] = a, e[71] = k, e[72] = z, e[73] = c, e[74] = l, e[75] = F, e[76] = h, e[77] = G, e[78] = s, e[79] = p, e[80] = m, e[81] = u, e[82] = g, e[83] = b, e[84] = D, e[85] = v, e[86] = T, e[87] = x, e[88] = d, e[89] = be;
   } else
     be = e[89];
-  if (be !== Symbol.for("react.early_return_sentinel"))
+  if (be !== /* @__PURE__ */ Symbol.for("react.early_return_sentinel"))
     return be;
 };
 nv.propTypes = {
@@ -61173,7 +61071,7 @@ const PS = (i) => {
   }, e[0] = a, e[1] = n, e[2] = t, e[3] = r, e[4] = s) : s = e[4];
   const o = s;
   let c;
-  e[5] === Symbol.for("react.memo_cache_sentinel") ? (c = /* @__PURE__ */ J.jsx(iF, {}), e[5] = c) : c = e[5];
+  e[5] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (c = /* @__PURE__ */ J.jsx(iF, {}), e[5] = c) : c = e[5];
   let l;
   return e[6] !== o ? (l = /* @__PURE__ */ J.jsx("button", { className: "ramp--transcript_menu_button ramp--transcript_downloader", "data-testid": "transcript-downloader", onClick: o, href: "#", "aria-label": "Transcript download button", children: c }), e[6] = o, e[7] = l) : l = e[7], l;
 };
@@ -62183,7 +62081,7 @@ const JP = ({
   let h;
   e[5] !== r || e[6] !== a ? (h = a && /* @__PURE__ */ J.jsx("span", { className: "ramp--auto-advance-label", "data-testid": "auto-advance-label", children: r }), e[5] = r, e[6] = a, e[7] = h) : h = e[7];
   let m;
-  e[8] === Symbol.for("react.memo_cache_sentinel") ? (m = /* @__PURE__ */ J.jsx("span", { className: "slider", children: /* @__PURE__ */ J.jsx("span", { "data-testid": "auto-advance-toggle" }) }), e[8] = m) : m = e[8];
+  e[8] === /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel") ? (m = /* @__PURE__ */ J.jsx("span", { className: "slider", children: /* @__PURE__ */ J.jsx("span", { "data-testid": "auto-advance-toggle" }) }), e[8] = m) : m = e[8];
   let p;
   return e[9] !== l || e[10] !== d || e[11] !== f || e[12] !== h ? (p = /* @__PURE__ */ J.jsxs("div", { role: "switch", onClick: l, onKeyDown: d, "aria-checked": f, tabIndex: 0, "data-testid": "auto-advance", className: "ramp--auto-advance", children: [
     h,
