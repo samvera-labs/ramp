@@ -135,6 +135,33 @@
   z-index: 1;
 }
 
+/* When audio player is placed near the top of the page (e.g. in Avalon), the playback rate
+menu that opens upwards gets clipped by the top of the viewport. To prevent this, open the
+menu downwards on mobile audio players. 
+To keep the menus consistent apply the same styling for quality selector menu as well. */
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone,
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-android {
+  .vjs-playback-rate .vjs-menu,
+  .vjs-quality-selector .vjs-menu {
+    bottom: auto;
+    top: 3em;
+    margin-bottom: 0;
+  }
+
+  .vjs-playback-rate .vjs-menu .vjs-menu-content,
+  .vjs-quality-selector .vjs-menu .vjs-menu-content {
+    bottom: auto;
+    top: 0;
+  }
+}
+
+/* Set the selected option color for it to be visible when the menu is overlaying the player
+and outside of the player (e.g. when quality selector opens downwards of the player) */
+.vjs-quality-selector .vjs-menu li.vjs-selected,
+.vjs-quality-selector .vjs-menu li.vjs-selected:focus {
+  background-color: #80a590 !important;
+}
+
 // Show volume control panel on top time-tooltip
 .vjs-volume-panel-vertical .vjs-volume-control {
   z-index: 1;
