@@ -11,13 +11,14 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment, offsetTextTrackCues, roundToPrecision, timeToHHmmss } from '@Services/utility-helpers';
+import { checkSrcRange, getMediaFragment, offsetTextTrackCues, roundToPrecision } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
+import { showResumeModal } from './VideoJSResumeModal';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import {
   useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
@@ -77,7 +78,9 @@ function VideoJSPlayer({
     allCanvases,
     canvasDuration,
     canvasLink,
+    customStart,
     hasMultiItems,
+    manifest,
     targets,
     autoAdvance,
     structures,
@@ -146,6 +149,14 @@ function VideoJSPlayer({
   useEffect(() => {
     canvasURLRef.current = allCanvases[canvasIndex]?.canvasURL ?? null;
   }, [allCanvases, canvasIndex]);
+
+  const manifestURLRef = useRef(null);
+  useEffect(() => {
+    manifestURLRef.current = manifest?.id ?? null;
+  }, [manifest]);
+
+  // Delay resume modal when a cross-Canvas switch is needed
+  const pendingResumeRef = useRef(null);
 
   const savePositionRef = useRef();
   savePositionRef.current = savePosition;
@@ -262,7 +273,7 @@ function VideoJSPlayer({
           playerDispatch({ isEnded: true, type: 'setIsEnded' });
           player.pause();
           // Clear the saved playback position when media ends
-          if (canvasURLRef.current) clearPosition(canvasURLRef.current);
+          if (manifestURLRef.current) clearPosition(manifestURLRef.current);
           if (!canvasIsEmptyRef.current) handleEnded();
         }
       }, 100);
@@ -815,54 +826,6 @@ function VideoJSPlayer({
   };
 
   /**
-   * Show resume modal if a saved position exists for the current Canvas
-   * @param {Object} player
-   */
-  const resumePlaybackModal = (player) => {
-    const currentCanvasURL = canvasURLRef.current;
-    /* Skip the resume playback modal when,
-    - there is a custom start indicated via 'startCanvasTime' prop
-    - the Manifst is a playlist
-    */
-    if (manifestState.customStart?.startTime > 0 || isPlaylist) return;
-    if (currentCanvasURL) {
-      const savedTime = getPosition(currentCanvasURL);
-      if (savedTime !== null && savedTime > 0) {
-        const resumeLabel = `Resume playback from ${timeToHHmmss(savedTime)}?`;
-        const modal = player.createModal(resumeLabel, { temporary: false, uncloseable: true });
-        resumeModalRef.current = modal;
-        modal.addClass('vjs-resume-modal');
-        modal.setAttribute('data-testid', 'resume-playback-modal');
-        // Make the modal accessible by setting appropriate ARIA attributes
-        modal.el().setAttribute('role', 'alertdialog');
-        modal.el().setAttribute('aria-label', resumeLabel);
-        modal.contentEl().setAttribute('aria-live', 'assertive');
-        modal.contentEl().setAttribute('aria-atomic', 'true');
-        // Create buttons for resuming or dismissing the modal
-        const dismiss = (seekTo) => {
-          // Set the player's current time to the saved time if user chooses to resume
-          if (seekTo) player.currentTime(seekTo);
-          /* Clear the cache entry for the Canvas on user confirmation,
-          to avoid resuming from an outdated position in the future */
-          clearPosition(currentCanvasURL);
-          modal.close();
-          player.play();
-        };
-        const resumeBtn = document.createElement('button');
-        resumeBtn.textContent = 'Yes';
-        resumeBtn.className = 'vjs-resume-button';
-        resumeBtn.addEventListener('click', () => dismiss(savedTime));
-        const dismissBtn = document.createElement('button');
-        dismissBtn.textContent = 'No, start from beginning';
-        dismissBtn.className = 'vjs-resume-dismiss-button';
-        dismissBtn.addEventListener('click', () => dismiss());
-        modal.contentEl().appendChild(resumeBtn);
-        modal.contentEl().appendChild(dismissBtn);
-      }
-    }
-  };
-
-  /**
    * Setup on loadedmetadata event is broken out of initial setup function,
    * since this needs to be called when reloading the player on Canvas change
    * @param {Object} player Video.js player instance
@@ -973,10 +936,18 @@ function VideoJSPlayer({
       if (IS_SAFARI) {
         handleTimeUpdate();
       }
+
       // Offset cues for multi-source playback after metadata loads
       if (player.targets?.length > 1 && player.targets[srcIndex]) {
         const { altStart, duration } = player.targets[player.srcIndex];
         offsetTextTrackCues(player, altStart || 0, duration || 0);
+      }
+
+      // After a Canvas switch for resume playback, show the modal on the new Canvas
+      if (pendingResumeRef.current) {
+        const { time, manifestURL } = pendingResumeRef.current;
+        pendingResumeRef.current = null;
+        showResumeModal(player, resumeModalRef, time, manifestURL, clearPosition, true);
       }
     });
   };
@@ -1297,8 +1268,8 @@ function VideoJSPlayer({
 
       // Persist playback position, skip near-start and near-end to avoid unhelpful resumes
       const isHelpfulResume = playerTime > 5 && playerTime < canvasDurationRef.current - 5;
-      if (canvasURLRef.current && isHelpfulResume) {
-        savePositionRef.current(canvasURLRef.current, playerTime);
+      if (manifestURLRef.current && canvasURLRef.current && isHelpfulResume) {
+        savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
       }
 
       const activeSegment = getActiveSegment(playerTime);
@@ -1425,6 +1396,52 @@ function VideoJSPlayer({
       }
       return null;
     }
+  };
+
+  /**
+   * Show the resume modal if a saved playback position exists for the current Manifest.
+   * For multi-canvas manifests, load the saved Canvas first, then show the resume modal
+   * after the Canvas switch settles.
+   * @param {Object} player Video.js player instance
+   */
+  const resumePlaybackModal = (player) => {
+    /* Skip the resume playback modal when,
+    - there is a custom start indicated via 'startCanvasTime' prop
+    - the Manifest is a playlist
+    */
+    if (customStart?.startTime > 0 || isPlaylist) return;
+
+    const manifestURL = manifestURLRef.current;
+    if (!manifestURL) return;
+
+    const saved = getPosition(manifestURL);
+    if (!saved || saved.time <= 0) return;
+
+    const { canvasURL: savedCanvasURL, time: savedTime } = saved;
+
+    /* When a 'startCanvasId' is set, only show resume modal if the saved position
+    is on the 'startCanvasId' Canvas. Ignore saves on any other canvas. */
+    if (customStart?.startIndex > 0) {
+      const startCanvasURL = allCanvases[customStart.startIndex]?.canvasURL;
+      if (savedCanvasURL !== startCanvasURL) return;
+    }
+
+    if (savedCanvasURL !== canvasURLRef.current) {
+      // When saved position is on a different Canvas load the saved Canvas first
+      const savedCanvasIndex = allCanvases.findIndex((c) => c.canvasURL === savedCanvasURL);
+      if (savedCanvasIndex === -1) {
+        // When the saved Canvas is no longer in Manifest clear the stale entry and don't show the modal
+        clearPosition(manifestURL);
+        return;
+      }
+      // Store pending resume info so 'playerLoadedMetadata' can show the modal after the switch
+      pendingResumeRef.current = { time: savedTime, manifestURL };
+      manifestDispatch({ type: 'switchCanvas', canvasIndex: savedCanvasIndex });
+      return;
+    }
+
+    // If the loaded Canvas is the same as the saved one, show the modal immediately
+    showResumeModal(player, resumeModalRef, savedTime, manifestURL, clearPosition);
   };
 
   /**

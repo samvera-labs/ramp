@@ -52,13 +52,14 @@ function isExpired(savedAt, ttlDays) {
 }
 
 /**
- * Custom hook for persisting per-canvas playback positions in a bounded LRU cache.
- * All positions are stored under a single storage key. Provides methods to,
- * - read the saved playback position
+ * Custom hook for persisting per-Manifest playback positions in a bounded LRU cache.
+ * All positions are stored under a single storage key. Each entry is keyed by Manifest URL
+ * and stores the most recently active Canvas URL and playback time. Provides methods to,
+ * - read the saved playback position (Canvas URL + time) for a Manifest
  * - update an entry for the latest playback position and moves it to the front (most recently used)
  * of the cache and evict least recently used entry (if maxItems is exceeded) from cache
  * - clear an existing playback position
- * for a given canvasId (key). The cache is bounded by maxItems and TTL (set as # of days)
+ * for a given manifestURL (key). The cache is bounded by maxItems and TTL (set as # of days)
  * @param {Object} obj
  * @param {Boolean} obj.enable whether to enable saving playback positions
  * @param {Number}  obj.maxItems LRU capacity (number of max entries) -> default: 200
@@ -77,28 +78,28 @@ export const usePlaybackPositions = ({ enable, maxItems, ttlDays } = {}) => {
     }
   }, [enable, setCache]);
 
-  const savePosition = useCallback((canvasURL, time) => {
+  const savePosition = useCallback((manifestURL, canvasURL, time) => {
     // Do nothing when caching is disabled
     if (!enable) return;
-    setCache((current) => setCacheEntry(current, canvasURL, { time, savedAt: Date.now() }, maxItems));
+    setCache((current) => setCacheEntry(current, manifestURL, { canvasURL, time, savedAt: Date.now() }, maxItems));
   }, [enable, maxItems, setCache]);
 
-  const getPosition = useCallback((canvasURL) => {
+  const getPosition = useCallback((manifestURL) => {
     // Do nothing when caching is disabled
     if (!enable) return null;
-    const entry = readCacheEntry(cache, canvasURL);
+    const entry = readCacheEntry(cache, manifestURL);
     if (!entry) return null;
     if (isExpired(entry.savedAt, ttlDays)) {
-      setCache((current) => deleteCacheEntry(current, canvasURL));
+      setCache((current) => deleteCacheEntry(current, manifestURL));
       return null;
     }
-    return entry.time;
+    return { canvasURL: entry.canvasURL, time: entry.time };
   }, [enable, cache, ttlDays, setCache]);
 
-  const clearPosition = useCallback((canvasURL) => {
+  const clearPosition = useCallback((manifestURL) => {
     // Do nothing when caching is disabled
     if (!enable) return;
-    setCache((current) => deleteCacheEntry(current, canvasURL));
+    setCache((current) => deleteCacheEntry(current, manifestURL));
   }, [enable, setCache]);
 
   return { savePosition, getPosition, clearPosition };
