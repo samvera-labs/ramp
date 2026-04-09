@@ -411,7 +411,7 @@ export const useVideoJSPlayer = ({
       const player = playerRef.current;
 
       // Reset markers
-      if (activeId) player.markers?.removeAll();
+      if (activeId && typeof player.markers?.removeAll === 'function') player.markers.removeAll();
       setActiveId(null);
 
       // Block player while metadata is loaded when canvas is not empty

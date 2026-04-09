@@ -47,6 +47,7 @@ export function manifestState(manifest, canvasIndex = 0, isPlaylist = false) {
     canvasIndex,
     canvasSegments: [],
     structures: { hasStructure: false, isCollapsed: false },
-    renderings: getRenderingFiles(manifest)
+    renderings: getRenderingFiles(manifest),
+    annotations: [],
   };
 };

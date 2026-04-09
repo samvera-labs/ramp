@@ -350,9 +350,10 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
     return { currentIndex, startTime };
   };
   if (startProp != undefined) {
+    let canvasInfo = {};
     switch (startProp.type) {
       case 'Canvas':
-        let canvasInfo = getCanvasInfo(startProp.id, startProp.type, 0);
+        canvasInfo = getCanvasInfo(startProp.id, startProp.type, 0);
         return { type: 'C', canvas: canvasInfo.currentIndex, time: canvasInfo.startTime };
       case 'SpecificResource':
         let customStart = startProp.selector.t;

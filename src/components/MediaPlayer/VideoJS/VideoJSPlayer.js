@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import videojs from 'video.js';
@@ -17,6 +17,8 @@ import {
   IS_SAFARI, IS_TOUCH_ONLY
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
+import { usePlaybackPositions } from '@Services/save-playback-positions';
+import { showResumeModal } from './VideoJSResumeModal';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import {
   useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
@@ -60,6 +62,7 @@ function VideoJSPlayer({
   isVideo,
   options,
   placeholderText,
+  resumeCache,
   scrubberTooltipRef,
   tracks,
   trackScrubberRef,
@@ -72,9 +75,12 @@ function VideoJSPlayer({
   const manifestDispatch = useManifestDispatch();
 
   const {
+    allCanvases,
     canvasDuration,
     canvasLink,
+    customStart,
     hasMultiItems,
+    manifest,
     targets,
     autoAdvance,
     structures,
@@ -88,10 +94,17 @@ function VideoJSPlayer({
   const [startCaptioned, setStartCaptioned] = useLocalStorage('startCaptioned', true);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
 
+  const { savePosition, getPosition, clearPosition } = usePlaybackPositions({
+    enable: resumeCache?.enable,
+    maxItems: resumeCache?.maxItems,
+    ttlDays: resumeCache?.ttlDays,
+  });
+
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
   const isForcedTextTrackRef = useRef(false);
+  const resumeModalRef = useRef(null);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -127,6 +140,27 @@ function VideoJSPlayer({
 
   // Register the videojs-quality-selector plugin before initialization
   silvermine(videojs);
+
+  const canvasDurationRef = useRef();
+  canvasDurationRef.current = useMemo(() => { return canvasDuration; }, [canvasDuration]);
+
+  // Refs so the throttled handleTimeUpdate closure always reads current values
+  const canvasURLRef = useRef(null);
+  useEffect(() => {
+    canvasURLRef.current = allCanvases[canvasIndex]?.canvasURL ?? null;
+  }, [allCanvases, canvasIndex]);
+
+  const manifestURLRef = useRef(null);
+  useEffect(() => {
+    manifestURLRef.current = manifest?.id ?? null;
+  }, [manifest]);
+
+  // Delay resume modal when a cross-Canvas switch is needed
+  const pendingResumeRef = useRef(null);
+
+  const savePositionRef = useRef();
+  savePositionRef.current = savePosition;
+
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -238,6 +272,8 @@ function VideoJSPlayer({
         if (isReadyRef.current && isPlayingRef.current) {
           playerDispatch({ isEnded: true, type: 'setIsEnded' });
           player.pause();
+          // Clear the saved playback position when media ends
+          if (manifestURLRef.current) clearPosition(manifestURLRef.current);
           if (!canvasIsEmptyRef.current) handleEnded();
         }
       }, 100);
@@ -465,6 +501,15 @@ function VideoJSPlayer({
       e.stopPropagation();
     });
     playerLoadedMetadata(player);
+    /**
+     * Show resume modal only for the initial page load, not on Canvas switches.
+     * This first loaded Canvas can be either the first Canvas in the Manifest or the
+     * Canvas corresponding to the 'startCanavasId' prop if it is provided.
+     * With the use of 'player.one' this is scoped only to the first load.
+     */
+    player.one('loadedmetadata', () => {
+      resumePlaybackModal(player);
+    });
   };
 
   /**
@@ -634,6 +679,13 @@ function VideoJSPlayer({
       player.controlBar.el().querySelectorAll('button, [tabindex]').forEach((focusable) => {
         focusable.removeAttribute('tabindex');
       });
+    }
+
+    /* Remove any resume playback modal in the DOM. Call close() to restore
+    player controls before removing the modal element from the DOM. */
+    if (resumeModalRef.current) {
+      resumeModalRef.current.close();
+      resumeModalRef.current.el()?.remove();
     }
 
     player.duration(canvasDuration);
@@ -884,10 +936,18 @@ function VideoJSPlayer({
       if (IS_SAFARI) {
         handleTimeUpdate();
       }
+
       // Offset cues for multi-source playback after metadata loads
       if (player.targets?.length > 1 && player.targets[srcIndex]) {
         const { altStart, duration } = player.targets[player.srcIndex];
         offsetTextTrackCues(player, altStart || 0, duration || 0);
+      }
+
+      // After a Canvas switch for resume playback, show the modal on the new Canvas
+      if (pendingResumeRef.current) {
+        const { time, manifestURL } = pendingResumeRef.current;
+        pendingResumeRef.current = null;
+        showResumeModal(player, resumeModalRef, time, manifestURL, clearPosition, true);
       }
     });
   };
@@ -1205,6 +1265,13 @@ function VideoJSPlayer({
       if (hasMultiItems && srcIndexRef.current > 0) {
         playerTime = playerTime + targets[srcIndexRef.current].altStart;
       }
+
+      // Persist playback position, skip near-start and near-end to avoid unhelpful resumes
+      const isHelpfulResume = playerTime > 5 && playerTime < canvasDurationRef.current - 5;
+      if (manifestURLRef.current && canvasURLRef.current && isHelpfulResume) {
+        savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
+      }
+
       const activeSegment = getActiveSegment(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
@@ -1332,6 +1399,52 @@ function VideoJSPlayer({
   };
 
   /**
+   * Show the resume modal if a saved playback position exists for the current Manifest.
+   * For multi-canvas manifests, load the saved Canvas first, then show the resume modal
+   * after the Canvas switch settles.
+   * @param {Object} player Video.js player instance
+   */
+  const resumePlaybackModal = (player) => {
+    /* Skip the resume playback modal when,
+    - there is a custom start indicated via 'startCanvasTime' prop
+    - the Manifest is a playlist
+    */
+    if (customStart?.startTime > 0 || isPlaylist) return;
+
+    const manifestURL = manifestURLRef.current;
+    if (!manifestURL) return;
+
+    const saved = getPosition(manifestURL);
+    if (!saved || saved.time <= 0) return;
+
+    const { canvasURL: savedCanvasURL, time: savedTime } = saved;
+
+    /* When a 'startCanvasId' is set, only show resume modal if the saved position
+    is on the 'startCanvasId' Canvas. Ignore saves on any other canvas. */
+    if (customStart?.startIndex > 0) {
+      const startCanvasURL = allCanvases[customStart.startIndex]?.canvasURL;
+      if (savedCanvasURL !== startCanvasURL) return;
+    }
+
+    if (savedCanvasURL !== canvasURLRef.current) {
+      // When saved position is on a different Canvas load the saved Canvas first
+      const savedCanvasIndex = allCanvases.findIndex((c) => c.canvasURL === savedCanvasURL);
+      if (savedCanvasIndex === -1) {
+        // When the saved Canvas is no longer in Manifest clear the stale entry and don't show the modal
+        clearPosition(manifestURL);
+        return;
+      }
+      // Store pending resume info so 'playerLoadedMetadata' can show the modal after the switch
+      pendingResumeRef.current = { time: savedTime, manifestURL };
+      manifestDispatch({ type: 'switchCanvas', canvasIndex: savedCanvasIndex });
+      return;
+    }
+
+    // If the loaded Canvas is the same as the saved one, show the modal immediately
+    showResumeModal(player, resumeModalRef, savedTime, manifestURL, clearPosition);
+  };
+
+  /**
    * Click event handler for previous/next buttons in inaccessible
    * message display
    * @param {Number} c updated Canvas index upon event trigger
@@ -1446,6 +1559,7 @@ VideoJSPlayer.propTypes = {
   isVideo: PropTypes.bool,
   options: PropTypes.object,
   placeholderText: PropTypes.string,
+  resumeCache: PropTypes.object,
   scrubberTooltipRef: PropTypes.object,
   tracks: PropTypes.array,
   trackScrubberRef: PropTypes.object,
