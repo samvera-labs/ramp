@@ -161,6 +161,8 @@ function VideoJSPlayer({
   const savePositionRef = useRef();
   savePositionRef.current = savePosition;
 
+  // Flag to track whether srcIndex has changed since last load
+  const srcIndexChangedRef = useRef();
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -220,7 +222,7 @@ function VideoJSPlayer({
        * when tracks are available as annotations in the Manifest add them back.
        */
       if (tracksRef.current?.length > 0 && isVideo
-        && player.textTracks()?.length <= tracksRef.current?.length) {
+        && player.textTracks()?.length <= tracksRef.current?.length && !srcIndexChangedRef.current) {
         // Remove any existing text tracks in Safari, as it handles tracks differently
         if (IS_SAFARI) {
           let oldTracks = player.remoteTextTracks();
@@ -693,6 +695,14 @@ function VideoJSPlayer({
     player.poster(options.poster);
     player.canvasIndex = cIndexRef.current;
     player.canvasIsEmpty = canvasIsEmptyRef.current;
+    /* The source change for multi-source canvases triggers 'emptied' event identical
+    to 'qualityRequested' event.
+    And 'qualityRequested' event from the plugin clears the text-tracks in the player,
+    which needs to be added back in the 'emptied' event listener.
+    However, for the 'emptied' event triggered by source change for a multi-source Canvas
+    the text-tracks are not cleared. And this flag is used to distinguish between the origin
+    of the 'emptied' event to avoid duplication of text-tracks in the player. */
+    srcIndexChangedRef.current = player.srcIndex != srcIndex;
     player.srcIndex = srcIndex;
     player.targets = targets;
     if (enableTitleLink) player.canvasLink = canvasLink;
