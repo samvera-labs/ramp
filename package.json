@@ -9,7 +9,8 @@
     "/dist"
   ],
   "scripts": {
-    "build": "npm run clean && NODE_ENV=production vite build && styleguidist build",
+    "build": "npm run clean && NODE_ENV=production npm run bundle && styleguidist build",
+    "bundle": "vite build && PREACT=true vite build",
     "clean": "rimraf dist",
     "prepublishOnly": "npm run build",
     "dev": "styleguidist server",
@@ -59,6 +60,7 @@
     "gh-pages": "^5.0.0",
     "jest": "^26.4.2",
     "path-browserify": "^1.0.1",
+    "preact": "^10.29.0",
     "prop-types": "^15.7.2",
     "react": "^19.0.0",
     "react-compiler-runtime": "^19.1.0-rc.3",
