@@ -6,13 +6,32 @@ import { readFileSync } from 'fs';
 // Read package.json for build outputs
 const pkg = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
+const baseAlias = {
+  '@Components': resolve(__dirname, 'src/components'),
+  '@TestData': resolve(__dirname, 'src/test_data'),
+  '@Services': resolve(__dirname, 'src/services'),
+  // Node.js polyfills for browser compatibility
+  'stream': 'stream-browserify',
+  'path': 'path-browserify',
+};
+
+const preactAlias = {
+  ...baseAlias,
+  // Alias 'react' to 'preact/compat'
+  'react': 'preact/compat',
+  'react-dom/client': 'preact/compat/client',
+  'react-dom': 'preact/compat',
+};
+
+const isPreact = process.env.PREACT === 'true';
+
 export default defineConfig({
   plugins: [
     react({
       babel: {
         plugins: [
-          // Add the React Compiler Babel plugin
-          ['babel-plugin-react-compiler', { target: '19' }],
+          // React Compiler Babel plugin is incompatible with Preact
+          ...(!isPreact ? [['babel-plugin-react-compiler', { target: '19' }]] : []),
         ],
       },
     }),
@@ -23,16 +42,8 @@ export default defineConfig({
     include: /.*\.[jt]sx?$/,
     exclude: /node_modules/,
   },
-  // Resolve path aliases and Node.js polyfills
   resolve: {
-    alias: {
-      '@Components': resolve(__dirname, 'src/components'),
-      '@TestData': resolve(__dirname, 'src/test_data'),
-      '@Services': resolve(__dirname, 'src/services'),
-      // Node.js polyfills for browser compatibility
-      'stream': 'stream-browserify',
-      'path': 'path-browserify',
-    },
+    alias: isPreact ? preactAlias : baseAlias,
   },
   // Environment variables
   define: {
@@ -47,7 +58,21 @@ export default defineConfig({
     },
   },
   // Build configuration for library
-  build: {
+  build: isPreact ? {
+    outDir: 'dist',
+    emptyOutDir: false,
+    lib: {
+      entry: resolve(__dirname, 'src/main.standalone.js'),
+      name: 'RampIIIF',
+      formats: ['umd'],
+      fileName: () => 'ramp.standalone.umd.js',
+    },
+    rollupOptions: {
+      // No external dependencies, bundles all aliasing react -> preact
+      external: [],
+      output: { globals: {} },
+    },
+  } : {
     outDir: 'dist',
     emptyOutDir: true,
     // Library mode configuration
@@ -55,9 +80,7 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/main.js'),
       name: 'RampIIIF',
       formats: ['esm', 'cjs', 'umd'],
-      fileName: (format) => {
-        return `ramp.${format}.js`;
-      },
+      fileName: (format) => `ramp.${format}.js`,
     },
     // Rollup options for external dependencies
     rollupOptions: {
@@ -75,8 +98,8 @@ export default defineConfig({
           'classnames': 'cx'
         },
       },
-    }
+    },
   },
-  // Prevent inlcuding files from the public directory in the build
+  // Prevent including files from the public directory in the build
   publicDir: false,
 });
