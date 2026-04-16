@@ -210,11 +210,14 @@ function VideoJSPlayer({
         // Need to set this once experimentalSvgIcons option in Video.js options was enabled
         player.getChild('controlBar').qualitySelector.setIcon('cog');
       }
+
+      // Update popup menu directions as needed
+      updateMenuDirection(player);
     });
 
     player.on('emptied', () => {
       /**
-       * In the quality-selector plugin used in Ramp, when the player is using remote 
+       * In the quality-selector plugin used in Ramp, when the player is using remote
        * text tracks they get cleared upon quality selection.
        * This is a known issue with @silvermine/videojs-quality-selector plugin.
        * When a new source from the quality selector is selected 'emptied' event is trigger.
@@ -963,7 +966,7 @@ function VideoJSPlayer({
   };
 
   const {
-    activeId, fragmentMarker, isReadyRef, playerRef, setActiveId, setFragmentMarker, setIsReady
+    activeId, fragmentMarker, isReadyRef, playerRef, setActiveId, setFragmentMarker, setIsReady, updateMenuDirection
   } = useVideoJSPlayer({
     audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
   });

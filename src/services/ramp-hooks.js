@@ -329,6 +329,7 @@ export const useSetupPlayer = ({
  * setActiveId: func,
  * setFragmentMarker: func,
  * setIsReady: func,
+ * updateMenuDirection: func,
  * }
  */
 export const useVideoJSPlayer = ({
@@ -549,12 +550,11 @@ export const useVideoJSPlayer = ({
       }
     });
 
-    // Listen for resize events on desktop browsers and trigger player.resize event
-    window.addEventListener('resize', () => {
-      // Check if player is initialized before triggering resize event, especially helpful
-      // when switching the Manifest in the demo site without a page reload
+    /* Check if player is initialized before triggering resize event, especially helpful
+      when switching the Manifest in the demo site without a page reload */
+    const callPlayerResize = () => {
       if (player?.player_) player.trigger('resize');
-    });
+    };
 
     /**
      * The 'resize' event on window doesn't catch zoom in/out in iOS Safari.
@@ -562,12 +562,27 @@ export const useVideoJSPlayer = ({
      * zoomed in/out using OS/browser settings.
      */
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', () => {
-        // Check if player is initialized before triggering resize event, especially helpful
-        // when switching the Manifest in the demo site without a page reload
-        if (player?.player_) player.trigger('resize');
-      });
+      window.visualViewport.addEventListener('resize', callPlayerResize);
     }
+
+    // Re-evaluate menu direction on scroll and window resize events
+    const handleScrollOrResize = () => updateMenuDirection(player);
+
+    window.addEventListener('scroll', handleScrollOrResize);
+    window.addEventListener('resize', () => {
+      handleScrollOrResize();
+      // Listen for resize events on desktop browsers and trigger player.resize event.
+      callPlayerResize();
+    });
+
+    // Clean up window listeners when the player is destroyed
+    player.on('dispose', () => {
+      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('resize', () => {
+        handleScrollOrResize();
+        callPlayerResize();
+      });
+    });
   };
 
   /**
@@ -608,6 +623,33 @@ export const useVideoJSPlayer = ({
     }
   };
 
+  /**
+   * Change the direction of the popup menu based on whether there is enough
+   * space above the player to show them without getting clipped by the viewport
+   */
+  const updateMenuDirection = (player) => {
+    const playerEl = playerRef.current?.el();
+    if (!playerEl) return;
+    const playerTop = playerEl.getBoundingClientRect().top;
+    // Get all VideoJS menus in the player
+    const menus = playerEl.querySelectorAll(
+      '.vjs-playback-rate .vjs-menu, .vjs-quality-selector .vjs-menu'
+    );
+    // Calculate tallest popup menu by breifly making it visible
+    const menuHeight = Array.from(menus).reduce((max, el) => {
+      const prev = el.style.display;
+      el.style.display = 'block';
+      const h = el.children?.length > 0 ? el.children[0].offsetHeight : 0;
+      el.style.display = prev;
+      return Math.max(max, h);
+    }, 0);
+    if (menuHeight > 0 && playerTop < menuHeight) {
+      player.addClass('vjs-menu-open-down');
+    } else {
+      player.removeClass('vjs-menu-open-down');
+    }
+  };
+
   return {
     activeId,
     fragmentMarker,
@@ -615,7 +657,8 @@ export const useVideoJSPlayer = ({
     playerRef,
     setActiveId,
     setFragmentMarker,
-    setIsReady
+    setIsReady,
+    updateMenuDirection
   };
 };
 
