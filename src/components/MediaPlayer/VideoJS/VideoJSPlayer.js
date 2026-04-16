@@ -739,11 +739,12 @@ function VideoJSPlayer({
 
     /*
       Update player control bar for;
-       - track scrubber button
-       - volume panel
-       - appearance of the player: big play button and aspect ratio of the player
+        - track scrubber button
+        - volume panel
+        - if tracks exists: captions button for video players
+        - appearance of the player: big play button and aspect ratio of the player
         based on media type
-       - file download menu
+        - file download menu
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
@@ -782,6 +783,14 @@ function VideoJSPlayer({
           is set on either 'ready' or 'volumechange' events.
         */
         player.trigger('volumechange');
+      }
+
+      if (tracks?.length > 0 && isVideo && !controlBar.getChild('subsCapsButton')) {
+        let subsCapBtn = controlBar.addChild(
+          'subsCapsButton', {}, volumeIndex + 1
+        );
+        // Add CSS to mark captions-on
+        subsCapBtn.children_[0].addClass('captions-on');
       }
 
       /*
