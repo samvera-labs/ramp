@@ -359,6 +359,7 @@ export const useVideoJSPlayer = ({
     isReadyRef.current = r;
   };
   const playerRef = useRef(null);
+  const visibilityHandlerRef = useRef(null);
   const setPlayer = (p) => {
     /**
      * When player is set to null, dispose player using Video.js' dispose()
@@ -374,6 +375,9 @@ export const useVideoJSPlayer = ({
       if (playerRef.current) {
         setPlayer(null);
         document.removeEventListener('keydown', playerHotKeys);
+        if (visibilityHandlerRef.current) {
+          document.removeEventListener('visibilitychange', visibilityHandlerRef.current);
+        }
         setIsReady(false);
       }
     };
@@ -583,6 +587,32 @@ export const useVideoJSPlayer = ({
         callPlayerResize();
       });
     });
+
+    /**
+     * On iOS/iPadOS, the browser does not reliably pause media when switching tabs.
+     * Media continues advancing its clock, and media can be interrupted unpredictably 
+     * by iOS's OS-level audio session management.
+     * To prevent the playhead from jumping forward when the user returns to the tab,
+     * the player is paused when the tab becomes inactive and resume it when it becomes
+     * active again.
+     */
+    let wasPlayingBeforeHide = false;
+    const handleVisibilityChange = () => {
+      if (!playerRef.current) return;
+      if (document.hidden) {
+        wasPlayingBeforeHide = !playerRef.current.paused();
+        if (wasPlayingBeforeHide) {
+          playerRef.current.pause();
+          playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+        }
+      } else if (wasPlayingBeforeHide) {
+        wasPlayingBeforeHide = false;
+        playerRef.current.play();
+        playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
+      }
+    };
+    visibilityHandlerRef.current = handleVisibilityChange;
+    document.addEventListener('visibilitychange', handleVisibilityChange);
   };
 
   /**

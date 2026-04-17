@@ -290,6 +290,28 @@ function VideoJSPlayer({
       setStartVolume(player.volume());
     });
     /**
+     * On iOS, the OS audio session can be revoked by another tab or app, leaving the
+     * player in a stuck state where the playhead moves but no audio is produced, or
+     * the buffer stalls indefinitely. Reload the source to recover.
+     */
+    if (IS_IOS) {
+      let stallTimer = null;
+      player.on('stalled', () => {
+        stallTimer = setTimeout(() => {
+          if (!player.paused() && player.readyState() < 3) {
+            player.load();
+            player.play();
+          }
+        }, 2000);
+      });
+      player.on('playing', () => {
+        if (stallTimer) {
+          clearTimeout(stallTimer);
+          stallTimer = null;
+        }
+      });
+    }
+    /**
      * Setting 'isReady' to true triggers the 'videojs-markers' plugin to add track/playlist/search 
      * markers to the progress-bar.
      * When 'isReady' is set to true in the same event (loadedmetadata) where, player.load() is called for
@@ -869,7 +891,15 @@ function VideoJSPlayer({
        * highlights are correctly synchronized.
        */
       const targetTime = isEndedRef.current
-        ? 0 : Math.max(currentTimeRef.current, player.currentTime());
+        ? 0
+        /**
+         * On iOS, player.currentTime() cannot be trusted here, because iOS may advance the media
+         * clock in the background before the 'visibilitychange' handler has a chance to pause the
+         * player. This makes the player.currentTime() stale with the forward-jumped value. In this
+         * scenario trust the currentTimeRef which is alwayes paused/frozen by 'visibilitychange'
+         * handler.
+         */
+        : (IS_IOS ? currentTimeRef.current : Math.max(currentTimeRef.current, player.currentTime()));
       player.currentTime(targetTime);
 
       // Update control-bar width on player reload
