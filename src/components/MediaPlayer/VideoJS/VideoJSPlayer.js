@@ -104,6 +104,8 @@ function VideoJSPlayer({
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
   const isForcedTextTrackRef = useRef(false);
+  // Ref to store track.change event handler with up-to-date sticky settings
+  const trackChangeHandlerRef = useRef(null);
   const resumeModalRef = useRef(null);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
@@ -789,8 +791,10 @@ function VideoJSPlayer({
         let subsCapBtn = controlBar.addChild(
           'subsCapsButton', {}, volumeIndex + 1
         );
-        // Add CSS to mark captions-on
-        subsCapBtn.children_[0].addClass('captions-on');
+        // Add CSS to mark captions-on if its turned on sticky settings
+        if (startCaptioned) {
+          subsCapBtn.children_[0].addClass('captions-on');
+        }
       }
 
       /*
@@ -1101,7 +1105,12 @@ function VideoJSPlayer({
       }
     }
 
-    textTracks.on('change', () => {
+    /* Remove existing track.change event handlers from previous Canvases reading 
+    stale values for startCaptioned sticky setting. */
+    if (trackChangeHandlerRef.current) {
+      textTracks.off('change', trackChangeHandlerRef.current);
+    }
+    const handleTrackChange = () => {
       /**
        * Safari/WebKit can asynchronously enable additional text tracks as a 'nativeTextTracks'
        * config's side effect.
@@ -1161,7 +1170,11 @@ function VideoJSPlayer({
         setStartCaptioned(subsOn);
       }
       if (player._applyForcedMenuItemStyle) player._applyForcedMenuItemStyle();
-    });
+    };
+
+    // Register new track.change handler with the current startCaptioned closure value
+    trackChangeHandlerRef.current = handleTrackChange;
+    textTracks.on('change', handleTrackChange);
   };
 
   /**
