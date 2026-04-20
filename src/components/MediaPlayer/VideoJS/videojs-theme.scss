@@ -137,10 +137,9 @@
 
 /* When audio player is placed near the top of the page (e.g. in Avalon), the playback rate
 menu that opens upwards gets clipped by the top of the viewport. To prevent this, open the
-menu downwards on mobile audio players. 
+menu downwards.
 To keep the menus consistent apply the same styling for quality selector menu as well. */
-.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-iphone,
-.vjs-theme-ramp.vjs-audio-only-mode.vjs-device-android {
+.vjs-theme-ramp.vjs-audio-only-mode.vjs-menu-open-down {
   .vjs-playback-rate .vjs-menu,
   .vjs-quality-selector .vjs-menu {
     bottom: auto;
