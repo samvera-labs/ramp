@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 // Mocking MutationObserver for Transcript component unit tests
 global.MutationObserver = class MutationObserver {
