@@ -1492,7 +1492,6 @@ export const useSyncPlayback = ({
         }
       }
 
-      console.log(`Syncing player to time: ${time - timeOffset}`);
       playerRef.current.currentTime(time - timeOffset);
     }
   }, [playerRef.current]);
