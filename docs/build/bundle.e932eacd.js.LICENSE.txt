@@ -64,9 +64,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
  * Available under the MIT license <https://github.com/bnjmnt4n/regjsgen/blob/master/LICENSE-MIT.txt>
  */
 
-/*! @license DOMPurify 3.4.0 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.0/LICENSE */
+/*! @license DOMPurify 3.4.1 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.1/LICENSE */
 
-/*! @name @videojs/http-streaming @version 3.17.2 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 3.17.3 @license Apache-2.0 */
 
 /*! @name aes-decrypter @version 4.0.2 @license Apache-2.0 */
 
