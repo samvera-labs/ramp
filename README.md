@@ -10,7 +10,7 @@ A ReactJS component library of interactive components created to display audio/v
 
 For full documentation of the component library, visit [GitHub Wiki](https://github.com/samvera-labs/ramp/wiki)
 
-Demo site built showcasing all the components at https://ramp.avalonmediasystem.org/
+Demo site showcasing all the components at https://ramp.avalonmediasystem.org/
 
 ## Installation Guide:
 
@@ -21,7 +21,7 @@ For React applications using a build tool (Webpack, Vite, etc.).
 #### Prerequisites
 
 Please ensure you have the following installed:
-- Node.js (>= 16.x)
+- Node.js (>= 20.x)
 - `react` and `react-dom` (version compatibility with each Ramp version listed below)
 - NPM or Yarn
 
@@ -30,7 +30,7 @@ Please ensure you have the following installed:
  - `@samvera/ramp` **v3.3.0** to **v4.0.2** support **React 18**. **Note:** `@samvera/ramp` v3.3.0 works with both React 17 and React 18. If upgrading to React 18, update both `react` and `react-dom` to the same version.
  - For **older versions** of `@samvera/ramp`, use **React 17**.
 
-For ReactJS upgrade instructions, see the [ReactJS official upgrade guide](https://react.dev/blog/2022/03/08/react-18-upgrade-guide#updates-to-client-rendering-apis).
+For ReactJS upgrade instructions, see the official upgrade guides [for React 18](https://react.dev/blog/2022/03/08/react-18-upgrade-guide#updates-to-client-rendering-apis) and [for React 19](https://react.dev/blog/2024/04/25/react-19-upgrade-guide) as needed.
 
 #### Steps
 
@@ -40,24 +40,25 @@ yarn add @samvera/ramp
 npm install @samvera/ramp
 ```
 
-**For `@samvera/ramp` versions < `5.x`**:
-For older versions:
+From `@samvera/ramp v5.x`, VideoJS is included as a dependency and does **not** need to be installed separately.
+
+**For `@samvera/ramp` versions < `5.x`**, install the recommended VideoJS version for your Ramp version:
   - `@samvera/ramp` versions < `v3.1.3`: Install `video.js@7.21.3`
   - `@samvera/ramp` versions between (inclusive) `v3.1.3` and `v4.0.2`: Install `video.js@8.10.0`
 
-For best results, use the recommended VideoJS version for your Ramp version.
-Add `Video.js` library to your app as follows:
 ```
 yarn add video.js@<version>
 npm install video.js@<version>
 ```
-From `@samvera/ramp v5.x`, VideoJS is included as a dependency and does **not** need to be installed separately.
 
 2. Import the library into your application:
 ```
 import { IIIFPlayer, MediaPlayer, StructuredNavigation, Transcript } from "@samvera/ramp";
 
-// Import starter styles (includes VideoJS CSS)
+// For @samvera/ramp versions < v5.0.0 import VideoJS styles from installed library
+// import "video.js/dist/video-js.css";
+
+// Import starter styles (includes VideoJS CSS for @samvera/ramp >= 5.0.0)
 import "@samvera/ramp/dist/ramp.css";
 ```
 
@@ -169,88 +170,20 @@ Alternatively, download both files from the [latest release](https://github.com/
 </html>
 ```
 
-## Development
+## Questions
 
-Ramp provides two development environments, 
-- using [React Styleguidist](https://react-styleguidist.js.org/): a documentation site for all the components and their usage accompanied with code snippets, running on http://localhost:6060.
-- using [Webpack](https://webpack.js.org/): show-case of how these components can be arranged on a web page and styled according to user preference, running on http://localhost:3003.
+If you have any questions, reach out on the [Samvera Community Slack](https://samvera.slack.com):
 
-Both of these can run on your localhost at the same time, and can live-reload based on your code changes.
+- [#ramp](https://samvera.slack.com/archives/C01FGR7GSHF) — Ramp-specific questions and discussion
+- [#avalon](https://samvera.slack.com/archives/C1C3C4F5L) — broader Avalon media system discussion
 
-### Styleguidist environment
-
-[React Styleguidist](https://react-styleguidist.js.org/), in addition to providing documentation, also offers an isolated development environment. To start the dev environment, run:
-
-```
-yarn dev
-```
-
-To build a static html version of the docs (which Github pages uses), run:
-
-```
-yarn styleguide:build
-```
-
-This will create a set of static documentation HTML files in the project's `/docs` directory. In this documentation, each component is explained with a code sample and a description of its props and functionality.
-
-
-### Webpack environment
-
-An example usage of all the components in the library is served from the `/demo` directory. This showcases the real-time usage of the components in an application. To start this example, run:
-
-```
-yarn demo
-```
-
-## Testing
-
-Ramp uses [`Jest`](https://jestjs.io/) and [`react-testing-library`](https://github.com/testing-library/react-testing-library) to build an automated unit test suite. To run these tests, with a full coverage report, run:
-
-```
-yarn test
-```
-
-To run tests in `watch` mode:
-
-```
-yarn test:watch
-```
-
-The built library can be imported directly from GitHub to test unreleased code changes. To do this, please follow the following steps.
-
-1. Create a new branch from `main` with the latest code
-2. Run `yarn build` commande in your branch. This will create CommoneJS, ES Module, and UMD distribution files located in the `/dist/` directory.
-3. Push these files into your branch in GitHub
-4. In your application;
-   - Remove the existing `@samvera/ramp` installation with `yarn remove @samvera/ramp`
-   - Clean cache using `yarn cache clean`
-   - Add the built library from your GitHub branch `yarn add https://github.com/samvera-labs/ramp#<your_branch_name>`
-
-Once you've completed your testing, _please cleanup the test branch from GitHub_.
-
-## Deployment
-
-When new code is added into the `main` branch of the GitHub repo, it is deployed into two locations.
-
-### Deploying to Netlify demo site
-
-The [demo site](https://ramp.avalonmediasystem.org/) is hosted with [Netlify](https://www.netlify.com), which displays all the components in the library in a similar manner to real-life usage of them.
-
-This demo instance can read a **publicly available IIIF Presentation 3.0 Manifest** given the URL of the manifest and display content in the manifest.
-
-A new build is triggered and published in Netlify when code changes are merged to `main` branch in this repository.
-
-### Deploying to GitHub Pages
-
-The GitHub pages site, https://samvera-labs.github.io/ramp/ is built using ReactJS Styleguidist docs.
-
-Similar to the demo site, a new build of this site it triggered and published when new code changes are merged to `main` branch.
+Or, submit a new issue in the [GitHub issues](github.com/samvera-labs/ramp/issues) to report any issues or new feature requests.
 
 ## Contributing
 
-If you're working on PR for this project, create a feature branch off of `main`.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, development workflow, testing, and branch conventions.
 
-We welcome your contributions. This repository follows the [Samvera Community Code of Conduct](https://samvera.atlassian.net/wiki/spaces/samvera/pages/405212316/Code+of+Conduct) and [language recommendations](https://github.com/samvera/maintenance/blob/main/templates/CONTRIBUTING.md#language).
+This repository follows the [Samvera Community Code of Conduct](https://samvera.atlassian.net/wiki/spaces/samvera/pages/405212316/Code+of+Conduct) and [language recommendations](https://github.com/samvera/maintenance/blob/main/templates/CONTRIBUTING.md#language).
 
 ## Versioning
 
