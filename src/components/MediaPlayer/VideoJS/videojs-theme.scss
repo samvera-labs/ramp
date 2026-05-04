@@ -339,3 +339,27 @@ and outside of the player (e.g. when quality selector opens downwards of the pla
   padding: 0.3em 0.7em;
   font-size: 1em;
 }
+
+/* Custom eror modal for unavailable items */
+.vjs-custom-error-modal .vjs-modal-dialog-content {
+  color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.vjs-custom-error-modal-message {
+  font-size: 1em;
+  font-weight: 400;
+  max-width: 28em;
+}
+
+.vjs-audio-only-mode .vjs-custom-error-modal .vjs-modal-dialog-content {
+  padding: 0.4em 1em;
+  font-size: 1.2em;
+  gap: 0.3em;
+}
