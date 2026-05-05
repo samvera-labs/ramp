@@ -1,5 +1,27 @@
 # @samvera/ramp
 
+## v5.1.0 tag (05/05/2026)
+* Fix quality-selector import and registration for ESM build by @Dananji in https://github.com/samvera-labs/ramp/pull/921
+* Create a standalone bundle for non-React apps by @Dananji in https://github.com/samvera-labs/ramp/pull/922
+* Bump node-forge from 1.3.2 to 1.4.0 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/923
+* Bump @xmldom/xmldom from 0.8.11 to 0.8.12 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/925
+* Save playback position by @Dananji in https://github.com/samvera-labs/ramp/pull/926
+* Open playback-rate menu downwards for audio players in mobile browsers by @Dananji in https://github.com/samvera-labs/ramp/pull/927
+* Bump vite from 7.1.11 to 7.3.2 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/928
+* Make error and inaccessible message displays keyboard accessible by @Dananji in https://github.com/samvera-labs/ramp/pull/929
+* Bump lodash from 4.17.23 to 4.18.1 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/930
+* Avoid text-track duplication for multi-source canvases by @Dananji in https://github.com/samvera-labs/ramp/pull/933
+* Bump follow-redirects from 1.15.6 to 1.16.0 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/934
+* Bump dompurify from 3.3.3 to 3.4.0 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/935
+* Change popup menu direction based on player orientation by @Dananji in https://github.com/samvera-labs/ramp/pull/937
+* Fix captions icon disappear on canvas change by @Dananji in https://github.com/samvera-labs/ramp/pull/938
+* Fix active and inactive tab playback and stalling for player by @Dananji in https://github.com/samvera-labs/ramp/pull/939
+* Add Git workflow to re-build /docs on code changes by @Dananji in https://github.com/samvera-labs/ramp/pull/940
+* Dependency audit and upgrade as needed by @Dananji in https://github.com/samvera-labs/ramp/pull/942
+* Bump @xmldom/xmldom from 0.8.12 to 0.8.13 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/943
+* Bump postcss from 8.5.6 to 8.5.12 by @dependabot[bot] in https://github.com/samvera-labs/ramp/pull/944
+* Update/cleanup docs by @Dananji in https://github.com/samvera-labs/ramp/pull/945
+
 ## v5.0.0 tag (03/24/2026)
 * Fix search highlights for searches with punctuation in untimed transcripts by @Dananji in https://github.com/samvera-labs/ramp/pull/858
 * Add show more/less functionality to transcript cues by @Dananji in https://github.com/samvera-labs/ramp/pull/860
