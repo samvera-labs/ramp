@@ -19,6 +19,7 @@ import {
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
 import { showResumeModal } from './VideoJSResumeModal';
+import { showErrorModal } from './VideoJSErrorModal';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import {
   useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
@@ -107,6 +108,7 @@ function VideoJSPlayer({
   // Ref to store track.change event handler with up-to-date sticky settings
   const trackChangeHandlerRef = useRef(null);
   const resumeModalRef = useRef(null);
+  const vjsErrorModalRef = useRef(null);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -265,7 +267,10 @@ function VideoJSPlayer({
       handleTimeUpdate();
     });
     player.on('resize', () => {
-      setControlBar(player);
+      /* Keep the control-bar visible with an active VideoJSErrorModal for multi-Canvas
+      manifests when player is resized. */
+      const errorModalActive = !!vjsErrorModalRef.current;
+      setControlBar(player, errorModalActive && isMultiCanvased);
     });
     player.on('ended', () => {
       /**
@@ -410,12 +415,6 @@ function VideoJSPlayer({
           break;
       }
 
-      // Stop retrying if the player is currently in a fallback attempt
-      if (player.isFallingBack) {
-        e.stopPropagation();
-        return;
-      }
-
       // Determine if this is a multi-source Canvas failure or source quality choice failure
       /** ASSUMPTION: A Canvas is either multi-sourced OR multi-choice and not both at the same time */
       const isMultiSource = player.targets?.length > 1;
@@ -444,8 +443,12 @@ function VideoJSPlayer({
 
           e.stopPropagation();
           return;
-        } else {
+        } else if (failureResult.isCanvasInaccessible) {
           // When all sources failed, set the error message
+          showErrorModal(player, vjsErrorModalRef, isMultiCanvased, setControlBar, failureResult.errorMessage);
+          e.stopPropagation();
+          return;
+        } else {
           errorMessage = failureResult.errorMessage;
         }
       } else {
@@ -493,13 +496,17 @@ function VideoJSPlayer({
           // Prevent error modal from showing during fallback
           e.stopPropagation();
           return;
-        } else {
+        } else if (fallbackResult.isCanvasInaccessible) {
           // When all sources fail, show an error message
-          errorMessage = fallbackResult.errorMessage;
+          showErrorModal(player, vjsErrorModalRef, isMultiCanvased, setControlBar, fallbackResult.errorMessage);
+          e.stopPropagation();
+          return;
+        } else {
+          errorMessage = failureResult.errorMessage;
         }
       }
 
-      // Show dismissable error display modal from Video.js
+      // Show dismissable error display modal from Video.js for other generic errors
       var errorDisplay = player.getChild('ErrorDisplay');
       if (errorDisplay) {
         errorDisplay.contentEl().innerText = errorMessage;
@@ -529,16 +536,38 @@ function VideoJSPlayer({
       }
       e.stopPropagation();
     });
-    playerLoadedMetadata(player);
     /**
-     * Show resume modal only for the initial page load, not on Canvas switches.
-     * This first loaded Canvas can be either the first Canvas in the Manifest or the
-     * Canvas corresponding to the 'startCanavasId' prop if it is provided.
-     * With the use of 'player.one' this is scoped only to the first load.
+     * VideoJS HTTP Streaming (VHS) plugin (included in VideoJS) retries CORS-blocked/403 media sources
+     * indefintely without surfacing an error event in VideoJS. This causes the player to get stuck in a
+     * loading state without providing useful feedback to the user. 
+     * For each source a new VhsHandler is created, using this in combination with the VideoJS option
+     * 'vhs.maxPlaylistRetries=0' Ramp can display an error for CORS errors in playback.
      */
-    player.one('loadedmetadata', () => {
-      resumePlaybackModal(player);
+    const handleRetryPlaylist = () => {
+      const playlists = player.tech(true)?.vhs?.playlistController_
+        ?.mainPlaylistLoader_?.main?.playlists || [];
+      // With maxPlaylistRetries=0, any HLS playlist with is permanently excluded
+      const hasExhausted = playlists.some(p => p.playlistErrors_ > 0);
+      if (hasExhausted) {
+        showErrorModal(player, vjsErrorModalRef, isMultiCanvased, setControlBar);
+      }
+    };
+    player.on('loadstart', () => {
+      const tech = player.tech(true);
+      if (!tech) return;
+      // Remove any previously registered listeners befor adding a new one
+      tech.off('retryplaylist', handleRetryPlaylist);
+      tech.on('retryplaylist', handleRetryPlaylist);
     });
+    /**
+     * Show resume modal on initial setup of the player. This is invoked once for
+     * a given Manifest, as the playback positions in 'localStorage' are indexed by
+     * the Manifest URL, So the resume modal will not be show again on Canvas switches.
+     * And this allows, the player to show resume modal even if the first Canvas is not 
+     * playable, but there is a saved position for the Manifest on a different Canvas.
+     */
+    resumePlaybackModal();
+    playerLoadedMetadata(player);
   };
 
   /**
@@ -570,8 +599,8 @@ function VideoJSPlayer({
 
       console.error('All sources in the Canvas have failed to load.');
       return {
-        shouldFallback: false,
-        errorMessage: 'None of the available sources could be loaded. Please try again later.'
+        shouldFallback: false, isCanvasInaccessible: true,
+        errorMessage: 'None of the available sources could be loaded. Please try again later or contact support for help.'
       };
     }
     // Select the next viable available source
@@ -587,7 +616,8 @@ function VideoJSPlayer({
    */
   const handleMultiSourceFailure = (player) => {
     const { srcIndex, targets, failedSourceIndices } = player;
-    const allSegmentFailMsg = 'All video segments in this item are currently unavailable.';
+    const allSegmentFailMsg = `All ${player.audioOnlyMode_ ? 'audio' : 'video'} segments in this item are currently unavailable.
+    Please try again later or contact support for help.`;
 
     // Memorize the current failed source index
     if (!failedSourceIndices.includes(srcIndex)) {
@@ -596,7 +626,7 @@ function VideoJSPlayer({
 
     // Check if all sources have failed
     if (failedSourceIndices.length >= targets.length) {
-      return { shouldAdvance: false, errorMessage: allSegmentFailMsg };
+      return { shouldAdvance: false, errorMessage: allSegmentFailMsg, isCanvasInaccessible: true };
     }
 
     // Find next available source, wrap to the first segment when final segment is reached
@@ -607,7 +637,7 @@ function VideoJSPlayer({
       attempts++;
     }
     if (attempts >= targets.length) {
-      return { shouldAdvance: false, errorMessage: allSegmentFailMsg };
+      return { shouldAdvance: false, errorMessage: allSegmentFailMsg, isCanvasInaccessible: true };
     }
 
     return {
@@ -691,9 +721,13 @@ function VideoJSPlayer({
    * @param {Object} player
    */
   const updatePlayer = (player) => {
-    // Reset failed sources when Canvas changes
-    player.failedSources = [];
-    player.isFallingBack = false;
+    /* Reset failed source tracking only on Canvas change, not on source 
+    change within the same Canvas in a multi-source Canvas */
+    if (player.canvasIndex !== cIndexRef.current) {
+      player.failedSources = [];
+      player.failedSourceIndices = [];
+      player.isFallingBack = false;
+    }
 
     // Clear error state when changing Canvas
     player.error(null);
@@ -710,11 +744,16 @@ function VideoJSPlayer({
       });
     }
 
-    /* Remove any resume playback modal in the DOM. Call close() to restore
+    /* Remove any VideoJS modals instances in the DOM. Call close() to restore
     player controls before removing the modal element from the DOM. */
     if (resumeModalRef.current) {
       resumeModalRef.current.close();
       resumeModalRef.current.el()?.remove();
+    }
+    if (vjsErrorModalRef.current) {
+      vjsErrorModalRef.current.close();
+      vjsErrorModalRef.current.el()?.remove();
+      vjsErrorModalRef.current = null;
     }
 
     player.duration(canvasDuration);
@@ -1464,12 +1503,13 @@ function VideoJSPlayer({
   };
 
   /**
-   * Show the resume modal if a saved playback position exists for the current Manifest.
-   * For multi-canvas manifests, load the saved Canvas first, then show the resume modal
-   * after the Canvas switch settles.
+   * Check for a saved playback position in the current Manifest.
+   * Store a pending resume so 'loadedmetadata' event can show the modal only after media
+   * loads successfully. This avoids stacking the resume modal on top of an error modal if
+   * the media fails to load for any reason.
    * @param {Object} player Video.js player instance
    */
-  const resumePlaybackModal = (player) => {
+  const resumePlaybackModal = () => {
     /* Skip the resume playback modal when,
     - there is a custom start indicated via 'startCanvasTime' prop
     - the Manifest is a playlist
@@ -1499,14 +1539,14 @@ function VideoJSPlayer({
         clearPosition(manifestURL);
         return;
       }
-      // Store pending resume info so 'playerLoadedMetadata' can show the modal after the switch
+      // Store pending resume info so 'loadedmetadata' can show the modal after the switch
       pendingResumeRef.current = { time: savedTime, manifestURL };
       manifestDispatch({ type: 'switchCanvas', canvasIndex: savedCanvasIndex });
       return;
     }
 
-    // If the loaded Canvas is the same as the saved one, show the modal immediately
-    showResumeModal(player, resumeModalRef, savedTime, manifestURL, clearPosition);
+    // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
+    pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
   };
 
   /**
