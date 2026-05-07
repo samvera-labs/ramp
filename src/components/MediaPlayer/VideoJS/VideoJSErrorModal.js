@@ -12,34 +12,44 @@ export function showErrorModal(player, vjsErrorModalRef, isMultiCanvased, setCon
   message = 'This item may require special access. Please contact support for assistance.') {
   if (vjsErrorModalRef.current) return;
 
-  const label = 'This item is currently unavailable.';
+  let label = 'This item is currently unavailable.';
+  /* Combine the message into the label for audio-only mode, as there is less space to display
+  to display it in a new paragraph in the audio player container. */
+  if (player.audioOnlyMode_) {
+    label = message;
+  }
+
   const modal = player.createModal(label, { temporary: false, uncloseable: true });
   vjsErrorModalRef.current = modal;
   modal.addClass('vjs-custom-error-modal');
   modal.setAttribute('data-testid', 'error-access-modal');
-
+  modal.el().setAttribute('tabindex', '0');
   modal.el().setAttribute('role', 'alertdialog');
   modal.el().setAttribute('aria-label', label);
   modal.contentEl().setAttribute('aria-live', 'assertive');
   modal.contentEl().setAttribute('aria-atomic', 'true');
 
-  const messageEl = document.createElement('p');
-  messageEl.className = 'vjs-custom-error-modal-message';
-  messageEl.textContent = message;
-  modal.contentEl().appendChild(messageEl);
-  player.removeClass('vjs-disabled');
+  // Only use a separate message element in the modal for Video mode, as there is more space to display it.
+  if (!player.audioOnlyMode_) {
+    const messageEl = document.createElement('p');
+    messageEl.className = 'vjs-custom-error-modal-message';
+    messageEl.textContent = message;
+    modal.contentEl().appendChild(messageEl);
+  }
 
+  // Enable player and unvail player control-bar in blocked state
+  player.removeClass('vjs-disabled');
+  setControlBar(player, true);
+
+  /* Show the previous/next button in the control bar for multi-Canvas players so that,
+  the user can navigate between canvases in error-mode. */
   if (isMultiCanvased) {
-    // Show the control bar with only prev/next buttons focusable
-    setControlBar(player, true);
     player.controlBar.el().querySelectorAll('button, [tabindex]').forEach((focusable) => {
       if (!focusable.closest('.vjs-previous-button')
         && !focusable.closest('.vjs-next-button')) {
         focusable.setAttribute('tabindex', '-1');
       }
     });
-  } else {
-    player.controlBar.hide();
   }
 
   modal.el().focus();
