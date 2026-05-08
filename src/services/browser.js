@@ -273,13 +273,14 @@ if (!IS_CHROMIUM) {
 
     IS_WINDOWS = (/Windows/i).test(USER_AGENT);
 
+    // iPadOS 13+ changed the user agent to Mac, so this needs to check for touch support to detect if it's an iPad
+    IS_IPAD = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
     IS_IPHONE = (/iPhone/i).test(USER_AGENT) && !IS_IPAD;
 
     IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
 
     IS_TOUCH_ONLY = navigator.maxTouchPoints && navigator.maxTouchPoints > 2 && !window.matchMedia("(pointer: fine").matches;
-
-    IS_IPAD = IS_TOUCH_ONLY && !IS_ANDROID && !IS_IPHONE;
 
     IS_MOBILE = IS_ANDROID || IS_IOS || IS_IPHONE || IS_TOUCH_ONLY || (/Mobi/i).test(USER_AGENT);
 }
