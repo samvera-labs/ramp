@@ -12,24 +12,27 @@ export function showErrorModal(player, vjsErrorModalRef, isMultiCanvased, setCon
   message = 'This item may require special access. Please contact support for assistance.') {
   if (vjsErrorModalRef.current) return;
 
-  let label = 'This item is currently unavailable.';
-  /* Combine the message into the label for audio-only mode, as there is less space to display
-  to display it in a new paragraph in the audio player container. */
+  // Error modal title for video mode
+  let errorLabel = 'This item is currently unavailable.';
+
+  /* Override the modal title with the message for audio-only mode, as there is less
+  space to display it in a new paragraph in the audio player container */
   if (player.audioOnlyMode_) {
-    label = message;
+    errorLabel = message;
   }
 
-  const modal = player.createModal(label, { temporary: false, uncloseable: true });
+  const modal = player.createModal(errorLabel, { temporary: false, uncloseable: true });
   vjsErrorModalRef.current = modal;
   modal.addClass('vjs-custom-error-modal');
-  modal.setAttribute('data-testid', 'error-access-modal');
+  modal.setAttribute('data-testid', 'error-display-modal');
   modal.el().setAttribute('tabindex', '0');
+  // Make the modal accessible by setting appropriate ARIA attributes
   modal.el().setAttribute('role', 'alertdialog');
-  modal.el().setAttribute('aria-label', label);
+  modal.el().setAttribute('aria-label', errorLabel);
   modal.contentEl().setAttribute('aria-live', 'assertive');
   modal.contentEl().setAttribute('aria-atomic', 'true');
 
-  // Only use a separate message element in the modal for Video mode, as there is more space to display it.
+  // Set the message in a separate elemet for video mode as there is more space to display it
   if (!player.audioOnlyMode_) {
     const messageEl = document.createElement('p');
     messageEl.className = 'vjs-custom-error-modal-message';

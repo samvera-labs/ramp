@@ -19,7 +19,7 @@ import {
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
 import { showResumeModal } from './VideoJSResumeModal';
-import { showErrorModal } from './VideoJSErrorModal';
+import { showErrorModal } from './components/js/VideoJSErrorModal';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import {
   useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
@@ -744,17 +744,8 @@ function VideoJSPlayer({
       });
     }
 
-    /* Remove any VideoJS modals instances in the DOM. Call close() to restore
-    player controls before removing the modal element from the DOM. */
-    if (resumeModalRef.current) {
-      resumeModalRef.current.close();
-      resumeModalRef.current.el()?.remove();
-    }
-    if (vjsErrorModalRef.current) {
-      vjsErrorModalRef.current.close();
-      vjsErrorModalRef.current.el()?.remove();
-      vjsErrorModalRef.current = null;
-    }
+    // Remove any existing VideoJS modals instances in the DOM
+    cleanupExistingModals();
 
     player.duration(canvasDuration);
     player.src(options.sources);
@@ -1019,7 +1010,7 @@ function VideoJSPlayer({
         player.altStart = mediaRange.start;
       } else {
         player.playableDuration = canvasDuration;
-        player.altStart = targets[srcIndex].altStart;
+        player.altStart = targets[srcIndex]?.altStart ?? 0;
       }
 
       player.canvasIndex = cIndexRef.current;
@@ -1040,9 +1031,10 @@ function VideoJSPlayer({
 
       // After a Canvas switch for resume playback, show the modal on the new Canvas
       if (pendingResumeRef.current) {
-        const { time, manifestURL } = pendingResumeRef.current;
+        const { time, manifestURL, isSameCanvas } = pendingResumeRef.current;
         pendingResumeRef.current = null;
-        showResumeModal(player, resumeModalRef, time, manifestURL, clearPosition, true);
+        cleanupExistingModals();
+        showResumeModal(player, resumeModalRef, time, manifestURL, clearPosition, !isSameCanvas);
       }
     });
   };
@@ -1059,6 +1051,22 @@ function VideoJSPlayer({
   const activeIdRef = useRef();
   activeIdRef.current = useMemo(() => { return activeId; }, [activeId]);
 
+  /**
+   * Remove any VideoJS modals instances in the DOM. Call close() to restore
+   * player controls before removing the modal element from the DOM.
+   */
+  const cleanupExistingModals = () => {
+    if (resumeModalRef.current) {
+      resumeModalRef.current.close();
+      resumeModalRef.current.el()?.remove();
+      resumeModalRef.current = null;
+    }
+    if (vjsErrorModalRef.current) {
+      vjsErrorModalRef.current.close();
+      vjsErrorModalRef.current.el()?.remove();
+      vjsErrorModalRef.current = null;
+    }
+  };
   /**
    * Setup captions for the player based on context
    * @param {Object} player Video.js player instance

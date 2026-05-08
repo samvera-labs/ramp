@@ -5,6 +5,7 @@ import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import { withManifestAndPlayerProvider, manifestState } from '@Services/testing-helpers';
 import videoManifest from '@TestData/lunchroom-manners';
 import playlistManifest from '@TestData/playlist';
+import singleCanvasManifest from '@TestData/single-canvas';
 
 describe('VideoJSPlayer component', () => {
   const MANIFEST_URL = 'https://example.com/manifest/lunchroom_manners';
@@ -56,7 +57,12 @@ describe('VideoJSPlayer component', () => {
       expect(screen.getAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
     });
     const player = screen.getAllByTestId('videojs-video-element')[0].player;
+    // Wait for player 'ready' to fire, i.e. player.canvasIndex is set
+    await waitFor(() => {
+      expect(player.canvasIndex).toBeDefined();
+    });
     act(() => { player.trigger('loadedmetadata'); });
+    return player;
   };
 
   describe('feature: resume playback modal', () => {
@@ -304,6 +310,99 @@ describe('VideoJSPlayer component', () => {
             expect(screen.getByText(/Resume playback from 00:45?/i)).toBeInTheDocument();
           });
         });
+      });
+    });
+  });
+
+  describe('feature: error modal', () => {
+    let player;
+
+    describe('when all sources of a single-source Canvas fail', () => {
+      beforeEach(async () => {
+        await renderPlayer({ manifest: singleCanvasManifest, canvasIndex: 0 });
+        player = await triggerLoadedMetadata();
+        // Mark the source as failed to trigger error modal
+        player.failedSources = player.currentSources().map((s) => s.src);
+        // Fire the 'error' event by setting player.error(err)
+        act(() => { player.error({ code: 2, message: 'network error' }); });
+      });
+
+      test('renders the error display modal', async () => {
+        await waitFor(() => {
+          expect(screen.queryByTestId('error-display-modal')).toBeInTheDocument();
+        });
+      });
+
+      test('renders the error display modal with the unavailable sources message', async () => {
+        await waitFor(() => {
+          expect(screen.queryByTestId('error-display-modal')).toBeInTheDocument();
+        });
+        expect(screen.getByText(
+          'None of the available sources could be loaded. Please try again later or contact support for help.'
+        )).toBeInTheDocument();
+      });
+    });
+
+    describe('when all multi-source segments of a Canvas fail', () => {
+      beforeEach(async () => {
+        await renderPlayer({ manifest: singleCanvasManifest, canvasIndex: 0 });
+        player = await triggerLoadedMetadata();
+        // Set player.targets to simulate a multi-source Canvas
+        player.targets = [
+          { start: 0, end: 330, altStart: 0, duration: 330 },
+          { start: 330, end: 660, altStart: 330, duration: 330 },
+        ];
+        player.srcIndex = 0;
+        // Mark both segment indices as already failed to trigger error modal
+        player.failedSourceIndices = [0, 1];
+        act(() => { player.error({ code: 2, message: 'network error' }); });
+      });
+
+      test('renders the error display modal', async () => {
+        await waitFor(() => {
+          expect(screen.queryByTestId('error-display-modal')).toBeInTheDocument();
+        });
+      });
+
+      test('renders the error display modal with the all segments failed message', async () => {
+        await waitFor(() => {
+          expect(screen.queryByTestId('error-display-modal')).toBeInTheDocument();
+        });
+        expect(
+          screen.getByText(/All video segments in this item are currently unavailable/i)
+        ).toBeInTheDocument();
+      });
+    });
+
+    describe('when a CORS error exhausts HLS playlist retries', () => {
+      test('renders the error display modal with the default message', async () => {
+        await renderPlayer({ manifest: singleCanvasManifest, canvasIndex: 0 });
+        const player = await triggerLoadedMetadata();
+        const mockVHSTech = {
+          vhs: {
+            playlistController_: {
+              mainPlaylistLoader_: {
+                main: { playlists: [{ playlistErrors_: 1 }] },
+              },
+            },
+          },
+          on: jest.fn(),
+          off: jest.fn(),
+        };
+
+        // Simulate HLS retry errors in vhs' playlist controller
+        jest.spyOn(player, 'tech').mockReturnValue(mockVHSTech);
+        // Trigger 'loadstart' to set up the 'retryplaylist' event listener
+        act(() => { player.trigger('loadstart'); });
+        const retryCall = mockVHSTech.on.mock.calls.find(([evt]) => evt === 'retryplaylist');
+        act(() => { retryCall[1](); });
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('error-display-modal')).toBeInTheDocument();
+        });
+        expect(screen.getByText(
+          'This item may require special access. Please contact support for assistance.'
+        )).toBeInTheDocument();
       });
     });
   });
