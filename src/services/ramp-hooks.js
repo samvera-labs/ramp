@@ -20,6 +20,7 @@ import {
   truncateText,
   autoScroll
 } from '@Services/utility-helpers';
+import { IS_IPAD } from '@Services/browser';
 import { getMediaInfo } from '@Services/iiif-parser';
 import videojs from 'video.js';
 import throttle from 'lodash/throttle';
@@ -595,24 +596,28 @@ export const useVideoJSPlayer = ({
      * To prevent the playhead from jumping forward when the user returns to the tab,
      * the player is paused when the tab becomes inactive and resume it when it becomes
      * active again.
+     * This is only applied to iPads, as iPhones use the native player for playback thus
+     * not affected by this issue.
      */
-    let wasPlayingBeforeHide = false;
-    const handleVisibilityChange = () => {
-      if (!playerRef.current) return;
-      if (document.hidden) {
-        wasPlayingBeforeHide = !playerRef.current.paused();
-        if (wasPlayingBeforeHide) {
-          playerRef.current.pause();
-          playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+    if (IS_IPAD) {
+      let wasPlayingBeforeHide = false;
+      const handleVisibilityChange = () => {
+        if (!playerRef.current) return;
+        if (document.hidden) {
+          wasPlayingBeforeHide = !playerRef.current.paused();
+          if (wasPlayingBeforeHide) {
+            playerRef.current.pause();
+            playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
+          }
+        } else if (wasPlayingBeforeHide) {
+          wasPlayingBeforeHide = false;
+          playerRef.current.play();
+          playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
         }
-      } else if (wasPlayingBeforeHide) {
-        wasPlayingBeforeHide = false;
-        playerRef.current.play();
-        playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
-      }
-    };
-    visibilityHandlerRef.current = handleVisibilityChange;
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+      };
+      visibilityHandlerRef.current = handleVisibilityChange;
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
   };
 
   /**
