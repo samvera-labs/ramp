@@ -110,7 +110,11 @@ const MediaPlayer = ({
       // where the native iOS player is used by default or on fullscreen-mode.
       // i.e. Both Safari and Chrome on iPhones, only Chrome on iPads.
       html5: {
-        nativeTextTracks: !IS_ANDROID && ((IS_IPAD && !IS_SAFARI) || IS_IPHONE)
+        nativeTextTracks: !IS_ANDROID && ((IS_IPAD && !IS_SAFARI) || IS_IPHONE),
+        vhs: {
+          // Stop VHS from retrying CORS-blocked/403 HLS manfiests indefinitely
+          maxPlaylistRetries: 0,
+        },
       },
       // Make error display modal dismissable
       errorDisplay: {
