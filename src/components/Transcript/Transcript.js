@@ -489,7 +489,11 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
 
   const seekPlayer = useCallback((time) => {
     setCurrentTime(time); // so selecting an item works in tests
-    syncPlayback(time);
+    /* Add 1ms offset so that, the player time lands strictly inside the current cue.
+    When 2 adjacent cues share a boundary, i.e. end time of cue 1 === start time of cue 2,
+    VideoJS treats both as active at the boundary time, which shows both captions
+    over the other. */
+    syncPlayback(Math.round((time + 0.001) * 1000) / 1000);
   }, []);
 
   if (!isLoading) {
