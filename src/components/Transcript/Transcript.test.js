@@ -124,7 +124,7 @@ describe('Transcript component', () => {
         // Click on the cue's timestamp
         fireEvent.click(transcriptItem.children[0]);
         expect(transcriptItem.classList.contains('active')).toBeTruthy();
-        expect(syncPlaybackMock).toHaveBeenCalledWith(1.2);
+        expect(syncPlaybackMock).toHaveBeenCalledWith(1.201);
       });
 
       test('does nothing when clicking on the cue\'s text', () => {
@@ -190,7 +190,7 @@ describe('Transcript component', () => {
           // Click on the cue's timestamp
           fireEvent.click(transcriptItem.children[0]);
           expect(transcriptItem.classList.contains('active')).toBeTruthy();
-          expect(syncPlaybackMock).toHaveBeenCalledWith(22.2);
+          expect(syncPlaybackMock).toHaveBeenCalledWith(22.201);
         });
 
         test('does nothing when clicking on the cue\'s text', () => {
