@@ -307,4 +307,78 @@ describe('VideoJSPlayer component', () => {
       });
     });
   });
+
+  describe('feature: quality selection fallback', () => {
+    const HIGH_SRC = 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4';
+    const MED_SRC = 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4';
+
+    // Helper function to set up the player for testing quality selection fallback logic
+    const setupPlayerInFallbackState = async ({ isPlaying = false } = {}) => {
+      await renderPlayer({ manifest: videoManifest, canvasIndex: 0 });
+      await waitFor(() => {
+        expect(screen.getAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+      });
+      const player = screen.getAllByTestId('videojs-video-element')[0].player;
+      act(() => { player.trigger('loadedmetadata'); });
+
+      // Setup player state for fallback logic
+      player.failedSources = [];
+      player.isFallingBack = false;
+      player.currentSources = jest.fn(() => [
+        { src: HIGH_SRC, type: 'video/mp4', label: 'High', selected: true },
+        { src: MED_SRC, type: 'video/mp4', label: 'Medium', selected: false },
+      ]);
+      /* Stub,
+      - player.error() - set default getter to return a code 4
+      - player.currentTime() - default getter returns 0
+      - player.paused() - default getter returns based on isPlaying arg
+      - player.play() - stub to track play() calls without breaking    
+      */
+      player.error = jest.fn((code) => (code !== undefined ? undefined : { code: 4 }));
+      player.currentTime = jest.fn((t) => (t !== undefined ? undefined : 0));
+      player.play = jest.fn(() => Promise.resolve());
+      player.paused = jest.fn(() => !isPlaying);
+
+      // Trigger 'qualityRequested' to set wasPlayingRef.current initially
+      act(() => {
+        player.trigger('qualityRequested', { src: HIGH_SRC, label: 'High' });
+      });
+
+      return player;
+    };
+
+    test('resumes playback in seeked event when player was playing before fallback', async () => {
+      const player = await setupPlayerInFallbackState({ isPlaying: true });
+
+      act(() => { player.trigger('error'); });
+      await act(async () => new Promise((r) => setTimeout(r, 150)));
+      // Simulate quality-selector plugin 'seeked' event
+      act(() => { player.trigger('seeked'); });
+
+      expect(player.play).toHaveBeenCalled();
+    });
+
+    test('doesn\'t resume playback in seeked event when player was paused before fallback', async () => {
+      const player = await setupPlayerInFallbackState({ isPlaying: false });
+
+      act(() => { player.trigger('error'); });
+      await act(async () => new Promise((r) => setTimeout(r, 150)));
+      // Simulate quality-selector plugin 'seeked' event
+      act(() => { player.trigger('seeked'); });
+
+      expect(player.play).not.toHaveBeenCalled();
+    });
+
+    test('sets isFallingBack to false after the fallback loadedmetadata fires', async () => {
+      const player = await setupPlayerInFallbackState();
+
+      act(() => { player.trigger('error'); });
+      await act(async () => new Promise((r) => setTimeout(r, 150)));
+
+      expect(player.isFallingBack).toBe(true);
+      act(() => { player.trigger('loadedmetadata'); });
+      expect(player.isFallingBack).toBe(false);
+    });
+  });
+
 });

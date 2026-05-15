@@ -166,6 +166,9 @@ function VideoJSPlayer({
   // Flag to track whether srcIndex has changed since last load
   const srcIndexChangedRef = useRef();
 
+  // Flag to track whether the player was playing during a fallback for source selection
+  const wasPlayingRef = useRef();
+
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -326,6 +329,11 @@ function VideoJSPlayer({
       handleTimeUpdate();
     });
     player.on('qualityRequested', (e, quality) => {
+      /* Remember the player state before source selection changes, which is used in the error
+      handler to determine whether to resume playback after fallback efforts in source selection. */
+      if (wasPlayingRef.current == undefined) {
+        wasPlayingRef.current = !player.paused() ? true : false;
+      }
       // Prevent selection of known failed sources going through
       if (player.failedSources && player.failedSources.includes(quality.src)) {
         console.warn(`Cannot select ${quality.label}, this source previously failed to load`);
@@ -458,26 +466,29 @@ function VideoJSPlayer({
             try {
               updateQualityMenuItems(player, player.failedSources);
 
-              // Get current player state before switching
-              const allSources = player.currentSources();
-              const currentTime = player.currentTime();
-              const isPaused = player.paused();
-
               /**
                * Mark all sources as not selected and update the player's src information.
                * Then trigger a 'qualityRequested' event manually to let quality selector
                * plugin to update the source in the player. This helps persist the source
                * selection.
                */
+              const allSources = player.currentSources();
               allSources.forEach(s => { s.selected = false; });
               player.src(allSources);
               player.trigger('qualityRequested', fallbackResult.nextSource);
 
-              // Once the player is ready, restore playback state and flags
-              player.ready(function () {
-                if (currentTime > 0) player.currentTime(currentTime);
-                if (!isPaused) player.play();
+              // Once the player is loaded, reset the fallback flag
+              player.one('loadedmetadata', function () {
+                if (currentTimeRef.current > 0) player.currentTime(currentTimeRef.current);
                 player.isFallingBack = false;
+              });
+
+              /* Once the quality-selector plugin resets the player state to zero it emits a 'seeked'
+              event. Listen to this 'seeked' event once and restore player status from saved refs
+              overriding the default reset by the quality-selector plugin */
+              player.one('seeked', function () {
+                if (currentTimeRef.current > 0) player.currentTime(currentTimeRef.current);
+                if (wasPlayingRef.current) player.play();
               });
 
               // Reset fallback flag on error when fallback attempt also fails
@@ -500,7 +511,7 @@ function VideoJSPlayer({
       }
 
       // Show dismissable error display modal from Video.js
-      var errorDisplay = player.getChild('ErrorDisplay');
+      let errorDisplay = player.getChild('ErrorDisplay');
       if (errorDisplay) {
         errorDisplay.contentEl().innerText = errorMessage;
         errorDisplay.removeClass('vjs-hidden');
