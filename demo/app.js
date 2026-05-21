@@ -50,20 +50,18 @@ const App = ({ manifestURL }) => {
         </p>
         <div className='ramp--form_container'>
           <form onSubmit={handleSubmit}>
-            <div className='row'>
-              <div className='col-1'>
-                <label htmlFor='manifesturl' className='ramp-demo__manifest-input-label'>Manifest URL</label>
-              </div>
-              <div className='col-2'>
-                <input type='url'
-                  id='manifesturl'
-                  name='manifesturl'
-                  value={userURL}
-                  onChange={handleUserInput}
-                  placeholder='Manifest URL'
-                  className='ramp-demo__manifest-input' />
-                <input type='submit' value='Set Manifest' className='ramp-demo__manifest-submit' />
-              </div>
+            <div className='col-1'>
+              <label htmlFor='manifesturl' className='ramp-demo__manifest-input-label'>Manifest URL</label>
+            </div>
+            <div className='col-2'>
+              <input type='url'
+                id='manifesturl'
+                name='manifesturl'
+                value={userURL}
+                onChange={handleUserInput}
+                placeholder='Manifest URL'
+                className='ramp-demo__manifest-input' />
+              <input type='submit' value='Set Manifest' className='ramp-demo__manifest-submit' />
             </div>
           </form>
         </div>
