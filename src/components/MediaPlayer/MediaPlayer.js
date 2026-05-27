@@ -39,7 +39,7 @@ const MediaPlayer = ({
   const playerState = usePlayerState();
   const { showBoundary } = useErrorBoundary();
 
-  const { srcIndex, playlist, structures } = manifestState;
+  const { srcIndex, playlist, structures, auth, allCanvases } = manifestState;
   const { isPlaylist } = playlist;
   const { hasStructure } = structures;
   const { currentTime } = playerState;
@@ -50,6 +50,7 @@ const MediaPlayer = ({
   const [languageLoaded, setLanguageLoaded] = useState(false);
 
   const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
+  const authService = allCanvases[canvasIndex]?.authService ?? null;
 
   const {
     isMultiSourced,
@@ -196,16 +197,17 @@ const MediaPlayer = ({
             { trackScrubberRef, timeToolRef, isPlaylist },
           videoJSADButton: (audioDescTracks.length > 0) && { audioDescTracks }
         },
-        sources: isMultiSourced
-          ? [sources[srcIndex]]
-          : sources,
+        // Only pass along the sources with access in VideoJS options
+        sources: (authService && auth?.status !== 'authorized')
+          ? []
+          : (isMultiSourced ? [sources[srcIndex]] : sources),
         errorDisplay: {
           // Show the close button for the error modal, if more than one source OR multiple 
           // canvases are available
           uncloseable: (sources?.length > 1 || isMultiCanvased) ? false : true,
         },
       } : { ...defaultOptions, sources: [] };
-  }, [isVideo, playerConfig, srcIndex]);
+  }, [isVideo, playerConfig, srcIndex, authService, auth]);
 
   if (((ready && videoJSOptions != undefined && languageLoaded) || canvasIsEmpty)) {
     return (

@@ -28,6 +28,13 @@
   min-height: 210px;
 }
 
+// Maintain player's 16/9 aspect ratio for auth dialog
+[data-vjs-player="true"]:has(.vjs-theme-ramp) {
+  background-color: black;
+  aspect-ratio: 16/9;
+}
+
+
 .vjs-theme-ramp .vjs-control-bar {
   height: 5em;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .75), rgba(0, 0, 0, .75));

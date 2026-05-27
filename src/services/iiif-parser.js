@@ -1,6 +1,5 @@
 import { parseManifest, PropertyValue } from 'manifesto.js';
 import mimeTypes from 'mime-types';
-import DOMPurify from 'dompurify';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
@@ -9,15 +8,9 @@ import {
   parseResourceAnnotations,
   setCanvasMessageTimeout,
   timeToHHmmss,
-  identifyMachineGen
+  identifyMachineGen,
+  sanitizeHTML,
 } from './utility-helpers';
-
-// HTML tags and attributes allowed in IIIF metadata values.
-const DOMPURIFY_CONFIG = {
-  ALLOWED_TAGS: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
-  ALLOWED_ATTR: ['href', 'src', 'alt'],
-  ALLOWED_URI_REGEXP: /^(?:https?|mailto):/i,
-};
 
 // Do not build structures for the following 'Range' behaviors:
 // Reference: https://iiif.io/api/presentation/3.0/#behavior
@@ -76,7 +69,8 @@ export function canvasesInManifest(manifest) {
             summary: summary,
             homepage: homepage || '',
             label: canvasLabel,
-            searchService: getSearchService(canvas)
+            searchService: getSearchService(canvas),
+            authService: getAuthService(canvas)
           });
         } catch (error) {
           canvasesInfo.push({
@@ -89,7 +83,8 @@ export function canvasesInManifest(manifest) {
             summary: summary,
             homepage: homepage || '',
             label: getLabelValue(canvas.label) || `Section ${index + 1}`,
-            searchService: getSearchService(canvas)
+            searchService: getSearchService(canvas),
+            authService: getAuthService(canvas)
           });
         }
       });
@@ -485,7 +480,7 @@ export function parseMetadata(metadata, resourceType) {
     metadata.map(md => {
       // get value and replace \n characters with <br/> to display new lines in UI
       let value = getLabelValue(md.value, true)?.replace(/\n/g, "<br />");
-      let purifiedValue = DOMPurify.sanitize(value, { ...DOMPURIFY_CONFIG });
+      let purifiedValue = sanitizeHTML(value);
       parsedMetadata.push({
         label: getLabelValue(md.label),
         value: purifiedValue
@@ -714,4 +709,53 @@ export function getSearchService(resource) {
     }
   }
   return searchService;
+}
+
+/**
+ * Read 'services' block from a Canvas' Annotation body for IIIF Auth flow 2.0.
+ * When the Annotation body has a 'Choice', parse the service information in the first
+ * item in body's 'items' list, with the assumption that service information across
+ * choices are identical.
+ * @function IIIFParser#getAuthService
+ * @param {Object} canvas current Canvas to read auth service endpoints
+ * @returns {Object} { version: Number, probe: Object, accessService: Object,
+ * tokenService: Object, logoutService: Object }
+ */
+export function getAuthService(canvas) {
+  try {
+    const body = canvas?.items?.[0]?.items?.[0]?.body;
+    /* For Canvas 'body' with choice, parse auth service from within the an item
+    in the list of choices. Assumption: auth service info is identical across all listed
+    source choices within the Canvas. */
+    const source = body?.type === 'Choice' ? body?.items?.[0] : body;
+    const authService = source?.service;
+
+    if (!authService) return null;
+
+    const serviceArray = Array.isArray(authService) ? authService : [authService];
+    const services = serviceArray.flatMap(s => Array.isArray(s) ? s : [s]);
+
+    // Find and parse service type="AuthProbeService2"
+    const probe = services.find(s => s.type === 'AuthProbeService2');
+    if (probe) {
+      // Read probe services as an array
+      const probeServices = Array.isArray(probe.service)
+        ? probe.service
+        : probe.service ? [probe.service] : [];
+      const accessService = probeServices.find(
+        s => s.type === 'AuthAccessService2' && ['active', 'kiosk'].includes(s.profile)
+      ) ?? null;
+
+      // Parse access, token, and logout services if they exist
+      const accessServices = Array.isArray(accessService?.service)
+        ? accessService.service
+        : accessService?.service ? [accessService.service] : [];
+      const tokenService = accessServices.find(s => s.type === 'AuthAccessTokenService2') ?? null;
+      const logoutService = accessServices.find(s => s.type === 'AuthLogoutService2') ?? null;
+
+      return { version: 2, probe, accessService, tokenService, logoutService };
+    }
+  } catch {
+    return null;
+  }
 }

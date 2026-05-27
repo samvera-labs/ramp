@@ -49,5 +49,6 @@ export function manifestState(manifest, canvasIndex = 0, isPlaylist = false) {
     structures: { hasStructure: false, isCollapsed: false },
     renderings: getRenderingFiles(manifest),
     annotations: [],
+    auth: { token: null, status: 'idle' },
   };
 };

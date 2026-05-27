@@ -9,6 +9,7 @@ import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
 import audiannotateTest from '@TestData/audiannotate-test';
 import adManifest from '@TestData/ad-annotation';
+import authManifest from '@TestData/auth-manifest';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
@@ -119,6 +120,14 @@ describe('iiif-parser', () => {
         expect(canvases[4].homepage).toEqual('https://example.com/playlists/1?position=5');
         expect(canvases[4].searchService).toBeNull();
       });
+    });
+
+    test('returns authService on each Canvas', () => {
+      const canvases = iiifParser.canvasesInManifest(authManifest);
+      expect(canvases[0].authService).not.toBeNull();
+      expect(canvases[0].authService.version).toBe(2);
+      expect(canvases[0].authService.probe.type).toBe('AuthProbeService2');
+      expect(canvases[1].authService).toBeNull();
     });
   });
 
@@ -837,6 +846,43 @@ describe('iiif-parser', () => {
 
     test('returns null when service type is not equal to SearchService2', () => {
       expect(iiifParser.getSearchService(manifest.items[1])).toBeNull();
+    });
+  });
+
+  describe('getAuthService()', () => {
+    test('returns AuthProbeService2 for a given Canvas', () => {
+      const result = iiifParser.getAuthService(authManifest.items[0]);
+      expect(result).not.toBeNull();
+      expect(result.version).toBe(2);
+      expect(result.probe.type).toBe('AuthProbeService2');
+      expect(result.accessService.type).toBe('AuthAccessService2');
+      expect(result.accessService.profile).toBe('active');
+      expect(result.tokenService.type).toBe('AuthAccessTokenService2');
+      expect(result.logoutService.type).toBe('AuthLogoutService2');
+    });
+
+    describe('returns null when a Canvas', () => {
+      test('has no auth services', () => {
+        const result = iiifParser.getAuthService(authManifest.items[1]);
+        expect(result).toBeNull();
+      });
+
+      test('is undefined', () => {
+        expect(iiifParser.getAuthService(undefined)).toBeNull();
+      });
+
+      test('has no annotation body services', () => {
+        expect(iiifParser.getAuthService(singleCanvasManifest.items[0])).toBeNull();
+      });
+    });
+
+    test('returns auth service from the first choice when Annotation body type="Choice"', () => {
+      const result = iiifParser.getAuthService(authManifest.items[2]);
+      expect(result).not.toBeNull();
+      expect(result.version).toBe(2);
+      expect(result.probe.type).toBe('AuthProbeService2');
+      expect(result.accessService.profile).toBe('active');
+      expect(result.tokenService.type).toBe('AuthAccessTokenService2');
     });
   });
 });

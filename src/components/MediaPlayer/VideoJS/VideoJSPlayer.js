@@ -20,6 +20,7 @@ import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
 import { showResumeModal } from './VideoJSResumeModal';
 import { showErrorModal } from './components/js/VideoJSErrorModal';
+import AuthOverlay from './AuthOverlay';
 import { SectionButtonIcon } from '@Services/svg-icons';
 import {
   useMediaPlayer, useSetupPlayer, useShowInaccessibleMessage, useVideoJSPlayer
@@ -86,6 +87,7 @@ function VideoJSPlayer({
     autoAdvance,
     structures,
     canvasSegments,
+    auth,
   } = manifestState;
   const { hasStructure, structItems } = structures;
   const { clickedUrl, isEnded, isPlaying, currentTime } = playerState;
@@ -111,6 +113,8 @@ function VideoJSPlayer({
   const vjsErrorModalRef = useRef(null);
 
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
+  const authService = allCanvases[canvasIndex]?.authService ?? null;
+
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
     = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
   const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
@@ -1583,7 +1587,7 @@ function VideoJSPlayer({
   };
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <div data-vjs-player data-canvasindex={cIndexRef.current}>
         {canvasIsEmptyRef.current && (
           <div data-testid="inaccessible-message-display"
@@ -1597,11 +1601,11 @@ function VideoJSPlayer({
               zIndex: 101,
               aspectRatio: !playerRef.current ? '16/9' : '',
             }}>
-            <p className="ramp--media-player_inaccessible-message-content" data-testid="inaccessible-message-content"
+            <p className="ramp--media-player_inaccessible-message__content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
             {lastCanvasIndex > 0 &&
-              <div className="ramp--media-player_inaccessible-message-buttons"
+              <div className="ramp--media-player_inaccessible-message__buttons"
                 data-testid="inaccessible-message-buttons">
                 {canvasIndex >= 1 &&
                   <button aria-label="Go back to previous item"
@@ -1628,7 +1632,7 @@ function VideoJSPlayer({
             {canvasIndex != lastCanvasIndex && lastCanvasIndex > 0 &&
               <p data-testid="inaccessible-message-timer"
                 className={cx(
-                  'ramp--media-player_inaccessible-message-timer',
+                  'ramp--media-player_inaccessible-message__timer',
                   autoAdvanceRef.current ? '' : 'hidden'
                 )}>
                 {`Next item in ${messageTime} second${messageTime === 1 ? '' : 's'}`}
@@ -1649,6 +1653,15 @@ function VideoJSPlayer({
         >
         </video>
       </div>
+      {authService && auth?.status !== 'authorized' && (
+        <AuthOverlay
+          authService={authService}
+          authToken={auth.token}
+          authStatus={auth.status}
+          onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
+          onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
+        />
+      )}
       {(hasStructure || isPlaylist) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>
