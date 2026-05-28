@@ -53,7 +53,9 @@ export function requestTokenViaIframe(tokenServiceUrl, origin) {
     const onMessage = (event) => {
       /* Validate event.origin against token service origin to prevent accepting
        messages from malicious origins */
-      if (event.origin !== expectedOrigin) return;
+      if (event.origin !== expectedOrigin) {
+        reject(new Error('Invalid origin'));
+      }
 
       const data = event.data;
       if (!data || (data.messageId && data.messageId !== messageId)) return;

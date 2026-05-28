@@ -5,28 +5,26 @@ import { probeResource, requestTokenViaIframe } from '@Services/auth-service';
 import './VideoJSPlayer.scss';
 
 /**
- * Display authentication dialog and handle login/logout interactions for IIIF resources
+ * Display authentication dialog and handle login interaction for IIIF resources
  * protected by IIIF Auth 2.0 spec. 
  * It is rendered over the VideoJS player when a Canvas has an AuthProbeService2 defined.
  * The flow is as follows;
  * 1. On page load: probe the resource without a token to determine if login is required
  * 2. Login: performs the authnentication flow based on the access service profile and gets a token
  * 3. On token received: re-probe with token to confirm authorization, or show error if probe fails
- * 4. Logout button (if present): open logout URL in new tab, clear token
  * @param {Object} props
  * @param {Object} props.authService
- * @param {String} props.authToken
  * @param {String} props.authStatus
  * @param {Function} props.onTokenReceived
  * @param {Function} props.onAuthStatus
  */
-function AuthOverlay({ authService, authToken, authStatus, onTokenReceived, onAuthStatus }) {
+function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const loginTabRef = useRef(null);
   const pollIntervalRef = useRef(null);
 
-  const { probe, accessService, tokenService, logoutService } = authService;
+  const { probe, accessService, tokenService } = authService;
 
   // Probe without token on page load to determine if login is required
   useEffect(() => {
@@ -61,6 +59,7 @@ function AuthOverlay({ authService, authToken, authStatus, onTokenReceived, onAu
   const acquireToken = () => {
     if (!tokenService) return;
     const origin = window.location.origin;
+
     requestTokenViaIframe(tokenService.id, origin)
       .then(async ({ accessToken }) => {
         // Re-probe the resource with token
@@ -70,8 +69,10 @@ function AuthOverlay({ authService, authToken, authStatus, onTokenReceived, onAu
           onTokenReceived(accessToken);
           onAuthStatus('authorized');
         } else {
-          const errHeading = heading ? getLabelValue(heading) : getLabelValue(probe?.errorHeading);
-          const errNote = note ? getLabelValue(note) : getLabelValue(probe?.errorNote);
+          const errHeading = heading ? getLabelValue(heading)
+            : probe?.heading ? getLabelValue(probe?.errorHeading) : 'Something went wrong';
+          const errNote = note ? getLabelValue(note)
+            : probe?.errorNote ? getLabelValue(probe?.errorNote) : 'Could not confirm authorization with token.';
           setErrorMessage({ heading: errHeading, note: errNote });
           onAuthStatus('error');
           setIsLoggingIn(false);
@@ -120,19 +121,11 @@ function AuthOverlay({ authService, authToken, authStatus, onTokenReceived, onAu
       if (loginTabRef.current && loginTabRef.current.closed) {
         clearInterval(pollIntervalRef.current);
         loginTabRef.current = null;
+        // Reset button state immediately so the button is not stuck on 'Waiting...'
+        setIsLoggingIn(false);
         acquireToken();
       }
     }, 500);
-  };
-
-  /**
-   * Handle Logout button click
-   */
-  const handleLogout = () => {
-    if (!logoutService) return;
-    window.open(logoutService.id, '_blank', 'noopener');
-    onTokenReceived(null);
-    onAuthStatus('idle');
   };
 
   /**
@@ -149,57 +142,59 @@ function AuthOverlay({ authService, authToken, authStatus, onTokenReceived, onAu
     onAuthStatus('cancelled');
   };
 
-  const loginLabel = accessService
-    ? getLabelValue(accessService.confirmLabel) || getLabelValue(accessService.label) || 'Log in'
-    : 'Log in';
-  const headingText = accessService
-    ? getLabelValue(accessService.heading) || getLabelValue(accessService.label)
-    : null;
-  const noteText = accessService ? getLabelValue(accessService.note) : null;
-  // Only show logout when the user already has a token and a logout service is provided
-  const logoutLabel = (logoutService && authToken) ? getLabelValue(logoutService.label) || 'Log out' : null;
+  const confirmLabel = getLabelValue(accessService?.confirmLabel) || 'Log in';
+  const loginLabel = getLabelValue(accessService?.label) || 'Login';
+  const headingText = getLabelValue(accessService?.heading) ?? null;
+  const noteText = getLabelValue(accessService?.note) ?? null;
 
+  // Do not show the auth overlay when auth status doesn't indicate that login is required
   if (authStatus === 'authorized' || authStatus === 'idle' || authStatus === 'probing' || authStatus === 'cancelled') {
     return null;
   }
 
   return (
-    <div className='ramp--auth-overlay' data-testid='auth-overlay' role='region' aria-label='Authentication required'>
+    <div className='ramp--auth-overlay' data-testid='auth-overlay' role='region' aria-label={loginLabel}>
       <div className='ramp--auth-overlay__content'>
         {errorMessage ? (
           <>
             {errorMessage.heading && (
-              <p className='ramp--auth-overlay__error-heading' dangerouslySetInnerHTML={{ __html: sanitizeHTML(errorMessage.heading) }} />
+              <div className='ramp--auth-overlay__header error'>
+                <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(errorMessage.heading) }} />
+              </div>
             )}
             {errorMessage.note && (
-              <p className='ramp--auth-overlay__error-note' dangerouslySetInnerHTML={{ __html: sanitizeHTML(errorMessage.note) }} />
+              <div className='ramp--auth-overlay__body'>
+                <p className='ramp--auth-overlay__error-note' dangerouslySetInnerHTML={{ __html: sanitizeHTML(errorMessage.note) }} />
+              </div>
             )}
           </>
         ) : (
           <>
             {headingText && (
-              <p className='ramp--auth-overlay__heading' dangerouslySetInnerHTML={{ __html: sanitizeHTML(headingText) }} />
+              <div className='ramp--auth-overlay__header'>
+                <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(headingText) }} />
+              </div>
             )}
-            {noteText && (
-              <p className='ramp--auth-overlay__note' dangerouslySetInnerHTML={{ __html: sanitizeHTML(noteText) }} />
-            )}
+            <div className='ramp--auth-overlay__body'>
+              <p className='ramp--auth-overlay__label' dangerouslySetInnerHTML={{ __html: sanitizeHTML(loginLabel) }} />
+              {noteText && (
+                <p className='ramp--auth-overlay__note' dangerouslySetInnerHTML={{ __html: sanitizeHTML(noteText) }} />
+              )}
+            </div>
           </>
         )}
-        <div className='ramp--auth-overlay__actions'>
-          <button className='ramp--auth-overlay__login-btn' onClick={handleLogin} disabled={isLoggingIn} data-testid='auth-login-btn'>
-            {isLoggingIn ? 'Waiting…' : loginLabel}
-          </button>
-          {logoutLabel && (
-            <button className='ramp--auth-overlay__logout-btn' onClick={handleLogout} data-testid='auth-logout-btn'>
-              {logoutLabel}
+        {authStatus != 'error' && (
+          <div className='ramp--auth-overlay__actions'>
+            <button className='ramp--auth-overlay__login-btn' onClick={handleLogin} disabled={isLoggingIn} data-testid='auth-login-btn'>
+              {isLoggingIn ? 'Waiting…' : confirmLabel}
             </button>
-          )}
-          <button className='ramp--auth-overlay__cancel-btn' onClick={handleCancel} data-testid='auth-cancel-btn'>
-            Cancel
-          </button>
-        </div>
+            <button className='ramp--auth-overlay__cancel-btn' onClick={handleCancel} data-testid='auth-cancel-btn'>
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </div >
   );
 }
 
@@ -208,9 +203,7 @@ AuthOverlay.propTypes = {
     probe: PropTypes.object.isRequired,
     accessService: PropTypes.object,
     tokenService: PropTypes.object,
-    logoutService: PropTypes.object,
   }).isRequired,
-  authToken: PropTypes.string,
   authStatus: PropTypes.string.isRequired,
   onTokenReceived: PropTypes.func.isRequired,
   onAuthStatus: PropTypes.func.isRequired,
