@@ -374,7 +374,7 @@ class VideoJSTrackScrubber extends Button {
     if (trackScrubberRef.current && trackScrubberRef.current.children) {
       // Attach mouse pointer events to track scrubber progress bar
       let [_, progressBar, __] = trackScrubberRef.current.children;
-      progressBar.setAttribute('aria-valuenow', trackoffset);
+      progressBar.setAttribute('aria-valuenow', trackoffset || 0);
     }
   };
 
