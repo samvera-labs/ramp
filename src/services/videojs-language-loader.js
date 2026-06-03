@@ -7,8 +7,9 @@ const languageCache = new Map();
 // Default to English
 languageCache.set('en', en);
 
-// Detect the environment
-const isDevelopment = process.env.NODE_ENV === 'development';
+/* Detect the environment using Vite's import.meta.env.DEV which is set correctly by both
+ the Vite dev server and Storybook's Vite builder, unlike process.env.NODE_ENV */
+const isDevelopment = import.meta.env.DEV;
 
 /**
  * Dynamically load a Video.js language file
