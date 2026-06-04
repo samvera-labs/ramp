@@ -6,3 +6,4 @@ yarn-error.log
 .DS_Store
 .npmrc
 storybook-static
+debug-storybook.log

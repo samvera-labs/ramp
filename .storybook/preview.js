@@ -4,11 +4,7 @@ import 'video.js/dist/video-js.css';
 const preview = {
   parameters: {
     controls: {
-      disableSaveFromUI: true,
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
+      disableSaveFromUI: true
     },
   },
 };

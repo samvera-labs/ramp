@@ -7,8 +7,12 @@ const __dirname = dirname(__filename);
 
 /** @type { import('@storybook/react-vite').StorybookConfig } */
 const config = {
-  stories: ['../src/components/**/*.stories.jsx'],
+  stories: [
+    '../src/components/**/*.mdx',
+    '../src/components/**/*.stories.jsx',
+  ],
   addons: [
+    '@storybook/addon-docs',
     '@storybook/addon-a11y',
   ],
   framework: {
