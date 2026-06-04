@@ -73,6 +73,7 @@ module.exports = {
   moduleNameMapper: {
     '^@Components(.*)$': '<rootDir>/src/components$1',
     '^@TestData(.*)$': '<rootDir>/src/test_data$1',
+    '^@Services/videojs-language-loader$': '<rootDir>/__mocks__/videojs-language-loader.js',
     '^@Services(.*)$': '<rootDir>/src/services$1',
     '\\.(css|less|scss)$': '<rootDir>/__mocks__/styleMock.js',
   },
