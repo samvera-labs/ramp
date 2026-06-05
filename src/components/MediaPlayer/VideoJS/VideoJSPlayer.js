@@ -492,6 +492,7 @@ function VideoJSPlayer({
               player.one('seeked', function () {
                 if (currentTimeRef.current > 0) player.currentTime(currentTimeRef.current);
                 if (wasPlayingRef.current) player.play();
+                wasPlayingRef.current = undefined;
               });
 
               // Reset fallback flag on error when fallback attempt also fails
