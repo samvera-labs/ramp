@@ -62437,7 +62437,7 @@ const QP = ({
   }), [L, j] = ct(!0), $ = Ze(L), B = (q) => {
     $.current = q, j(q);
   }, V = Ze(), N = Ln((q) => {
-    l(q), T(q);
+    l(q), T(Math.round((q + 1e-3) * 1e3) / 1e3);
   }, []);
   return m ? /* @__PURE__ */ ee.jsx(Bu, {}) : /* @__PURE__ */ ee.jsxs("div", { className: "ramp--transcript_nav", "data-testid": "transcript_nav", role: "complementary", "aria-label": "transcript display", children: [
     !p && /* @__PURE__ */ ee.jsx(Tm, { showSearch: k.enabled, selectTranscript: v, transcriptData: H, transcriptInfo: A, noTranscript: A.tError?.length > 0 && A.tError != h, setAutoScrollEnabled: B, setFocusedMatchIndex: C, focusedMatchIndex: P, autoScrollEnabled: $.current, searchResults: R, searchQuery: F, setSearchQuery: E }),
