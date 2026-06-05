@@ -30,6 +30,7 @@ const defaultAuthService = {
     errorHeading: { en: ['Something went wrong'] },
     errorNote: { en: ['Could not get a token.'] },
   },
+  restricted: false,
 };
 
 describe('AuthOverlay', () => {
@@ -37,7 +38,6 @@ describe('AuthOverlay', () => {
   const onAuthStatusMock = jest.fn();
   const props = {
     authService: defaultAuthService,
-    // authStatus: 'login-required',
     onTokenReceived: onTokenReceivedMock,
     onAuthStatus: onAuthStatusMock,
   };
@@ -46,7 +46,6 @@ describe('AuthOverlay', () => {
 
   describe('renders successfully', () => {
     test('when authStatus=\'login-required\'', () => {
-      // renderOverlay({ authStatus: 'login-required' });
       render(<AuthOverlay {...props} authStatus='login-required' />);
       expect(screen.queryByTestId('auth-overlay')).toBeInTheDocument();
     });
@@ -78,7 +77,7 @@ describe('AuthOverlay', () => {
   });
 
   describe('renders the login', () => {
-    describe('from accessService info', () => {
+    describe('from accessService\'s', () => {
       beforeEach(() => {
         render(<AuthOverlay {...props} authStatus='login-required' />);
       });
@@ -101,27 +100,38 @@ describe('AuthOverlay', () => {
       });
     });
 
-    describe('without accessService info', () => {
-      const updatedProps = {
-        ...props,
-        authStatus: 'login-required',
-        authService: { ...defaultAuthService, accessService: null }
-      };
-      beforeEach(() => {
-        render(<AuthOverlay {...updatedProps} />);
+    describe('restricted overlay (no login/cancel buttons) when', () => {
+      test('accessService is missing; shows probe errorHeading and errorNote', () => {
+        render(<AuthOverlay {...props} authStatus='login-required'
+          authService={{ ...defaultAuthService, accessService: null, restricted: true }} />);
+
+        expect(screen.getByText('No access')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission')).toBeInTheDocument();
+        expect(screen.queryByTestId('auth-login-btn')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-cancel-btn')).not.toBeInTheDocument();
       });
 
-      test('with a default label and no heading', () => {
-        expect(screen.queryByTestId('auth-overlay-heading')).not.toBeInTheDocument();
-        expect(screen.getByText('Login')).toBeInTheDocument();
+      test('tokenService is missing; shows probe errorHeading and errorNote', () => {
+        render(<AuthOverlay {...props} authStatus='login-required'
+          authService={{ ...defaultAuthService, tokenService: null, restricted: true }} />);
+
+        expect(screen.getByText('No access')).toBeInTheDocument();
+        expect(screen.getByText('You do not have permission')).toBeInTheDocument();
+        expect(screen.queryByTestId('auth-login-btn')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-cancel-btn')).not.toBeInTheDocument();
       });
 
-      test('no note text', () => {
-        expect(screen.queryByTestId('auth-overlay-note')).not.toBeInTheDocument();
-      });
+      test('accessService, tokenService, and probe error info are all missing; shows default heading and note', () => {
+        render(<AuthOverlay {...props} authStatus='login-required'
+          authService={{
+            probe: { id: 'http://example.com/auth/probe' },
+            accessService: null, tokenService: null, restricted: true
+          }} />);
 
-      test('with a default login button text', () => {
-        expect(screen.getByTestId('auth-login-btn')).toHaveTextContent('Log in');
+        expect(screen.getByText('Restricted content')).toBeInTheDocument();
+        expect(screen.getByText('Authentication is not available for this resource.')).toBeInTheDocument();
+        expect(screen.queryByTestId('auth-login-btn')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-cancel-btn')).not.toBeInTheDocument();
       });
     });
   });
@@ -253,20 +263,6 @@ describe('AuthOverlay', () => {
       await waitFor(() => {
         expect(onTokenReceivedMock).toHaveBeenCalledWith('kiosk-token');
       });
-    });
-
-    test('displays an error when no accessService is given for authService', () => {
-      render(<AuthOverlay {...props} authStatus='login-required'
-        authService={{
-          ...defaultAuthService,
-          accessService: null,
-        }} />);
-
-      fireEvent.click(screen.getByTestId('auth-login-btn'));
-
-      // Error state updated in UI
-      expect(screen.getByText('Login unavailable')).toBeInTheDocument();
-      expect(screen.getByText('No access service is configured for this resource.')).toBeInTheDocument();
     });
   });
 

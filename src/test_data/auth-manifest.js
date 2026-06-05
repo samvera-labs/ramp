@@ -195,6 +195,87 @@ export default {
           ]
         }
       ]
+    },
+    {
+      id: 'http://example.com/auth-manifest/canvas/4',
+      type: 'Canvas',
+      duration: 120,
+      label: { en: ['Probe w/o Access Service'] },
+      items: [
+        {
+          id: 'http://example.com/auth-manifest/canvas/4/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/auth-manifest/canvas/4/page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              target: 'http://example.com/auth-manifest/canvas/4',
+              body: {
+                id: 'http://example.com/auth-manifest/video/restricted.mp4',
+                type: 'Video',
+                format: 'video/mp4',
+                duration: 120,
+                service: [
+                  {
+                    id: 'http://example.com/auth/probe?id=restricted.mp4',
+                    type: 'AuthProbeService2',
+                    errorHeading: { en: ['Access restricted'] },
+                    errorNote: { en: ['This resource is not accessible.'] }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'http://example.com/auth-manifest/canvas/5',
+      type: 'Canvas',
+      duration: 120,
+      label: { en: ['Access Service w/o Token Service'] },
+      items: [
+        {
+          id: 'http://example.com/auth-manifest/canvas/5/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/auth-manifest/canvas/5/page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              target: 'http://example.com/auth-manifest/canvas/5',
+              body: {
+                id: 'http://example.com/auth-manifest/video/restricted2.mp4',
+                type: 'Video',
+                format: 'video/mp4',
+                duration: 120,
+                service: [
+                  {
+                    id: 'http://example.com/auth/probe?id=restricted2.mp4',
+                    type: 'AuthProbeService2',
+                    service: [
+                      {
+                        id: 'http://example.com/auth/login',
+                        type: 'AuthAccessService2',
+                        profile: 'active',
+                        label: { en: ['Login'] },
+                        service: [
+                          {
+                            id: 'http://example.com/auth/logout',
+                            type: 'AuthLogoutService2',
+                            label: { en: ['Log out'] }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 };

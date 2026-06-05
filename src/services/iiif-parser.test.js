@@ -859,6 +859,7 @@ describe('iiif-parser', () => {
       expect(result.accessService.profile).toBe('active');
       expect(result.tokenService.type).toBe('AuthAccessTokenService2');
       expect(result.logoutService.type).toBe('AuthLogoutService2');
+      expect(result.restricted).toBe(false);
     });
 
     describe('returns null when a Canvas', () => {
@@ -883,6 +884,22 @@ describe('iiif-parser', () => {
       expect(result.probe.type).toBe('AuthProbeService2');
       expect(result.accessService.profile).toBe('active');
       expect(result.tokenService.type).toBe('AuthAccessTokenService2');
+    });
+
+    describe('returns restricted=true when', () => {
+      test('auth service has no access service', () => {
+        const result = iiifParser.getAuthService(authManifest.items[3]);
+        expect(result).not.toBeNull();
+        expect(result.restricted).toBe(true);
+        expect(result.accessService).toBeNull();
+      });
+
+      test('access service has no token service', () => {
+        const result = iiifParser.getAuthService(authManifest.items[4]);
+        expect(result).not.toBeNull();
+        expect(result.restricted).toBe(true);
+        expect(result.tokenService).toBeNull();
+      });
     });
   });
 });

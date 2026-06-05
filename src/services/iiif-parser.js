@@ -719,7 +719,7 @@ export function getSearchService(resource) {
  * @function IIIFParser#getAuthService
  * @param {Object} canvas current Canvas to read auth service endpoints
  * @returns {Object} { version: Number, probe: Object, accessService: Object,
- * tokenService: Object, logoutService: Object }
+ * tokenService: Object, logoutService: Object, restricted: Boolean }
  */
 export function getAuthService(canvas) {
   try {
@@ -751,8 +751,9 @@ export function getAuthService(canvas) {
         : accessService?.service ? [accessService.service] : [];
       const tokenService = accessServices.find(s => s.type === 'AuthAccessTokenService2') ?? null;
       const logoutService = accessServices.find(s => s.type === 'AuthLogoutService2') ?? null;
+      const restricted = !accessService || !tokenService;
 
-      return { version: 2, probe, accessService, tokenService, logoutService };
+      return { version: 2, probe, accessService, tokenService, logoutService, restricted };
     }
   } catch {
     return null;

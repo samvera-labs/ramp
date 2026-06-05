@@ -24,10 +24,19 @@ function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus })
   const loginTabRef = useRef(null);
   const pollIntervalRef = useRef(null);
 
-  const { probe, accessService, tokenService } = authService;
+  const { probe, accessService, tokenService, restricted } = authService;
 
-  // Probe without token on page load to determine if login is required
   useEffect(() => {
+    /* When the resource access is restricted without required access services, update auth status to 'error' in state and
+    set 'errorMessage' in component state with probe's 'errorHeading' & 'errorNote' if they are defined. */
+    if (restricted) {
+      onAuthStatus('error');
+      const restrictedHeading = getLabelValue(probe?.errorHeading) || 'Restricted content';
+      const restrictedNote = getLabelValue(probe?.errorNote) || 'Authentication is not available for this resource.';
+      setErrorMessage({ heading: restrictedHeading, note: restrictedNote });
+      return;
+    }
+    // Otherwise, probe without token on page load to determine if login is required
     if (authStatus !== 'idle') return;
     onAuthStatus('probing');
     probeResource(probe.id, null)
@@ -69,10 +78,10 @@ function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus })
           onTokenReceived(accessToken);
           onAuthStatus('authorized');
         } else {
-          const errHeading = heading ? getLabelValue(heading)
-            : probe?.heading ? getLabelValue(probe?.errorHeading) : 'Something went wrong';
-          const errNote = note ? getLabelValue(note)
-            : probe?.errorNote ? getLabelValue(probe?.errorNote) : 'Could not confirm authorization with token.';
+          const probeErrorHeading = getLabelValue(probe?.errorHeading) || 'Something went wrong';
+          const errHeading = getLabelValue(heading) || probeErrorHeading;
+          const probeErrorNote = getLabelValue(probe?.errorNote) || 'Could not confirm authorization with token.';
+          const errNote = getLabelValue(note) || probeErrorNote;
           setErrorMessage({ heading: errHeading, note: errNote });
           onAuthStatus('error');
           setIsLoggingIn(false);
@@ -96,15 +105,6 @@ function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus })
    */
   const handleLogin = () => {
     if (isLoggingIn) return;
-    // If no accessService is give for the authService, show an error message
-    if (!accessService) {
-      setErrorMessage({
-        heading: 'Login unavailable',
-        note: 'No access service is configured for this resource.',
-      });
-      onAuthStatus('error');
-      return;
-    }
     setIsLoggingIn(true);
     setErrorMessage(null);
 
@@ -192,7 +192,7 @@ function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus })
             </div>
           </>
         )}
-        {authStatus != 'error' && (
+        {(authStatus != 'error' && !restricted) && (
           <div className='ramp--auth-overlay__actions'>
             <button className='ramp--auth-overlay__login-btn' onClick={handleLogin} disabled={isLoggingIn} data-testid='auth-login-btn'>
               {isLoggingIn ? 'Waiting…' : confirmLabel}
@@ -212,6 +212,7 @@ AuthOverlay.propTypes = {
     probe: PropTypes.object.isRequired,
     accessService: PropTypes.object,
     tokenService: PropTypes.object,
+    restricted: PropTypes.bool.isRequired,
   }).isRequired,
   authStatus: PropTypes.string.isRequired,
   onTokenReceived: PropTypes.func.isRequired,
