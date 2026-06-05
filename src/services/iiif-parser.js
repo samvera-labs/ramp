@@ -739,9 +739,8 @@ export function getAuthService(canvas) {
     const probe = services.find(s => s.type === 'AuthProbeService2');
     if (probe) {
       // Read probe services as an array
-      const probeServices = Array.isArray(probe.service)
-        ? probe.service
-        : probe.service ? [probe.service] : [];
+      const probeServicesRaw = probe.service ?? [];
+      const probeServices = Array.isArray(probeServicesRaw) ? probeServicesRaw : [probeServicesRaw];
       const accessService = probeServices.find(
         s => s.type === 'AuthAccessService2' && ['active', 'kiosk'].includes(s.profile)
       ) ?? null;

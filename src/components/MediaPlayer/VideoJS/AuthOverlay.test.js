@@ -78,25 +78,51 @@ describe('AuthOverlay', () => {
   });
 
   describe('renders the login', () => {
-    beforeEach(() => {
-      render(<AuthOverlay {...props} authStatus='login-required' />);
+    describe('from accessService info', () => {
+      beforeEach(() => {
+        render(<AuthOverlay {...props} authStatus='login-required' />);
+      });
+
+      test('heading and label', () => {
+        expect(screen.getByText('Please Log In')).toBeInTheDocument();
+        expect(screen.getByText('Login Required')).toBeInTheDocument();
+      });
+
+      test('note', () => {
+        expect(screen.getByText('Login Required')).toHaveClass('ramp--auth-overlay__label');
+        expect(screen.getByText('This application requires that you log in with your account to view this content.'))
+          .toBeInTheDocument();
+        expect(screen.getByText('This application requires that you log in with your account to view this content.'))
+          .toHaveClass('ramp--auth-overlay__note');
+      });
+
+      test('confirmLabel as login button text', () => {
+        expect(screen.getByTestId('auth-login-btn')).toHaveTextContent('Log In');
+      });
     });
 
-    test('with the heading and label from the accessService info', () => {
-      expect(screen.getByText('Please Log In')).toBeInTheDocument();
-      expect(screen.getByText('Login Required')).toBeInTheDocument();
-    });
+    describe('without accessService info', () => {
+      const updatedProps = {
+        ...props,
+        authStatus: 'login-required',
+        authService: { ...defaultAuthService, accessService: null }
+      };
+      beforeEach(() => {
+        render(<AuthOverlay {...updatedProps} />);
+      });
 
-    test('with the note from the accessService info', () => {
-      expect(screen.getByText('Login Required')).toHaveClass('ramp--auth-overlay__label');
-      expect(screen.getByText('This application requires that you log in with your account to view this content.'))
-        .toBeInTheDocument();
-      expect(screen.getByText('This application requires that you log in with your account to view this content.'))
-        .toHaveClass('ramp--auth-overlay__note');
-    });
+      test('with a default label and no heading', () => {
+        expect(screen.queryByTestId('auth-overlay-heading')).not.toBeInTheDocument();
+        expect(screen.getByText('Login')).toBeInTheDocument();
+      });
 
-    test('with the confirmLabel as login button text', () => {
-      expect(screen.getByTestId('auth-login-btn')).toHaveTextContent('Log In');
+      test('no note text', () => {
+        expect(screen.queryByTestId('auth-overlay-note')).not.toBeInTheDocument();
+      });
+
+      test('with a default login button text', () => {
+        expect(screen.getByTestId('auth-login-btn')).toHaveTextContent('Log in');
+      });
     });
   });
 
@@ -227,6 +253,20 @@ describe('AuthOverlay', () => {
       await waitFor(() => {
         expect(onTokenReceivedMock).toHaveBeenCalledWith('kiosk-token');
       });
+    });
+
+    test('displays an error when no accessService is given for authService', () => {
+      render(<AuthOverlay {...props} authStatus='login-required'
+        authService={{
+          ...defaultAuthService,
+          accessService: null,
+        }} />);
+
+      fireEvent.click(screen.getByTestId('auth-login-btn'));
+
+      // Error state updated in UI
+      expect(screen.getByText('Login unavailable')).toBeInTheDocument();
+      expect(screen.getByText('No access service is configured for this resource.')).toBeInTheDocument();
     });
   });
 

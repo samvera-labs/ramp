@@ -95,7 +95,16 @@ function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus })
    * If popup is blocked, fall back to direct token acquisition without opening a login tab
    */
   const handleLogin = () => {
-    if (!accessService || isLoggingIn) return;
+    if (isLoggingIn) return;
+    // If no accessService is give for the authService, show an error message
+    if (!accessService) {
+      setErrorMessage({
+        heading: 'Login unavailable',
+        note: 'No access service is configured for this resource.',
+      });
+      onAuthStatus('error');
+      return;
+    }
     setIsLoggingIn(true);
     setErrorMessage(null);
 
@@ -171,14 +180,14 @@ function AuthOverlay({ authService, authStatus, onTokenReceived, onAuthStatus })
         ) : (
           <>
             {headingText && (
-              <div className='ramp--auth-overlay__header'>
+              <div className='ramp--auth-overlay__header' data-testid='auth-overlay-heading'>
                 <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(headingText) }} />
               </div>
             )}
             <div className='ramp--auth-overlay__body'>
               <p className='ramp--auth-overlay__label' dangerouslySetInnerHTML={{ __html: sanitizeHTML(loginLabel) }} />
               {noteText && (
-                <p className='ramp--auth-overlay__note' dangerouslySetInnerHTML={{ __html: sanitizeHTML(noteText) }} />
+                <p className='ramp--auth-overlay__note' data-testid='auth-overlay-note' dangerouslySetInnerHTML={{ __html: sanitizeHTML(noteText) }} />
               )}
             </div>
           </>
