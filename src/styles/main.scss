@@ -47,9 +47,9 @@
   z-index: 50;
 }
 
-/* Make VideoJS control bar buttons smaller */
+/* Make VideoJS control bar icons smaller and omit custom progress-bar */
 .video-js .vjs-volume-panel .vjs-volume-panel-vertical,
-.video-js .vjs-control {
+.video-js .vjs-control:not(.vjs-custom-progress-bar) {
   width: 2.5rem !important;
 }
 
