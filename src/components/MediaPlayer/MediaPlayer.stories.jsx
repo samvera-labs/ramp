@@ -5,7 +5,6 @@ import manifest from '../../../public/manifests/lunchroom_manners.js';
 export default {
   title: 'Components/MediaPlayer',
   component: MediaPlayer,
-  tags: ['autodocs'],
   parameters: {
     docs: {
       description: {
