@@ -42,6 +42,10 @@ const defaultState = {
   },
   annotations: [], // [{ canvasIndex: Number, annotationSets: Array }]
   clickedAnnotation: null, // clicked annotation in the Canvas
+  auth: {
+    token: null, // auth token for the current Canvas
+    status: 'idle', // 'idle' | 'probing' | 'login-required' | 'authorized' | 'error' | 'cancelled'
+  },
 };
 
 function getHasStructure(canvasSegments, canvasIndex) {
@@ -94,7 +98,7 @@ function manifestReducer(state = defaultState, action) {
         },
         annotations: hasAnnotations
           ? [...state.annotations]
-          : [...state.annotations, parseAnnotationSets(state.manifest, action.canvasIndex)]
+          : [...state.annotations, parseAnnotationSets(state.manifest, action.canvasIndex)],
       };
     }
     case 'switchItem': {
@@ -252,6 +256,18 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         clickedAnnotation: action.clickedAnnotation,
+      };
+    }
+    case 'setAuthToken': {
+      return {
+        ...state,
+        auth: { token: action.token, status: 'authorized' },
+      };
+    }
+    case 'setAuthStatus': {
+      return {
+        ...state,
+        auth: { ...state.auth, status: action.status },
       };
     }
     default: {

@@ -1,7 +1,8 @@
 import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
-import { getPlaceholderCanvas } from './iiif-parser';
 import mimeTypes from 'mime-types';
+import DOMPurify from 'dompurify';
+import { getPlaceholderCanvas } from './iiif-parser';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3, audioDescription: 4 };
@@ -25,6 +26,13 @@ export let GENERIC_EMPTY_MANIFEST_MESSAGE = DEFAULT_EMPTY_MANIFEST_MESSAGE;
 // Timer for displaying placeholderCanvas text when a Canvas is empty
 const DEFAULT_TIMEOUT = 10000;
 export let CANVAS_MESSAGE_TIMEOUT = DEFAULT_TIMEOUT;
+
+// HTML tags and attributes allowed in IIIF metadata values.
+const DOMPURIFY_CONFIG = {
+  ALLOWED_TAGS: ['a', 'b', 'br', 'i', 'img', 'p', 'small', 'span', 'sub', 'sup'],
+  ALLOWED_ATTR: ['href', 'src', 'alt'],
+  ALLOWED_URI_REGEXP: /^(?:https?|mailto):/i,
+};
 
 /**
  * Sets the timer for displaying the placeholderCanvas text in the player
@@ -1113,4 +1121,15 @@ const filterAndOffsetTextTrackCues = (track, altStart, duration) => {
       if (cue._originalText !== undefined) cue.text = cue._originalText;
     }
   }
+};
+
+/**
+ * Sanitize HTML string using DOMPurify library with allowed configuration
+ * from the IIIF 3.0 specification for HTML content in labels and metadata.
+ * @param {String} html text with possible inline HTML
+ * @returns {String}
+ */
+export const sanitizeHTML = (html) => {
+  if (!html) return '';
+  return DOMPurify.sanitize(html, { ...DOMPURIFY_CONFIG });
 };
