@@ -1522,7 +1522,9 @@ export const useAnnotations = () => {
       || annotations?.filter((a) => a.canvasIndex === canvasIndex).length === 0)
       && manifest !== null) {
       let annotationSet = parseAnnotationSets(manifest, canvasIndex);
-      manifestDispatch({ annotations: annotationSet, type: 'setAnnotations' });
+      if (annotationSet != null) {
+        manifestDispatch({ annotations: annotationSet, type: 'setAnnotations' });
+      }
     }
   }, [manifest]);
 
