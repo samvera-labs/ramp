@@ -59291,7 +59291,7 @@ const mF = () => {
   i[0] !== n || i[1] !== r || i[2] !== a || i[3] !== t ? (c = () => {
     if ((n?.length > 0 || n?.filter((f) => f.canvasIndex === r).length === 0) && a !== null) {
       const f = vg(a, r);
-      t({
+      f != null && t({
         annotations: f,
         type: "setAnnotations"
       });
