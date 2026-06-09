@@ -28,6 +28,11 @@
     max-height: 30rem;
     overflow-y: auto;
 
+    &.with-heading {
+      border: 0.05rem solid vars.$primaryLight;
+      padding: 1rem;
+    }
+
     >span {
       font-weight: bold;
       font-style: italic;

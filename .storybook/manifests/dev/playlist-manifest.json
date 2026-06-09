@@ -81,11 +81,11 @@
                 "choiceHint": "user",
                 "items": [
                   {
-                    "id": "http://localhost:6060/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.0",
+                    "id": "http://localhost:6060/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.034",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
-                    "duration": 572.0,
+                    "duration": 572.034,
                     "format": "video/mp4",
                     "label": {
                       "none": [
@@ -94,11 +94,11 @@
                     }
                   },
                   {
-                    "id": "http://localhost:6060/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.0",
+                    "id": "http://localhost:6060/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.034",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
-                    "duration": 572.0,
+                    "duration": 572.034,
                     "format": "video/mp4",
                     "label": {
                       "none": [
@@ -107,11 +107,11 @@
                     }
                   },
                   {
-                    "id": "http://localhost:6060/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0,572.0",
+                    "id": "http://localhost:6060/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0,572.034",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
-                    "duration": 572.0,
+                    "duration": 572.034,
                     "format": "video/mp4",
                     "label": {
                       "none": [
@@ -154,7 +154,52 @@
             }
           ]
         }
-      ]
+      ],
+      "summary": {
+        "none": [
+          "Lunchroom manners - an educational video"
+        ]
+      },
+      "homepage": [
+        {
+          "id": "http://localhost:6060/playlists/33?position=1",
+          "type": "Text",
+          "label": {
+            "none": [
+              "View in Repository"
+            ]
+          },
+          "format": "text/html"
+        }
+      ],
+      "metadata": [
+        {
+          "label": {
+            "none": [
+              "Title"
+            ]
+          },
+          "value": {
+            "none": [
+              "Lunchroom manners - an educational video"
+            ]
+          }
+        },
+        {
+          "label": {
+            "none": [
+              "Publishers"
+            ]
+          },
+          "value": {
+            "none": [
+              "Indiana University",
+              "University Indiana"
+            ]
+          }
+        }
+      ],
+      "rights": "http://creativecommons.org/licenses/by-sa/3.0/"
     },
     {
       "type": "Canvas",

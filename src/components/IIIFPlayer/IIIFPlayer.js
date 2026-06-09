@@ -49,12 +49,29 @@ export default function IIIFPlayer({
 }
 
 IIIFPlayer.propTypes = {
-  /** A valid IIIF manifest uri */
+  /** URL of a IIIF Manifest to fetch. Either this or `manifest` is _required_. When both props are provided,
+   * `manifest` takes precedence. */
   manifestUrl: PropTypes.string,
+  /** A IIIF Manifest JSON object. Takes precedence over `manifestUrl` when both are provided. */
   manifest: PropTypes.object,
+  /** Custom message shown to the user in the unlikely event of the components crashing. The message can include
+   * HTML markup. This prop has a defaulf value for a generic message. (**added in `@samvera/ramp@3.0.0`**) */
   customErrorMessage: PropTypes.string,
+  /** Message text to be shown when a given Manifest has no canvases in it yet (e.g. an empty playlist). This has
+   * a default generic message. (**added in `@samvera/ramp@3.0.0`**) */
   emptyManifestMessage: PropTypes.string,
+  /** A valid Canvas ID in the given Manifest to show in Ramp on initialization. This can be mapped to the
+   * [`start` property](https://iiif.io/api/presentation/3.0/#start) in a IIIF Manifest. If a `start` property is
+   * also present in the given Manfiest, this value overrides it. (**added in `@samvera/ramp@3.0.0`**) */
   startCanvasId: PropTypes.string,
+  /** A valid numer for a time in seconds to start playback in Ramp on initialization. Similar to the previous prop,
+   * this can be used to override the `start` property in the Manifest. (**added in `@samvera/ramp@3.0.0`**) */
   startCanvasTime: PropTypes.number,
+};
+
+/* Default prop values for IIIFPlayer component in Storybook */
+IIIFPlayer.defaultProps = {
+  customErrorMessage: 'Error encountered. Please check your Manifest.',
+  emptyManifestMessage: 'No media resource(s). Please check your Manifest.',
 };
 

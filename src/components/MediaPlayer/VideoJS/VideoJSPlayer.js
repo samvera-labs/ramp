@@ -290,7 +290,6 @@ function VideoJSPlayer({
       setTimeout(() => {
         if (isReadyRef.current && isPlayingRef.current) {
           playerDispatch({ isEnded: true, type: 'setIsEnded' });
-          player.pause();
           // Clear the saved playback position when media ends
           if (manifestURLRef.current) clearPosition(manifestURLRef.current);
           if (!canvasIsEmptyRef.current) handleEnded();
@@ -1372,6 +1371,16 @@ function VideoJSPlayer({
             if (!nextItem.isEmpty) playerRef.current.play();
           }
         }
+      } else {
+        /* When the component library is used without StructuredNavigation, 'structures.structItems' is unavailable
+        in state and the auto-advance feature doesn't have enough information to function properly.
+        This code branch is a fallback to provide auto-advance functionality using other available data
+        such as 'allCanvases' */
+        const nextCanvasIndex = cIndexRef.current + 1;
+        if (nextCanvasIndex <= lastCanvasIndex) {
+          manifestDispatch({ canvasIndex: nextCanvasIndex, type: 'switchCanvas' });
+          playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+        }
       }
     }
   }), [cIndexRef.current]);
@@ -1484,9 +1493,26 @@ function VideoJSPlayer({
    * Get the segment, which encapsulates the current time of the playhead,
    * from a list of media fragments in the current canvas.
    * @param {Number} time playhead's current time
+   * @returns {Object|null} active segment or null if not found
    */
   const getActiveSegment = (time) => {
     if (isPlaylist) {
+      /* In playlist Manifests, the segments are mapped one-to-one with canvases. And when the component
+      library is used in a playlist context without the 'StructuredNavigation' component, 'canvasSegments'
+      is empty. So, build a temporary active segment from the information available from 'allCanvases'.
+      Edge-case scenario, because Avalon playlists use 'StructuredNavigation' component in playlists. */
+      if (canvasSegments?.length === 0) {
+        const currentCanvas = allCanvases[cIndexRef.current];
+        if (currentCanvas) {
+          const { canvasId, canvasIndex, duration, label, range, summary } = currentCanvas;
+          return {
+            canvasIndex: canvasIndex, duration: String(duration), homepage: '', id: canvasId,
+            isCanvas: true, isClickable: false, isEmpty: false, isRoot: false, isTitle: false,
+            itemIndex: canvasIndex + 1, items: [], label: label, rangeId: '', summary: summary,
+            times: range ? { start: range.start, end: range.end } : { start: 0, end: duration }
+          };
+        }
+      }
       // For playlists timespans and canvasIdex are mapped one-to-one
       return canvasSegments[cIndexRef.current];
     } else {
