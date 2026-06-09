@@ -4,6 +4,10 @@
   min-width: inherit;
   padding: 10px;
 
+  &.with-heading {
+    border: 0.05rem solid vars.$primaryLight;
+  }
+
   .ramp--annotations__title {
     border: 0.05rem solid vars.$primaryLight;
     border-radius: 0.25rem 0.25rem 0 0;

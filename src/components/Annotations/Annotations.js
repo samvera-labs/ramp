@@ -15,19 +15,16 @@ import { useAnnotations } from '@Services/ramp-hooks';
  * @param {Boolean} props.showHeading
  * @param {String} props.headingText
  * @param {Array<String>} props.displayMotivations
+ * @param {Object} props.showMoreSettings
+ * @param {Object} props.showMoreSettings.enableShowMore enable the show more/less toggle
+ * @param {Number} props.showMoreSettings.textLineLimit  number of lines to display before truncating
  */
 const Annotations = ({
   displayMotivations = [],
   headingText = 'Annotations',
   showHeading = true,
-  showMoreSettings,
+  showMoreSettings = { enableShowMore: false, textLineLimit: 6 },
 }) => {
-  // Default showMoreSettings
-  const defaultShowMoreSettings = { enableShowMore: false, textLineLimit: 6 };
-
-  // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
-  showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
-
   const { allCanvases, annotations, canvasDuration, canvasIndex, playlist } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
@@ -172,10 +169,11 @@ const Annotations = ({
         </table>
       );
     }
+    return <p>No markers available.</p>;
   }, [canvasPlaylistsMarkers]);
 
   return (
-    <div className='ramp--annotations-display'
+    <div className={`ramp--annotations-display${showHeading ? ' with-heading' : ''}`}
       data-testid='annotations-display'
       role='complementary'
       aria-label='annotations display'
@@ -208,10 +206,25 @@ const Annotations = ({
 };
 
 Annotations.propTypes = {
+  /** List of IIIF supported Annotation [motivations](https://iiif.io/api/registry/motivations/) to display in the current instance.
+   * An empty array displays `supplementing`, `commenting`, and `tagging` annotations related to the Canvas. For playlist manifests 
+   * Ramp overwrites the value of this prop to `['highlighting']`, as this component is intended for displaying markers in playlists.
+   * (**added in `@samvera/ramp@4.0.0`**) */
   displayMotivations: PropTypes.array,
+  /** Label text shown in the component's heading. */
   headingText: PropTypes.string,
+  /** Show/hide the component heading on top of the component. */
   showHeading: PropTypes.bool,
-  showMoreSettings: PropTypes.object,
+  /** Truncate long annotation texts to `textLineLimit` lines with a Show more/less toggle. When configured, it truncates lengthy texts
+   * in annotations and displays given `textLineLimit` number of lines along with a `Show more` button, which user can click to 
+   * show/hide the rest of the annotation text. If the prop is initialized partially, Ramp applies default prop values to the rest of
+   * properties. _Since the words are not getting broken in the middle in the display, sometimes the lines shown could be +/- 1 of the
+   * given `textLineLimit` value_ (**added in `@samvera/ramp@4.0.0`**)
+   */
+  showMoreSettings: PropTypes.shape({
+    enableShowMore: PropTypes.bool,
+    textLineLimit: PropTypes.number,
+  }),
 };
 
 export default Annotations;

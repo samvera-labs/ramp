@@ -1,6 +1,6 @@
 let config = {};
 
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   config.url = 'http://localhost:6060';
   config.env = 'dev';
 } else {
