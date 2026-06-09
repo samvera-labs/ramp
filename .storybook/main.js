@@ -19,8 +19,11 @@ const config = {
     name: '@storybook/react-vite',
     options: {},
   },
-  // Serve public/ assets at root
-  staticDirs: ['../public'],
+  // Configure static directories for Storybook to serve assets and Manifests
+  staticDirs: [
+    '../public',
+    '../.storybook/manifests:/storybook-manifests',
+  ],
   async viteFinal(config) {
     config.resolve.alias = {
       ...config.resolve.alias,

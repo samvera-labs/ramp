@@ -1,0 +1,44 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as AnnotationsStories from './Annotations.stories';
+
+<Meta of={AnnotationsStories} />
+
+# Annotations
+
+Annotations component, renders items from `annotations` property in a given Canvas. This component was previously known as `MarkersDisplay` and was renamed to `Annotations` in `@samvera/ramp@v4.0.0` as support was extended to display annotations with other motivations.
+
+In `@samvera/ramp` versions prior to `4.0.0` this component only supported the display of annotations with `highlighting` motivation, and from `4.0.0` onwards this has added support to display time-synced annotations with `commenting`, `supplementing`, and `tagging` motivations.
+
+This component reads manifest data from central state management provided by Contexts. Thus it should be wrapped by context providers using `IIIFPlayer` which is the component in Ramp providing these out of the box.
+
+## Supported motivations
+
+<table>
+  <thead>
+    <tr><th>Motivation</th><th>Display style</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>highlighting</code></td><td>Tabular list + progress bar marker</td><td>Used for playlist markers</td></tr>
+    <tr><td><code>commenting</code></td><td>Transcript-style, time-synced scroll</td><td>Added in v4.0.0</td></tr>
+    <tr><td><code>supplementing</code></td><td>Transcript-style, time-synced scroll</td><td>Added in v4.0.0</td></tr>
+    <tr><td><code>tagging</code></td><td>Displayed as tags next to timestamp</td><td>Added in v4.0.0</td></tr>
+  </tbody>
+</table>
+
+## Usage
+
+```js
+import { Annotations } from '@samvera/ramp';
+```
+
+## Examples
+
+### Playlist Markers (`highlighting` annotations)
+<Canvas of={AnnotationsStories.DefaultMarkers} />
+
+### Other Textual Annotations
+<Canvas of={AnnotationsStories.DefaultAnnotations} />
+
+## Props reference
+
+<ArgTypes of={AnnotationsStories} />
