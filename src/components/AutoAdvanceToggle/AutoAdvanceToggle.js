@@ -55,7 +55,9 @@ const AutoAdvanceToggle = ({ label = 'Autoplay', showLabel = true }) => {
 };
 
 AutoAdvanceToggle.propTypes = {
+  /** Text label for the toggle button. */
   label: PropTypes.string,
+  /** Show/hide the toggle label. */
   showLabel: PropTypes.bool,
 };
 

@@ -1,0 +1,26 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as MetadataDisplayStories from './MetadataDisplay.stories';
+
+<Meta of={MetadataDisplayStories} />
+
+# MetadataDisplay
+
+MetadataDisplay component, renders any available metadata in a given IIIF manifest. By default it displays metadata relevant to the Manifest, and can be customized to show Canvas level metadata using the following props. 
+Any changes to `displayTitle` prop is applied to both Manifest and Canvas metadata. This component reads manifest data from central state management provided by Contexts. 
+Thus it should be wrapped by context providers using [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs) which is the component in Ramp providing these out of the box.
+
+The `displayTitle` prop applies to both Manifest and Canvas metadata sections.
+
+## Usage
+
+```js
+import { MetadataDisplay } from '@samvera/ramp';
+```
+
+## Examples
+
+<Canvas of={MetadataDisplayStories.ManifestMetadata} />
+
+## Props reference
+
+<ArgTypes of={MetadataDisplayStories} />

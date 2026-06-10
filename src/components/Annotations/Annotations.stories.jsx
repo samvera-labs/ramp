@@ -18,7 +18,7 @@ export default {
 export const DefaultMarkers = {
   name: 'Playlist Markers (highlighting motivation)',
   tags: ['!dev'], // Remove this story from side-panel and only display in docs
-  render: (args) => (
+  render: () => (
     <IIIFPlayer manifestUrl={`${config.url}/storybook-manifests/${config.env}/playlist-manifest.json`}>
       <Annotations showHeading={false} />
     </IIIFPlayer>
@@ -28,7 +28,7 @@ export const DefaultMarkers = {
 export const DefaultAnnotations = {
   name: 'Textual Annotations',
   tags: ['!dev'], // Remove this story from side-panel and only display in docs
-  render: (args) => (
+  render: () => (
     <IIIFPlayer manifestUrl={`${config.url}/storybook-manifests/${config.env}/lunchroom-manners.json`}>
       <Annotations showHeading={false} />
     </IIIFPlayer>

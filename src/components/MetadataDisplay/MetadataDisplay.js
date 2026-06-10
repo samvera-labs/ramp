@@ -14,7 +14,7 @@ import './MetadataDisplay.scss';
  * @param {Boolean} props.displayTitle
  * @param {Boolean} props.showHeading
  * @param {String} props.itemHeading
- * @param {String} props.sectionHeaading
+ * @param {String} props.sectionHeading
  */
 const MetadataDisplay = ({
   displayOnlyCanvasMetadata = false,
@@ -22,7 +22,7 @@ const MetadataDisplay = ({
   displayTitle = true,
   showHeading = true,
   itemHeading = 'Item Details',
-  sectionHeaading = 'Section Details',
+  sectionHeading = 'Section Details',
 }) => {
   const { manifest, canvasIndex } = useManifestState();
 
@@ -145,7 +145,7 @@ const MetadataDisplay = ({
   const canvasMetadataBlock = useMemo(() => {
     if (showCanvasMetadata && canvasMetadata?.length > 0) {
       return (<>
-        {displayAllMetadata && <span>{sectionHeaading}</span>}
+        {displayAllMetadata && <span>{sectionHeading}</span>}
         {buildMetadata(canvasMetadata)}
         {canvasRights?.length > 0 && (
           <span
@@ -173,7 +173,7 @@ const MetadataDisplay = ({
       )}
       {hasMetadata
         ? (
-          <div className='ramp--metadata-display-content'>
+          <div className={`ramp--metadata-display-content${showHeading ? ' with-heading' : ''}`}>
             {manifestMetadataBlock}
             {canvasMetadataBlock}
           </div>
@@ -191,12 +191,20 @@ const MetadataDisplay = ({
 };
 
 MetadataDisplay.propTypes = {
+  /** Display only the active Canvas metadata instead of Manifest-level metadata. */
   displayOnlyCanvasMetadata: PropTypes.bool,
+  /** Display metadata for both the active Canvas and the Manifest. */
   displayAllMetadata: PropTypes.bool,
+  /** Show/hide the title field from the metadata display if 'title' is included in the current set of
+   * metadata. This helps to avoid duplicating the display of title information on the page,
+   * when the title is already visible in some other part of the page. */
   displayTitle: PropTypes.bool,
+  /** Show/hide the component heading. */
   showHeading: PropTypes.bool,
+  /** Heading label for the Manifest-level metadata list. */
   itemHeading: PropTypes.string,
-  sectionHeaading: PropTypes.string,
+  /** Heading label for the Canvas-level metadata list. */
+  sectionHeading: PropTypes.string,
 };
 
 export default MetadataDisplay;

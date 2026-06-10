@@ -1,0 +1,31 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as IIIFPlayerStories from './IIIFPlayer.stories';
+
+<Meta of={IIIFPlayerStories} />
+
+# IIIFPlayer
+
+`IIIFPlayer` is the root wrapper component that provides React Context providers for state management across all Ramp components. 
+Every other Ramp component must be rendered as a child of `IIIFPlayer` unless specified.
+
+Either `manifestUrl` or `manifest` is **required**. When both are provided, `manifest` takes precedence over `manifestUrl`.
+
+## Usage
+
+```js
+import { IIIFPlayer } from '@samvera/ramp';
+```
+
+## Examples
+
+### With `manifest` prop
+
+<Canvas of={IIIFPlayerStories.WithManifestObject} />
+
+### With `manifestUrl` prop
+
+<Canvas of={IIIFPlayerStories.WithManifestUrl} />
+
+## Props reference
+
+<ArgTypes of={IIIFPlayerStories} />
