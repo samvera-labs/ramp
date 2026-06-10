@@ -199,7 +199,29 @@
           }
         }
       ],
-      "rights": "http://creativecommons.org/licenses/by-sa/3.0/"
+      "rights": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "rendering": [
+        {
+          "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners.vtt",
+          "type": "Text",
+          "label": {
+            "en": [
+              "Captions File"
+            ]
+          },
+          "format": "text/vtt"
+        },
+        {
+          "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners_poster.jpg",
+          "type": "Image",
+          "label": {
+            "en": [
+              "Poster File"
+            ]
+          },
+          "format": "image/jpeg"
+        }
+      ]
     },
     {
       "type": "Canvas",
@@ -232,6 +254,28 @@
               }
             }
           ]
+        }
+      ],
+      "rendering": [
+        {
+          "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners.srt",
+          "type": "Text",
+          "label": {
+            "en": [
+              "Captions File"
+            ]
+          },
+          "format": "application/x-subrip"
+        },
+        {
+          "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners_poster.jpg",
+          "type": "Image",
+          "label": {
+            "en": [
+              "Poster File"
+            ]
+          },
+          "format": "image/jpeg"
         }
       ]
     },
@@ -296,6 +340,18 @@
               "target": "http://localhost:6060/storybook-manifests/prod/playlist-manifest/canvas/1#t=600.432"
             }
           ]
+        }
+      ],
+      "rendering": [
+        {
+          "id": "http://localhost:6060/volleyball-for-boys/volleyball.txt",
+          "type": "Text",
+          "label": {
+            "en": [
+              "External Text Transcript 2 (machine-generated)"
+            ]
+          },
+          "format": "text/plain"
         }
       ]
     }

@@ -1,0 +1,23 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as SupplementalFilesStories from './SupplementalFiles.stories';
+
+<Meta of={SupplementalFilesStories} />
+
+# SupplementalFiles
+
+`SupplementalFiles` reads the `rendering` property at both the Manifest level and Canvas level and lists the files as downloadable links.
+It reads data from React Contexts and must be wrapped by [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs).
+
+## Usage
+
+```js
+import { SupplementalFiles } from '@samvera/ramp';
+```
+
+## Example
+
+<Canvas of={SupplementalFilesStories.Default} />
+
+## Props reference
+
+<ArgTypes of={SupplementalFilesStories} />

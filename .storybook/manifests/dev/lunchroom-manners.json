@@ -275,16 +275,6 @@
   ],
   "rendering": [
     {
-      "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners.vtt",
-      "type": "Text",
-      "label": {
-        "en": [
-          "Captions File"
-        ]
-      },
-      "format": "text/vtt"
-    },
-    {
       "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners_poster.jpg",
       "type": "Image",
       "label": {
@@ -303,6 +293,11 @@
       "height": 360,
       "width": 480,
       "duration": 572.034,
+      "label": {
+        "en": [
+          "Lunchroom Manners"
+        ]
+      },
       "placeholderCanvas": {
         "id": "http://localhost:6060/storybook-manifests/dev/lunchroom_manners/canvas/1/placeholder",
         "type": "Canvas",
@@ -418,6 +413,28 @@
               "target": "http://localhost:6060/storybook-manifests/dev/lunchroom_manners/canvas/1"
             }
           ]
+        }
+      ],
+      "rendering": [
+        {
+          "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners.vtt",
+          "type": "Text",
+          "label": {
+            "en": [
+              "Captions File"
+            ]
+          },
+          "format": "text/vtt"
+        },
+        {
+          "id": "http://localhost:6060/lunchroom_manners/lunchroom_manners_poster.jpg",
+          "type": "Image",
+          "label": {
+            "en": [
+              "Poster File"
+            ]
+          },
+          "format": "image/jpeg"
         }
       ]
     }

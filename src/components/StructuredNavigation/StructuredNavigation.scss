@@ -82,11 +82,6 @@
     }
   }
 
-  p {
-    padding-top: 1em;
-    color: vars.$primaryDarker;
-  }
-
   span {
     overflow-wrap: anywhere;
   }
@@ -97,6 +92,11 @@
       border-top: none;
     }
     border-top: 1px solid vars.$primaryLight;
+  }
+
+  .ramp--no-structure {
+    padding: 1rem;
+    color: vars.$primaryDarker;
   }
 }
 
@@ -135,6 +135,10 @@
   flex-direction: column;
   max-height: 40vh;
   position: relative;
+
+  &.full-border {
+    border: 1px solid #ddd;
+  }
 }
 
 .ramp--structured-nav__border>span {
