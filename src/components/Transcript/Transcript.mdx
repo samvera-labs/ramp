@@ -1,0 +1,50 @@
+import { Meta, Canvas, ArgTypes } from '@storybook/addon-docs/blocks';
+import * as TranscriptStories from './Transcript.stories';
+
+<Meta of={TranscriptStories} />
+
+# Transcript
+
+Transcript component displays transcript data in a given IIIF Manifest via `manifestUrl` or `transcripts`, when used along with a media-player
+linked via `playerID` prop it synchronizes scroll position with media playback for timed-text transcript formats (WebVTT, SRT).
+__Either `manifestUrl` or `transcripts` is REQUIRED. If both props are given then `transcripts` takes *precedence* over `manifestUrl`__.
+
+This component can be used **decoupled from the Context providers** and therefore requires explicit props rather than reading from shared state.
+`playerID` prop and one of `manifestUrl`/`transcripts` props are _required_ to be defined when using the component in this manner.
+
+When using this component with a different non-Ramp media player, the player should have a `data-canvasindex` attribute set with a zero-indexed number,
+which points to the current Canvas rendered from the Manifest in the player.
+
+## Usage
+
+```js
+import { Transcript } from '@samvera/ramp';
+```
+
+## Examples
+
+### `transcripts` prop (decoupled from state)
+
+Demonstrates supported transcript file types using the `transcripts` prop, with the component used **outside** of the Context providers and initialized
+with explicit `transcripts` and `playerID` props.
+
+<Canvas of={TranscriptStories.DecoupledTranscripts} />
+
+### With external player (decoupled from state)
+
+Demonstrates the Transcript synchronization of scroll position with playback when using a non-Ramp media player. The player element is identified
+via the `playerID` prop and exposes a `data-canvasindex` attribute along with stubbed `currentTime()`, `on()`, and `off()` methods for the Transcript
+component to hook into.
+
+<Canvas of={TranscriptStories.WithExternalPlayer} />
+
+### With IIIFPlayer wrapper (state coupled)
+
+Demonstrates the component used within the `IIIFPlayer` with Context Providers, where it reads the Manifest and Player states from shared context instead
+of relying on explicit props.
+
+<Canvas of={TranscriptStories.WithStateProviders} />
+
+## Props reference
+
+<ArgTypes of={TranscriptStories} />

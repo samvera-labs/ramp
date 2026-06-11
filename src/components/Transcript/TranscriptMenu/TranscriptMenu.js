@@ -102,5 +102,4 @@ TranscriptMenu.propTypes = {
   autoScrollEnabled: PropTypes.bool.isRequired,
   setAutoScrollEnabled: PropTypes.func.isRequired,
   ...TranscriptSelector.propTypes,
-  ...TranscriptMenu.propTypes
 };
