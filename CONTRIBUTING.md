@@ -93,9 +93,12 @@ Once testing is complete, **delete the test branch from GitHub** and do not merg
 
 ## Deployment
 
-Merging to `main` automatically triggers a deployment of the **[demo site](https://ramp.avalonmediasystem.org/)** — hosted on Netlify, showing a real-world component layout. Accepts any publicly available IIIF Presentation 3.0 Manifest URL as input.
+Merging to `main` automatically triggers two deployments:
 
-No manual steps are required for this deployment.
+- **[Demo site](https://ramp.avalonmediasystem.org/)** — hosted on Netlify, showing a real-world component layout. Accepts any publicly available IIIF Presentation 3.0 Manifest URL as input.
+- **[GitHub Pages docs](https://samvera-labs.github.io/ramp/)** — the Storybook documentation site, rebuilt from `yarn storybook:build`.
+
+No manual steps are required for either deployment.
 
 ## Branch and PR conventions
 
