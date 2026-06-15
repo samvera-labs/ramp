@@ -1063,7 +1063,7 @@ export const useTranscripts = ({
       canvasIndexRef.current = manifestState.canvasIndex;
       playerRef.current = playerState.player;
     } else {
-      playerIntervalRef.current = setInterval(() => {
+      const checkPlayer = (isInitialCheck = false) => {
         const domPlayer = document.getElementById(playerID);
         if (!domPlayer) {
           console.warn(
@@ -1080,13 +1080,23 @@ export const useTranscripts = ({
           let cIndex = parseInt(playerRef.current.canvasIndex);
           if (Number.isNaN(cIndex)) cIndex = 0;
           if (cIndex !== canvasIndexRef.current) {
-            // Clear the transcript text in the component
-            setTranscript([]);
-            setCanvasIndex(cIndex);
-            setCurrentTime(playerRef.current.currentTime());
+            if (isInitialCheck) {
+              /* On initial check set the Canvas index in parallel to the current
+              transcript load for the current Canvas */
+              canvasIndexRef.current = cIndex;
+            } else {
+              // Clear the transcript text in the component
+              setTranscript([]);
+              setCanvasIndex(cIndex);
+              setCurrentTime(playerRef.current.currentTime());
+            }
           }
         }
-      }, 500);
+      };
+      /* Check 'canvasIndexRef' is set before the transcript data finishes loading,
+      then keep polling for Canvas changes. */
+      checkPlayer(true);
+      playerIntervalRef.current = setInterval(checkPlayer, 500);
     }
   }, [manifestState]);
 

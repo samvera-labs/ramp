@@ -417,10 +417,15 @@ const TranscriptList = memo(({
  * @param {Boolean} props.showMetadata
  * @param {Boolean} props.showNotes
  * @param {Object} props.showMoreSettings
- * @param {Object} props.search
+ * @param {Object|Boolean} props.search
  * @param {Array} props.transcripts
  */
-const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = false, showMoreSettings = {}, search = {}, transcripts = [] }) => {
+const Transcript = ({
+  playerID = 'iiif-media-player', manifestUrl = '',
+  showMetadata = false, showNotes = false,
+  showMoreSettings = { enableShowMore: false, textLineLimit: 6 },
+  search = {}, transcripts = []
+}) => {
   const [currentTime, _setCurrentTime] = useState(-1);
   const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
 
@@ -446,17 +451,19 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
 
   const { syncPlayback } = useSyncPlayback({ enableTimeupdate: true, playerRef, setCurrentTime });
 
-  /* 
-    Enable search only for timed text as it is only working for these transcripts
+  /* When 'search' prop has a search config, enable search only for timed text as it is only working for these transcripts
     TODO:: remove 'isSearchable' if/when search is supported for other formats
    */
-  const { initialSearchQuery, ...searchOpts } = useSearchOpts({
-    ...search,
-    isSearchable: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
-      || transcriptInfo.tType === TRANSCRIPT_TYPES.docx
-      || transcriptInfo.tType === TRANSCRIPT_TYPES.plainText,
-    showMarkers: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
-  });
+  const isSearchable = transcriptInfo.tType === TRANSCRIPT_TYPES.timedText
+    || transcriptInfo.tType === TRANSCRIPT_TYPES.docx
+    || transcriptInfo.tType === TRANSCRIPT_TYPES.plainText;
+
+  const { initialSearchQuery, ...searchOpts } = useSearchOpts(
+    search === false
+      ? false
+      : { showMarkers: transcriptInfo.tType === TRANSCRIPT_TYPES.timedText, ...search },
+    isSearchable
+  );
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
 
   const searchResults =
@@ -552,25 +559,48 @@ const Transcript = ({ playerID, manifestUrl, showMetadata = false, showNotes = f
 };
 
 Transcript.propTypes = {
-  /** `id` attribute of the media player in the DOM */
+  /** `id` attribute of the media player element in the DOM. Required for playback synchronization. */
   playerID: PropTypes.string.isRequired,
-  /** URL of the manifest */
+  /** URL of the Manifest used with the player identified by `playerID` prop with `supplementing`
+   * annotations. Either this or `transcripts` prop is required and when both props are defined,
+   * `transcripts` prop takes precedence. (**added in `@samvera/ramp@3.0.0`**) */
   manifestUrl: PropTypes.string,
-  showSearch: PropTypes.bool,
+  /** Show/hide embedded metadata as per the 
+   * [FADGI guidelines](https://www.digitizationguidelines.gov/guidelines/FADGI_WebVTT_embed_guidelines_v0.1_2024-04-18.pdf)
+   * in the header of a given WebVTT file (**added in `@samvera/ramp@4.0.1`**) */
   showMetadata: PropTypes.bool,
+  /** Show/hide NOTE comments from SRT/VTT timed-text files. (**added in `@samvera/ramp@3.2.0`**) */
   showNotes: PropTypes.bool,
+  /** Truncate long cues to a given line count with a Show more/less toggle. When configured, it truncates
+   * lengthy cues in the **timed transcripts** to only display the defined `textLineLimit` number of lines.
+   * 
+   * Partial initialization applies defaults for missing keys. _Since the words are not broken in the display,
+   * sometimes the lines shown could be +/- 1 of the given `textLineLimit` value_ (**added in @samvera/ramp@5.0.0**) */
   showMoreSettings: PropTypes.shape({
     enableShowMore: PropTypes.bool,
     textLineLimit: PropTypes.number
   }),
-  search: PropTypes.oneOf([PropTypes.bool, PropTypes.shape({
-    initialSearchQuery: PropTypes.string,
-    showMarkers: PropTypes.bool,
-    matcherFactory: PropTypes.func,
-    sorter: PropTypes.func,
-    matchesOnly: PropTypes.bool
-  })]),
-  /** A list of transcripts for respective canvases in the manifest */
+  /** Search configuration for transcript search feature. Pass `false` to disable search, or a key-value pair object
+   * to configure initial search query, show/hide markers, custom matcher/sorter callback function, and matchesOnly mode.
+   * (**added in @samvera/ramp@v3.2.0**) */
+  search: PropTypes.oneOf([
+    PropTypes.bool,
+    PropTypes.shape({
+      initialSearchQuery: PropTypes.string,
+      showMarkers: PropTypes.bool,
+      matcherFactory: PropTypes.func,
+      sorter: PropTypes.func,
+      matchesOnly: PropTypes.bool
+    })
+  ]),
+  /** Array of transcript data objects per Canvas: `[{ canvasId: number, items: [{ title: string, url: string }] }]` in Manifest.
+   * Either this or `manifestUrl` is _required_ and, this takes precedence. Supports IIIF Manifests, Word documents (.docx), 
+   * plain text files, WebVTT, and SRT as transcripts.
+   * 
+   * **_Identifying machine generated transcripts_**: To identify machine generated transcripts the Transcript component
+   * checks for `(Machine generated/machine-generated)` case-insensitive text in the given title in either the `transcripts`
+   * prop or in the `label` in the `annotations` in the given Manifest.
+   */
   transcripts: PropTypes.arrayOf(
     PropTypes.shape({
       /** Index of the canvas in manifest, starts with zero */

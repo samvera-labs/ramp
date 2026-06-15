@@ -1,4 +1,5 @@
 import React, { createRef, useEffect, useMemo, useRef } from 'react';
+import PropTypes from 'prop-types';
 import cx from 'classnames';
 import CollapseExpandButton from './NavUtils/CollapseExpandButton';
 import TreeNode from './NavUtils/TreeNode';
@@ -56,8 +57,6 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   const structureContentRef = useRef(null);
 
   useEffect(() => {
-    // Update currentTime and canvasIndex in state if a
-    // custom start time and(or) canvas is given in manifest
     if (manifest) {
       try {
         let { structures, timespans, markRoot, hasCollapsibleStructure }
@@ -271,7 +270,9 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   }, [structureItemsRef.current]);
 
   if (!manifest) {
-    return <p>No manifest - Please provide a valid manifest.</p>;
+    return (<p className='ramp--no-structure'>
+      No manifest - Please provide a valid manifest.
+    </p>);
   }
   return (
     <div
@@ -293,7 +294,10 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={numberOfSections} />}
         </div>
       }
-      <div className='ramp--structured-nav__border' tabIndex={-1}>
+      <div className={cx(
+        'ramp--structured-nav__border',
+        numberOfSections == 0 && 'full-border'
+      )} tabIndex={-1}>
         <div
           data-testid='structured-nav'
           className={cx(
@@ -346,6 +350,12 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   );
 };
 
-StructuredNavigation.propTypes = {};
+StructuredNavigation.propTypes = {
+  /** Show/hide a collapse/expand all sections button with a text heading (given as the value for the `sectionHeading` prop) above the structures.
+   * This is only visible when the Manifest has collapsible structures even when this prop is turned on (**added in `@samvera/ramp@3.3.0`**) */
+  showAllSectionsButton: PropTypes.bool,
+  /** Label shown next to the collapse/expand all sections button  (**added in `@samvera/ramp@3.3.0`**). */
+  sectionsHeading: PropTypes.string,
+};
 
 export default StructuredNavigation;

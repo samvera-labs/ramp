@@ -78,10 +78,15 @@ export const defaultSearchOpts = {
   matchesOnly: false
 };
 
-export const useSearchOpts = (opts) => {
-  return (opts && opts.isSearchable
+export const useSearchOpts = (search, isSearchable) => {
+  if (search === false) {
+    return { ...defaultSearchOpts, enabled: false };
+  }
+  // When search is enabled but has not custom config set it to {}
+  const opts = search === true ? {} : search;
+  return (isSearchable
     ? { ...defaultSearchOpts, ...opts, enabled: true }
-    : { ...defaultSearchOpts, enabled: false }
+    : { ...defaultSearchOpts, ...opts, enabled: false }
   );
 };
 

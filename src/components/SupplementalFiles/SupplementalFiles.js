@@ -1,14 +1,16 @@
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useManifestState } from '../../context/manifest-context';
 import { useErrorBoundary } from 'react-error-boundary';
 import './SupplementalFiles.scss';
+import cx from 'classnames';
 
 /**
- * Display supplemental files as downloadable links, referenced in both 
+ * Display supplemental files as downloadable links, referenced in both
  * manifest and at each canvas as rendering files.
  * @param {Object} props
  * @param {String} props.itemHeading
- * @param {String} props.sectionHeaading
+ * @param {String} props.sectionHeading
  * @param {Boolean} props.showHeading
  */
 const SupplementalFiles = ({
@@ -52,7 +54,10 @@ const SupplementalFiles = ({
   const filesDisplay = useMemo(() => {
     return (
       <>
-        {hasFiles && <div className='ramp--supplemental-files-display-content'
+        {hasFiles && <div className={cx(
+          'ramp--supplemental-files-display-content',
+          showHeading && 'with-heading'
+        )}
           data-testid='supplemental-files-display-content'>
           {Array.isArray(manifestSupplementalFiles) && manifestSupplementalFiles.length > 0 && (
             <>
@@ -113,6 +118,15 @@ const SupplementalFiles = ({
     )}
     {filesDisplay}
   </div>;
+};
+
+SupplementalFiles.propTypes = {
+  /** Heading label for the Canvas-level file list. */
+  itemHeading: PropTypes.string,
+  /** Heading label for the Canvas-level file list. */
+  sectionHeading: PropTypes.string,
+  /** Show/hide the component heading. */
+  showHeading: PropTypes.bool,
 };
 
 export default SupplementalFiles;
