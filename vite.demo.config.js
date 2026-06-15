@@ -83,6 +83,11 @@ export default defineConfig({
     include: /.*\.js$/,
     exclude: /node_modules/,
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: { '.js': 'jsx' },
+    },
+  },
   // Resolve path aliases and Node.js polyfills
   resolve: {
     alias: {

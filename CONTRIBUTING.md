@@ -23,23 +23,23 @@ yarn install
 
 Ramp provides two local development environments that can run simultaneously and both live-reload on code changes.
 
-### Styleguidist (port 6060)
+### Storybook (port 6060)
 
-[React Styleguidist](https://react-styleguidist.js.org/) serves interactive component documentation with live code examples. Use this environment when working on component APIs or documentation.
+[Storybook](https://storybook.js.org/) serves interactive component documentation with live code examples. Use this environment when working on component APIs or documentation.
 
 ```
-yarn dev
+yarn storybook
 ```
 
 Open http://localhost:6060 in your browser.
 
-To build a static HTML version of the docs (used by GitHub Pages):
+To build a static HTML version of the docs:
 
 ```
-yarn styleguide:build
+yarn storybook:build
 ```
 
-The output is written to the project's `/docs` directory.
+The output is written to the project's `/storybook-static` directory.
 
 ### Vite demo (port 3003)
 
@@ -75,8 +75,6 @@ To produce the CommonJS, ES Module, and UMD distribution files in `/dist/` run:
 yarn build
 ```
 
-This also runs `yarn styleguide:build` to regenerate the static docs.
-
 ## Testing unreleased changes in a ReactJS application
 
 To test a branch's built output before it is published to NPM:
@@ -95,12 +93,9 @@ Once testing is complete, **delete the test branch from GitHub** and do not merg
 
 ## Deployment
 
-Merging to `main` automatically triggers two deployments:
+Merging to `main` automatically triggers a deployment of the **[demo site](https://ramp.avalonmediasystem.org/)** — hosted on Netlify, showing a real-world component layout. Accepts any publicly available IIIF Presentation 3.0 Manifest URL as input.
 
-- **[Demo site](https://ramp.avalonmediasystem.org/)** — hosted on Netlify, showing a real-world component layout. Accepts any publicly available IIIF Presentation 3.0 Manifest URL as input.
-- **[GitHub Pages docs](https://samvera-labs.github.io/ramp/)** — the Styleguidist documentation site, rebuilt from the `/docs` output.
-
-No manual steps are required for either deployment.
+No manual steps are required for this deployment.
 
 ## Branch and PR conventions
 
