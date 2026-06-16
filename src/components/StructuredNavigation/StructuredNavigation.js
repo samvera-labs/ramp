@@ -352,7 +352,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
 
 StructuredNavigation.propTypes = {
   /** Show/hide a collapse/expand all sections button with a text heading (given as the value for the `sectionHeading` prop) above the structures.
-   * This is only visible when the Manifest has collapsible structures even when this prop is turned on (**added in `@samvera/ramp@3.3.0`**) */
+   * This is only visible when the Manifest has collapsible structures even when this prop is turned on (**added in `@samvera/ramp@3.3.0`**). */
   showAllSectionsButton: PropTypes.bool,
   /** Label shown next to the collapse/expand all sections button  (**added in `@samvera/ramp@3.3.0`**). */
   sectionsHeading: PropTypes.string,

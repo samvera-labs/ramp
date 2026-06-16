@@ -11,15 +11,6 @@
   {
     "spans": [
       {
-        "begin": 10,
-        "end": 21,
-        "text": "<b>Hello</b> world!"
-      }
-    ]
-  },
-  {
-    "spans": [
-      {
         "begin": 22.2,
         "end": 26.6,
         "text": "Just before lunch one day, a puppet show was put on at school."

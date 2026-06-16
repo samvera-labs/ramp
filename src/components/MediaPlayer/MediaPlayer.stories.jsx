@@ -30,7 +30,19 @@ const propControls = {
       labels: { ...videoJSLanguageOptions },
     },
     options: videoJSLanguageOptions ? Object.keys(videoJSLanguageOptions) : [],
-  }
+  },
+  // Resume cache settings
+  enable: {
+    control: { type: 'boolean' },
+    description: 'Enable/disable saving playback position in localStorage for the last partially played Canvas --omit saving playback times\
+    within the first and last 5 second range of the media-- in the current Manifest.',
+    table: { category: 'resumeCache' },
+  },
+  ttlDays: {
+    control: { type: 'number', min: 1 },
+    description: 'Number of days a saved Manifest entry is retained before it is removed from localStorage due to LRU eviction or expiration.',
+    table: { category: 'resumeCache' },
+  },
 };
 
 /* Default state for the MediaPlayer component */
@@ -39,6 +51,9 @@ const defaultState = {
   enablePlaybackRate: false,
   enableTitleLink: false,
   language: 'en',
+  enable: false,
+  ttlDays: 30,
+  maxItems: 200,
 };
 
 export const MultiCanvas = {
@@ -47,9 +62,9 @@ export const MultiCanvas = {
     ...propControls,
     enableFileDownload: { table: { disable: true } },
   },
-  render: ({ manifestUrl, ...args }) => (
-    <IIIFPlayer key={hashArgs({ manifestUrl, ...args })} manifestUrl={manifestUrl}>
-      <MediaPlayer {...args} />
+  render: ({ manifestUrl, enable, ttlDays, ...args }) => (
+    <IIIFPlayer key={hashArgs({ manifestUrl, enable, ttlDays, ...args })} manifestUrl={manifestUrl}>
+      <MediaPlayer {...args} resumeCache={{ enable, ttlDays }} />
     </IIIFPlayer>
   ),
   args: {
@@ -60,9 +75,9 @@ export const MultiCanvas = {
 
 export const SingleCanvas = {
   argTypes: { ...propControls },
-  render: ({ manifestUrl, ...args }) => (
-    <IIIFPlayer key={hashArgs({ manifestUrl, ...args })} manifestUrl={manifestUrl}>
-      <MediaPlayer {...args} />
+  render: ({ manifestUrl, enable, ttlDays, ...args }) => (
+    <IIIFPlayer key={hashArgs({ manifestUrl, enable, ttlDays, ...args })} manifestUrl={manifestUrl}>
+      <MediaPlayer {...args} resumeCache={{ enable, ttlDays }} />
       <StructuredNavigation />
     </IIIFPlayer>
   ),

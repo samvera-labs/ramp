@@ -35,9 +35,9 @@ export const MultiCanvasManifest = {
   },
   render: ({ manifestUrl, ...args }) => (
     <IIIFPlayer key={hashArgs({ manifestUrl, ...args })} manifestUrl={manifestUrl}>
-      <AutoAdvanceToggle {...args} />
-      <br />
       <MediaPlayer />
+      <br />
+      <AutoAdvanceToggle {...args} />
     </IIIFPlayer>
   ),
   args: {
@@ -54,9 +54,9 @@ export const PlaylistManifest = {
   },
   render: ({ manifestUrl, ...args }) => (
     <IIIFPlayer key={hashArgs({ manifestUrl, ...args })} manifestUrl={manifestUrl}>
-      <AutoAdvanceToggle {...args} />
-      <br />
       <MediaPlayer />
+      <br />
+      <AutoAdvanceToggle {...args} />
     </IIIFPlayer>
   ),
   args: {

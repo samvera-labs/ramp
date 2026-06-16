@@ -563,26 +563,26 @@ Transcript.propTypes = {
   playerID: PropTypes.string.isRequired,
   /** URL of the Manifest used with the player identified by `playerID` prop with `supplementing`
    * annotations. Either this or `transcripts` prop is required and when both props are defined,
-   * `transcripts` prop takes precedence. (**added in `@samvera/ramp@3.0.0`**) */
+   * `transcripts` prop takes precedence (**added in `@samvera/ramp@3.0.0`**). */
   manifestUrl: PropTypes.string,
   /** Show/hide embedded metadata as per the 
    * [FADGI guidelines](https://www.digitizationguidelines.gov/guidelines/FADGI_WebVTT_embed_guidelines_v0.1_2024-04-18.pdf)
-   * in the header of a given WebVTT file (**added in `@samvera/ramp@4.0.1`**) */
+   * in the header of a given WebVTT file (**added in `@samvera/ramp@4.0.1`**). */
   showMetadata: PropTypes.bool,
-  /** Show/hide NOTE comments from SRT/VTT timed-text files. (**added in `@samvera/ramp@3.2.0`**) */
+  /** Show/hide NOTE comments from SRT/VTT timed-text files (**added in `@samvera/ramp@3.2.0`**). */
   showNotes: PropTypes.bool,
   /** Truncate long cues to a given line count with a Show more/less toggle. When configured, it truncates
    * lengthy cues in the **timed transcripts** to only display the defined `textLineLimit` number of lines.
    * 
    * Partial initialization applies defaults for missing keys. _Since the words are not broken in the display,
-   * sometimes the lines shown could be +/- 1 of the given `textLineLimit` value_ (**added in @samvera/ramp@5.0.0**) */
+   * sometimes the lines shown could be +/- 1 of the given `textLineLimit` value_ (**added in @samvera/ramp@5.0.0**). */
   showMoreSettings: PropTypes.shape({
     enableShowMore: PropTypes.bool,
     textLineLimit: PropTypes.number
   }),
   /** Search configuration for transcript search feature. Pass `false` to disable search, or a key-value pair object
-   * to configure initial search query, show/hide markers, custom matcher/sorter callback function, and matchesOnly mode.
-   * (**added in @samvera/ramp@v3.2.0**) */
+   * to configure initial search query, show/hide markers, custom matcher/sorter callback function, and matchesOnly mode
+   * (**added in @samvera/ramp@v3.2.0**). */
   search: PropTypes.oneOf([
     PropTypes.bool,
     PropTypes.shape({

@@ -239,21 +239,20 @@ const MediaPlayer = ({
 };
 
 MediaPlayer.propTypes = {
-  /** Adds the file download button for files listed in the active Canvas's `rendering` property in the player's control-bar, which is hidden
-   * by default. When enabled, this button displays a dropdown menu of files and allows the user to download them.
-   * This is a custom VideoJS component added to the VideoJS instance in Ramp. 
-   */
+  /** Adds the file download button for files listed in the active Canvas's `rendering` property in the player's control-bar.
+   * When enabled, this button displays a dropdown menu of files and allows the user to download them.
+   * This is a custom VideoJS component added to the VideoJS instance in Ramp.  */
   enableFileDownload: PropTypes.bool,
-  /** Adds VideoJS's built-in Picture-in-Picture control in the player's control-bar, which is hidden by default.
-   * When enabled VideoJS's built-in Picture-In-Picture functionality allows user to enable PiP playback and other functionalities.
+  /** Adds VideoJS's built-in Picture-in-Picture control in the player's control-bar. When enabled VideoJS's built-in
+   * Picture-In-Picture functionality allows user to enable PiP playback and other functionalities.
    * This is only enabled if the current browser supports Picture-In-Picture functionality. */
   enablePIP: PropTypes.bool,
-  /** Adds VideoJS's built-in playback rate control in the player's control-bar, which is hidden by default.
-   * This provides a menu with playback speed options 0.5x, 0.75x, 1x, 1.5x, and 2x. (**added in `@samvera/ramp@3.2.0`**) */
+  /** Adds VideoJS's built-in playback rate control in the player's control-bar. This provides a menu with playback speed
+   * options 0.5x, 0.75x, 1x, 1.5x, and 2x. (**added in `@samvera/ramp@3.2.0`**). */
   enablePlaybackRate: PropTypes.bool,
-  /** Adds a title bar to the video player linking to the active Canvas, which is hidden by default.
-   * The title bar displays a text `<Manifest label> - <Active Canvas label>` with an href attribute pointing to the active Canvas's URL. 
-   * This is a custom VideoJS component added to the VideoJS instance in Ramp. (**added in `@samvera/ramp@3.2.0`**) */
+  /** Adds a title bar to the video player linking to the active Canvas. The title bar displays a text
+   * `<Manifest label> - <Active Canvas label>` with an href attribute pointing to the active Canvas's URL. 
+   * This is a custom VideoJS component added to the VideoJS instance in Ramp (**added in `@samvera/ramp@3.2.0`**). */
   enableTitleLink: PropTypes.bool,
   /** Includes authentication/cookie headers with XHR requests for VideoJS streaming. This requires appropriate CORS headers on the server.
    * Setting this to `true` causes the VideoJS component to include any available `Authentication` and `Cookie` headers with 
@@ -261,12 +260,12 @@ MediaPlayer.propTypes = {
    * There are special server-side CORS requirements that go along with this option – specifically, the streaming server should
    * include an appropriate [`Access-Control-Allow-Credentials`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials)
    * header, and a non-wildcard [`Access-Control-Allow-Origin`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin)
-   * specifying the server originating the request. (**added in `@samvera/ramp@3.2.0`**) */
+   * specifying the server originating the request (**added in `@samvera/ramp@3.2.0`**). */
   withCredentials: PropTypes.bool,
   /** IANA language code for the translations of the player controls, which defaults to English (`'en'`).
    * Set the desired language as a [standard language code](https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry).
    * If the given language code doesn't match with any of the existing language files in VideoJS, Ramp defaults to English language. This only provides
-   * the language for the in-built VideoJS player controls at the moment. (**added in `@samvera/ramp@3.3.0`**). */
+   * the language for the in-built VideoJS player controls at the moment (**added in `@samvera/ramp@3.3.0`**). */
   language: PropTypes.string,
   /** Saves and restores playback position per Manifest using localStorage, which is disabled by default.
    * When `resumeCache.enable`is set to `true`, the player saves and restores the playback position per Manifest using the browser's `localStorage`,
@@ -274,7 +273,7 @@ MediaPlayer.propTypes = {
    * The `ttlDays` property sets how many days a saved position is retained before expiring, and `maxItems` limits the number of Manifest entries
    * stored using an LRU eviction strategy.
    * When `resumeCache.enable` is set to `false`, any previously saved positions are cleared from storage. If the prop is initialized partially,
-   * Ramp applies default prop values to the rest of the properties. (**added in `@samvera/ramp@5.1.0`**) */
+   * Ramp applies default prop values to the rest of the properties (**added in `@samvera/ramp@5.1.0`**). */
   resumeCache: PropTypes.shape({
     enable: PropTypes.bool,
     ttlDays: PropTypes.number,

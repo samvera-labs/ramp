@@ -14,6 +14,16 @@ export default {
   },
 };
 
+/* Default state for the MetadataDisplay component */
+const defaultState = {
+  displayOnlyCanvasMetadata: false,
+  displayAllMetadata: false,
+  displayTitle: true,
+  showHeading: true,
+  itemHeading: 'Item Details',
+  sectionHeading: 'Section Details',
+};
+
 export const ManifestMetadata = {
   name: 'Manifest Metadata',
   argTypes: {
@@ -25,6 +35,7 @@ export const ManifestMetadata = {
     </IIIFPlayer>
   ),
   args: {
+    ...defaultState,
     manifestUrl: `${config.url}/storybook-manifests/${config.env}/lunchroom-manners.json`,
   },
 };
@@ -40,6 +51,7 @@ export const CanvasMetadata = {
     </IIIFPlayer>
   ),
   args: {
+    ...defaultState,
     manifestUrl: `${config.url}/storybook-manifests/${config.env}/playlist-manifest.json`,
   },
 };
