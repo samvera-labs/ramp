@@ -44,6 +44,33 @@ export const WithManifestUrl = {
     </IIIFPlayer>
   ),
   args: {
+    customErrorMessage: '',
+    emptyManifestMessage: '',
+    startCanvasId: '',
+    startCanvasTime: 0,
     manifestUrl: `${config.url}/storybook-manifests/${config.env}/lunchroom-manners.json`,
+  },
+};
+
+export const EmptyManifest = {
+  name: 'Empty Manifest',
+  argTypes: {
+    manifestUrl: manifestUrlControl,
+    manifest: { table: { disable: true } },
+  },
+  render: (args) => (
+    <IIIFPlayer key={hashArgs(args)} {...args}>
+      <div className="iiif-player-demo">
+        <MediaPlayer />
+        <StructuredNavigation />
+      </div>
+    </IIIFPlayer>
+  ),
+  args: {
+    customErrorMessage: '',
+    emptyManifestMessage: '',
+    startCanvasId: '',
+    startCanvasTime: 0,
+    manifestUrl: `${config.url}/storybook-manifests/${config.env}/empty-manifest.json`,
   },
 };

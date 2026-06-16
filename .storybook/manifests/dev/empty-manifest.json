@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "http://www.w3.org/ns/anno.jsonld",
+    "http://iiif.io/api/presentation/3/context.json"
+  ],
+  "type": "Manifest",
+  "id": "http://localhost:6060/storybook-manifests/dev/empty-manifest.json",
+  "label": {
+    "en": [
+      "Empty Manifest"
+    ]
+  },
+  "metadata": [],
+  "items": []
+}

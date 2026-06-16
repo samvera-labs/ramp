@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "http://www.w3.org/ns/anno.jsonld",
+    "http://iiif.io/api/presentation/3/context.json"
+  ],
+  "type": "Manifest",
+  "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/empty-manifest.json",
+  "label": {
+    "en": [
+      "Empty Manifest"
+    ]
+  },
+  "metadata": [],
+  "items": []
+}
