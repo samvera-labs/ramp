@@ -1,0 +1,313 @@
+{
+  "@context": [
+    "http://www.w3.org/ns/anno.jsonld",
+    "http://iiif.io/api/presentation/3/context.json"
+  ],
+  "type": "Manifest",
+  "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest.json",
+  "label": {
+    "none": [
+      "Playlist Manifest [Playlist]"
+    ]
+  },
+  "behavior": [
+    "auto-advance"
+  ],
+  "metadata": [
+    {
+      "label": {
+        "none": [
+          "Title"
+        ]
+      },
+      "value": {
+        "none": [
+          "Playlist Manifest [Playlist]"
+        ]
+      }
+    }
+  ],
+  "items": [
+    {
+      "type": "Canvas",
+      "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1",
+      "label": {
+        "none": [
+          "Lunchroom Manners"
+        ]
+      },
+      "width": 480,
+      "height": 360,
+      "duration": 572.034,
+      "placeholderCanvas": {
+        "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/placeholder",
+        "type": "Canvas",
+        "width": 640,
+        "height": 360,
+        "items": [
+          {
+            "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/placeholder/1",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/placeholder/1-image",
+                "type": "Annotation",
+                "motivation": "painting",
+                "body": {
+                  "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/lunchroom_manners_poster.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg",
+                  "width": 640,
+                  "height": 360
+                },
+                "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/placeholder"
+              }
+            ]
+          }
+        ]
+      },
+      "items": [
+        {
+          "type": "AnnotationPage",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/page/1",
+          "items": [
+            {
+              "type": "Annotation",
+              "motivation": "painting",
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/page/1/annotation/1",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1",
+              "body": {
+                "type": "Choice",
+                "choiceHint": "user",
+                "items": [
+                  {
+                    "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0,572.0",
+                    "type": "Video",
+                    "height": 360,
+                    "width": 480,
+                    "duration": 572.0,
+                    "format": "video/mp4",
+                    "label": {
+                      "none": [
+                        "High"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/medium/lunchroom_manners_512kb.mp4#t=0,572.0",
+                    "type": "Video",
+                    "height": 360,
+                    "width": 480,
+                    "duration": 572.0,
+                    "format": "video/mp4",
+                    "label": {
+                      "none": [
+                        "Medium"
+                      ]
+                    }
+                  },
+                  {
+                    "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0,572.0",
+                    "type": "Video",
+                    "height": 360,
+                    "width": 480,
+                    "duration": 572.0,
+                    "format": "video/mp4",
+                    "label": {
+                      "none": [
+                        "Low"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "type": "AnnotationPage",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/annotation_page/1",
+          "items": [
+            {
+              "type": "Annotation",
+              "motivation": "highlighting",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "value": "Marker 1"
+              },
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/marker/1",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1#t=2.836"
+            },
+            {
+              "type": "Annotation",
+              "motivation": "highlighting",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "value": "Marker 2"
+              },
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1/marker/2",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1#t=369.811"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Canvas",
+      "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/2",
+      "label": {
+        "none": [
+          "Lunchroom Manners - There will be Cake"
+        ]
+      },
+      "width": 480,
+      "height": 360,
+      "duration": 99,
+      "items": [
+        {
+          "type": "AnnotationPage",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/2/page/1",
+          "items": [
+            {
+              "type": "Annotation",
+              "motivation": "painting",
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/2/page/1/annotation/1",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/2",
+              "body": {
+                "id": "https://samvera-labs.github.io/ramp/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=301,400",
+                "type": "Video",
+                "height": 360,
+                "width": 480,
+                "duration": 99,
+                "format": "video/mp4"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3",
+      "type": "Canvas",
+      "label": {
+        "none": [
+          "Volleyball for Boys"
+        ]
+      },
+      "width": 1920,
+      "height": 1080,
+      "duration": 662.037,
+      "items": [
+        {
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3/page/1",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3/page/1/annotation/1",
+              "type": "Annotation",
+              "motivation": "painting",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3",
+              "body": {
+                "id": "https://samvera-labs.github.io/ramp/volleyball-for-boys/volleyball-for-boys.mp4#t=400.32,642.45",
+                "type": "Video",
+                "format": "video/mp4",
+                "height": 1080,
+                "width": 1920,
+                "duration": 662.037
+              }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "type": "AnnotationPage",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3/annotation_page/1",
+          "items": [
+            {
+              "type": "Annotation",
+              "motivation": "highlighting",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "value": "Marker 1"
+              },
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3/marker/1",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1#t=405.836"
+            },
+            {
+              "type": "Annotation",
+              "motivation": "highlighting",
+              "body": {
+                "type": "TextualBody",
+                "format": "text/html",
+                "value": "Marker 2"
+              },
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3/marker/2",
+              "target": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1#t=600.432"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "structures": [
+    {
+      "type": "Range",
+      "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/range/1",
+      "label": null,
+      "behavior": "top",
+      "items": [
+        {
+          "type": "Range",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/range/2",
+          "label": {
+            "none": [
+              "Lunchroom Manners"
+            ]
+          },
+          "items": [
+            {
+              "type": "Canvas",
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/1#t=0,"
+            }
+          ]
+        },
+        {
+          "type": "Range",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/range/3",
+          "label": {
+            "none": [
+              "There will be Cake"
+            ]
+          },
+          "items": [
+            {
+              "type": "Canvas",
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/2#t=301,400"
+            }
+          ]
+        },
+        {
+          "type": "Range",
+          "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/range/4",
+          "label": {
+            "none": [
+              "Volleyball for Boys"
+            ]
+          },
+          "items": [
+            {
+              "type": "Canvas",
+              "id": "https://samvera-labs.github.io/ramp/storybook-manifests/prod/playlist-manifest/canvas/3#t=400.32,642.45"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
