@@ -40,6 +40,8 @@ const propControls = {
   manifestUrl: manifestUrlControl,
   displayMotivations: {
     control: { type: 'check' },
+    description: 'Choose one or more of the IIIF supported Annotation [motivations](https://iiif.io/api/registry/motivations/) from\
+    the list to display related annotations in the Canvas.',
     options: ['highlighting', 'commenting', 'supplementing', 'tagging'],
     table: { type: { summary: 'string[] (multi-select)' } },
   },
@@ -59,7 +61,8 @@ export const HighlightingMotivation = {
   args: {
     manifestUrl: `${config.url}/storybook-manifests/${config.env}/playlist-manifest.json`,
     headingText: 'Markers',
-    displayMotivations: ['highlighting']
+    displayMotivations: ['highlighting'],
+    showHeading: true,
   },
 };
 
@@ -70,12 +73,12 @@ export const OtherMotivations = {
     // Show more settings for textual annotations
     enableShowMore: {
       control: { type: 'boolean' },
-      description: 'Enable Show more/less toggle for long annotation texts',
+      description: 'Enable \'Show more/less\' toggle button for long annotation texts.',
       table: { category: 'showMoreSettings' },
     },
     textLineLimit: {
       control: { type: 'number', min: 1 },
-      description: 'Number of lines to show before truncating',
+      description: 'Number of lines to show before truncating the annotation text.',
       table: { category: 'showMoreSettings' },
     },
   },
@@ -92,5 +95,6 @@ export const OtherMotivations = {
     displayMotivations: [],
     enableShowMore: false,
     textLineLimit: 6,
+    showHeading: true,
   },
 };

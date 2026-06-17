@@ -10,7 +10,6 @@
   .ramp--metadata-display-title {
     border: 0.05rem solid vars.$primaryLight;
     border-radius: 0.25rem 0.25rem 0 0;
-    margin-bottom: 1rem;
     background: vars.$primaryLightest;
 
     h4 {
@@ -30,7 +29,12 @@
 
     &.with-heading {
       border: 0.05rem solid vars.$primaryLight;
+      border-top: none;
       padding: 1rem;
+      // Remove top margin when heading is displayed
+      >dl {
+        margin-top: 0;
+      }
     }
 
     >span {
@@ -62,5 +66,11 @@
     a {
       color: vars.$primaryGreenDark;
     }
+  }
+
+  .ramp--metadata-display-message.with-heading {
+    border: 0.05rem solid vars.$primaryLight;
+    border-top: none;
+    padding: 1rem;
   }
 }

@@ -1,0 +1,9 @@
+@use '../src/styles/vars.scss';
+
+/* Styling for components and others in the Storybook docs site */
+
+// Add a border to the transcript component in the Storybook docs site
+.ramp--transcript_nav {
+  border: 1px solid vars.$primaryLighter;
+  border-radius: 0.25rem;
+}

@@ -5,9 +5,10 @@ import { timeToS } from '@Services/utility-helpers';
 import CreateMarker from './MarkerAnnotations/CreateMarker';
 import MarkerRow from './MarkerAnnotations/MarkerRow';
 import { useErrorBoundary } from 'react-error-boundary';
-import './Annotations.scss';
 import AnnotationList from './OtherAnnotations/AnnotationList';
 import { useAnnotations } from '@Services/ramp-hooks';
+import './Annotations.scss';
+import cx from 'classnames';
 
 /**
  * Display annotations from 'annotations' list associated with the current Canvas
@@ -25,6 +26,12 @@ const Annotations = ({
   showHeading = true,
   showMoreSettings = { enableShowMore: false, textLineLimit: 6 },
 }) => {
+  // Default showMoreSettings
+  const defaultShowMoreSettings = { enableShowMore: false, textLineLimit: 6 };
+
+  // Fill in missing properties, e.g. if prop only set to { enableShowMore: true }
+  showMoreSettings = { ...defaultShowMoreSettings, ...showMoreSettings, };
+
   const { allCanvases, annotations, canvasDuration, canvasIndex, playlist } = useManifestState();
   const manifestDispatch = useManifestDispatch();
 
@@ -173,7 +180,7 @@ const Annotations = ({
   }, [canvasPlaylistsMarkers]);
 
   return (
-    <div className={`ramp--annotations-display${showHeading ? ' with-heading' : ''}`}
+    <div className={cx('ramp--annotations-display', showHeading && 'with-heading')}
       data-testid='annotations-display'
       role='complementary'
       aria-label='annotations display'
@@ -206,10 +213,10 @@ const Annotations = ({
 };
 
 Annotations.propTypes = {
-  /** List of IIIF supported Annotation [motivations](https://iiif.io/api/registry/motivations/) to display in the current instance.
-   * An empty array displays `supplementing`, `commenting`, and `tagging` annotations related to the Canvas. For playlist manifests 
-   * Ramp overwrites the value of this prop to `['highlighting']`, as this component is intended for displaying markers in playlists.
-   * (**added in `@samvera/ramp@4.0.0`**) */
+  /** List of IIIF supported Annotation [motivations](https://iiif.io/api/registry/motivations/) to be displayed in the component.
+   * An empty array (default value) displays `supplementing`, `commenting`, and `tagging` annotations related to the Canvas.
+   * For playlist manifests, Ramp overwrites the current value of this prop to `['highlighting']`, as this component is only intended to
+   * display markers in playlists. * (**added in `@samvera/ramp@4.0.0`**) */
   displayMotivations: PropTypes.array,
   /** Label text shown in the component's heading. */
   headingText: PropTypes.string,

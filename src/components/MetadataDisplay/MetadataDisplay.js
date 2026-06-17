@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useManifestState } from '../../context/manifest-context';
 import { getMetadata } from '@Services/iiif-parser';
 import './MetadataDisplay.scss';
+import cx from 'classnames';
 
 /** 
  * Parse and display metadata, rights, and requiredStatement information
@@ -173,7 +174,10 @@ const MetadataDisplay = ({
       )}
       {hasMetadata
         ? (
-          <div className={`ramp--metadata-display-content${showHeading ? ' with-heading' : ''}`}>
+          <div className={cx(
+            'ramp--metadata-display-content',
+            showHeading && 'with-heading'
+          )}>
             {manifestMetadataBlock}
             {canvasMetadataBlock}
           </div>
@@ -181,7 +185,10 @@ const MetadataDisplay = ({
         : (
           <div
             data-testid='metadata-display-message'
-            className='ramp--metadata-display-message'>
+            className={cx(
+              'ramp--metadata-display-message',
+              showHeading && 'with-heading'
+            )}>
             <p>No valid Metadata is in the Manifest/Canvas(es)</p>
           </div>
         )
@@ -191,7 +198,7 @@ const MetadataDisplay = ({
 };
 
 MetadataDisplay.propTypes = {
-  /** Display only the active Canvas metadata instead of Manifest-level metadata. */
+  /** Display only the active Canvas metadata without Manifest-level metadata. */
   displayOnlyCanvasMetadata: PropTypes.bool,
   /** Display metadata for both the active Canvas and the Manifest. */
   displayAllMetadata: PropTypes.bool,

@@ -1,4 +1,5 @@
 import 'video.js/dist/video-js.css';
+import './storybook-styles.scss';
 
 /**
  * Generate a hash for the given arguments. Used in IIIFPlayer component on storybook stories to create a unique key for
@@ -15,7 +16,7 @@ export const hashArgs = (args) =>
 /********** Shared Storybook Controls **********/
 export const manifestUrlControl = {
   control: { type: 'text' },
-  description: 'IIIF Manifest URL',
+  description: 'IIIF Manifest URL for creating state in Context Providers in Ramp',
   table: { category: 'IIIFPlayer' },
 };
 
@@ -46,7 +47,12 @@ export const videoJSLanguageOptions = {
 const preview = {
   parameters: {
     controls: {
-      disableSaveFromUI: true
+      disableSaveFromUI: true,
+      expanded: true,
+    },
+    docs: {
+      // Display a code tab in the controls panel
+      codePanel: true
     },
   },
 };

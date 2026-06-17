@@ -21,31 +21,32 @@ const propControls = {
   playerID: { table: { disable: true } },
   showMoreSettings: { table: { disable: true } },
   search: { table: { disable: true } },
+  transcripts: { table: { disable: true } },
   // Show more settings for cues
   enableShowMore: {
     control: { type: 'boolean' },
-    description: 'Enable Show more/less toggle for long annotation texts',
+    description: 'Enable \'Show more/less\' toggle for longer cues.',
     table: { category: 'showMoreSettings' },
   },
   textLineLimit: {
     control: { type: 'number', min: 1 },
-    description: 'Number of lines in the cue to show before truncating',
+    description: 'Number of lines in the cue to show before truncating longer cues.',
     table: { category: 'showMoreSettings' },
   },
   // Search settings
   enableSearch: {
     control: { type: 'boolean' },
-    description: 'Enable/disable the transcript search feature',
+    description: 'Enable/disable the transcript search feature.',
     table: { category: 'search' },
   },
   showMarkers: {
     control: { type: 'boolean' },
-    description: 'Show/hide search hit markers',
+    description: 'Show/hide search hit markers in the player\'s progress-bar rail.',
     table: { category: 'search' },
   },
   matchesOnly: {
     control: { type: 'boolean' },
-    description: 'Only display transcript lines with search hits',
+    description: 'Only display cues with search hits for the current search query.',
     table: { category: 'search' },
   },
 };
@@ -176,13 +177,6 @@ const NonRampPlayer = ({ playerID, source }) => {
 export const DecoupledTranscripts = {
   tags: ['!dev'], // Remove this story from side-panel and only display in docs
   argTypes: { ...propControls },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Use the primary button for the main call-to-action on a page.',
-      },
-    },
-  },
   render: (args) => (
     <div key={hashStoryArgs(args)}>
       <StubPlayer playerID={args.playerID} />
@@ -199,8 +193,6 @@ export const DecoupledManifestUrl = {
   name: 'With manifestUrl prop and Ramp player [decoupled]',
   argTypes: {
     ...propControls,
-    // Remove 'transcripts' prop from controls for this example
-    transcripts: { table: { disable: true } },
     // Remove showMarkers prop from controls because without Context providers search hit markers don't work
     showMarkers: { table: { disable: true } }
   },
@@ -227,32 +219,41 @@ export const WithExternalPlayer = {
     // Use a separate category to facilitate providing external media source URL for the non-Ramp player
     sourceUrl: {
       control: { type: 'text' },
-      description: 'Media file URL used to set up the non-Ramp player (not a Transcript prop)',
+      description: 'Media file URL to set as the `src` attribute of the non-Ramp player on the page (not a Transcript prop)',
       table: { category: 'external player' },
     },
     // Remove showMarkers prop from controls because without Context providers search hit markers don't work
-    showMarkers: { table: { disable: true } }
+    showMarkers: { table: { disable: true } },
+    transcripts: {
+      control: { type: 'object' },
+      description: 'Array of transcripts for the player in `[{ title: string, url: string }]` format. Since this instance with the\
+      external player has a single Canvas, the prop is set to accept only a list of transcripts.\
+      IIIF Manifests, Word documents (.docx), plain text files, WebVTT, and SRT can be given as transcripts. \
+      To identify machine generated transcripts type `Machine generated/machine-generated` in paranthesis after the title of\
+      the transcript. **Please edit the entire object at once using the edit icon next to the value.**',
+      table: { category: 'external player' },
+    }
   },
-  render: (args) => (
-    <div key={hashStoryArgs(args)}>
-      <NonRampPlayer
-        playerID={args.playerID}
-        source={args.sourceUrl}
-      />
-      <Transcript {...buildProps(args)} />
-    </div>
-  ),
+  render: ((args) => {
+    const { transcripts, ...rest } = args;
+    const transcriptProp = [{ canvasId: 0, items: transcripts }];
+    const storyArgs = { ...rest, transcripts: transcriptProp };
+    return (
+      <div key={hashStoryArgs(storyArgs)}>
+        <NonRampPlayer
+          playerID={storyArgs.playerID}
+          source={storyArgs.sourceUrl}
+        />
+        <Transcript {...buildProps(storyArgs)} />
+      </div>
+    );
+  }),
   args: {
     ...defaultState,
     transcripts: [
-      {
-        canvasId: 0,
-        items: [
-          { title: 'Structured JSON object list', url: `${config.url}/transcripts/lunchroom_base.json` },
-          { title: 'WebVTT Transcript (machine generated)', url: `${config.url}/lunchroom_manners/lunchroom_manners.vtt` },
-          { title: 'SRT Transcript', url: `${config.url}/lunchroom_manners/lunchroom_manners.srt` },
-        ]
-      }
+      { title: 'Structured JSON object list', url: `${config.url}/transcripts/lunchroom_base.json` },
+      { title: 'WebVTT Transcript (machine generated)', url: `${config.url}/lunchroom_manners/lunchroom_manners.vtt` },
+      { title: 'SRT Transcript', url: `${config.url}/lunchroom_manners/lunchroom_manners.srt` },
     ],
     sourceUrl: `${config.url}/lunchroom_manners/medium/lunchroom_manners_512kb.mp4`
   },
@@ -263,8 +264,6 @@ export const WithStateProviders = {
   argTypes: {
     ...propControls,
     manifestUrl: manifestUrlControl,
-    // Remove 'transcripts' prop from controls for this example
-    transcripts: { table: { disable: true } },
   },
   render: (args) => (
     <IIIFPlayer key={hashStoryArgs(args)} manifestUrl={args.manifestUrl}>
