@@ -1,5 +1,5 @@
 import 'video.js/dist/video-js.css';
-import './storybook-styles.scss';
+import '../src/styles/main.scss';
 
 /**
  * Generate a hash for the given arguments. Used in IIIFPlayer component on storybook stories to create a unique key for
@@ -53,6 +53,14 @@ const preview = {
     docs: {
       // Display a code tab in the controls panel
       codePanel: true
+    },
+    options: {
+      storySort: {
+        method: 'alphabetical', // Sorts items without a specified order alphabetically
+        order: [
+          'Introduction', ['Getting Started', 'Contributing'],
+          'Components', ['IIIFPlayer', 'MediaPlayer', 'StructuredNavigation', 'Transcript', 'Annotations']]
+      },
     },
   },
 };
