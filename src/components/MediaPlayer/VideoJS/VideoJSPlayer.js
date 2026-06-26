@@ -37,6 +37,7 @@ import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 import VideoJSADButton from './components/js/VideoJSADButton';
+import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
 
 /**
  * Module to setup VideoJS instance on initial page load and update
@@ -817,6 +818,7 @@ function VideoJSPlayer({
         - appearance of the player: big play button and aspect ratio of the player
         based on media type
         - file download menu
+        - logout menu for authenticated resources
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
@@ -903,6 +905,22 @@ function VideoJSPlayer({
           controlBar.addChild('videoJSFileDownload', { ...fileOptions },
             fileDownloadIndex
           );
+        }
+      }
+
+      if (authService?.logoutService && auth.status === 'authorized') {
+        if (!isVideo) {
+          // Index of the full-screen toggle in the player's control bar
+          const fullscreenIndex = controlBar.children()
+            .findIndex((c) => c.name_ == 'FullscreenToggle');
+          console.log(authService?.logoutService?.label);
+          controlBar.addChild('VideoJSAuthMenu', {
+            title: 'Authenticated',
+            label: authService?.logoutService?.label,
+            onLogout: () => manifestDispatch({ type: 'logout' }),
+          }, fullscreenIndex);
+        } else {
+          controlBar.removeChild('VideoJSAuthMenu');
         }
       }
     }
@@ -1691,13 +1709,15 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {authService && auth?.status !== 'authorized' && (
+      {authService && (
         <AuthOverlay
           authService={authService}
           authToken={auth.token}
           authStatus={auth.status}
+          isVideo={isVideo}
           onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
           onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
+          onLogout={() => manifestDispatch({ type: 'logout' })}
         />
       )}
       {(hasStructure || isPlaylist) &&

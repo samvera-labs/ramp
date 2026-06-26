@@ -92,6 +92,20 @@ export function requestTokenViaIframe(tokenServiceUrl, origin) {
 }
 
 /**
+ * Request logout from the logout service with type='AuthLogoutService2'
+ * @param {String} logoutServiceId URL of the AuthLogoutService2
+ * @returns {Promise<void>}
+ */
+export function requestLogout(logoutServiceId) {
+  return new Promise((resolve) => {
+    fetch(logoutServiceId, { mode: 'no-cors', credentials: 'include' })
+      .catch(() => { })
+      .finally(resolve);
+    return;
+  });
+}
+
+/**
  * Generate a random message ID for correlating postMessage responses
  * @returns {String} randomly generated, 36 character long v4 UUID
  */
