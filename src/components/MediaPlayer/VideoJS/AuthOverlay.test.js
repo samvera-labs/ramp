@@ -7,28 +7,29 @@ jest.mock('dompurify', () => ({ sanitize: (html) => html }));
 jest.mock('@Services/auth-service', () => ({
   probeResource: jest.fn(),
   requestTokenViaIframe: jest.fn(),
+  requestLogout: jest.fn(),
 }));
 
 const mockAccessService = {
   id: 'http://example.com/auth/login',
   profile: 'active',
-  label: { en: ['Login Required'] },
-  heading: { en: ['Please Log In'] },
-  note: { en: ['This application requires that you log in with your account to view this content.'] },
-  confirmLabel: { en: ['Log In'] },
+  label: 'Login Required',
+  heading: 'Please Log In',
+  note: 'This application requires that you log in with your account to view this content.',
+  confirmLabel: 'Log In',
 };
 
 const defaultAuthService = {
   probe: {
     id: 'http://example.com/auth/probe',
-    errorHeading: { en: ['No access'] },
-    errorNote: { en: ['You do not have permission'] },
+    errorHeading: 'No access',
+    errorNote: 'You do not have permission',
   },
   accessService: mockAccessService,
   tokenService: {
     id: 'http://example.com/auth/token',
-    errorHeading: { en: ['Something went wrong'] },
-    errorNote: { en: ['Could not get a token.'] },
+    errorHeading: 'Something went wrong',
+    errorNote: 'Could not get a token.',
   },
   restricted: false,
 };
@@ -57,22 +58,59 @@ describe('AuthOverlay', () => {
   });
 
   describe('does not render', () => {
-    test('when authStatus=\'authorized\'', () => {
-      render(<AuthOverlay {...props} authStatus='authorized' />);
-      expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+    describe('login overlay when', () => {
+      describe('authStatus="authorized"', () => {
+        test('with a logoutService in a video player', () => {
+          render(<AuthOverlay {...props} authStatus='authorized' isVideo={true}
+            authService={{
+              ...defaultAuthService,
+              logoutService: { id: 'http://example.com/auth/logout' }
+            }}
+          />);
+          expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+        });
+
+        test('without a logoutService in a video player', () => {
+          render(<AuthOverlay {...props} authStatus='authorized' isVideo={true} />);
+          expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+        });
+
+        test('with a logoutService in an audio-only player', () => {
+          render(<AuthOverlay {...props} authStatus='authorized' isVideo={false} />);
+          expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+        });
+      });
+
+      test('authStatus="idle" with probeResource returning 200', () => {
+        /* Mock probeResource to return 200, so that auth overlay is not
+         displayed with authStatus='authorized' */
+        authService.probeResource.mockResolvedValue({ status: 200 });
+        render(<AuthOverlay {...props} authStatus='idle' />);
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
+
+      test('authStatus="probing"', () => {
+        render(<AuthOverlay {...props} authStatus='probing' />);
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
+
+      test('authStatus="cancelled"', () => {
+        render(<AuthOverlay {...props} authStatus='cancelled' />);
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
     });
 
-    test('when authStatus=\'idle\'', () => {
-      /* Mock probeResource to return 200, so that auth overlay is not
-       displayed with authStatus='authorizd' */
-      authService.probeResource.mockResolvedValue({ status: 200 });
-      render(<AuthOverlay {...props} authStatus='idle' />);
-      expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
-    });
+    describe('authenticated badge when authStatus="authorized" for', () => {
+      test('an audio-only player', () => {
+        render(<AuthOverlay {...props} authStatus='authorized' isVideo={false}
+          authService={{ ...defaultAuthService, logoutService: { id: 'http://example.com/auth/logout' } }} />);
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+      });
 
-    test('when authStatus=\'probing\'', () => {
-      render(<AuthOverlay {...props} authStatus='probing' />);
-      expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      test('a video player when logoutService is undefined', () => {
+        render(<AuthOverlay {...props} authStatus='authorized' isVideo={true} authService={defaultAuthService} />);
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+      });
     });
   });
 
@@ -101,9 +139,13 @@ describe('AuthOverlay', () => {
     });
 
     describe('restricted overlay (no login/cancel buttons) when', () => {
+      // Null accessService without id
+      const nullAccessService = {
+        heading: 'No access', note: 'You do not have permission'
+      };
       test('accessService is missing; shows probe errorHeading and errorNote', () => {
         render(<AuthOverlay {...props} authStatus='login-required'
-          authService={{ ...defaultAuthService, accessService: null, restricted: true }} />);
+          authService={{ ...defaultAuthService, accessService: nullAccessService, restricted: true }} />);
 
         expect(screen.getByText('No access')).toBeInTheDocument();
         expect(screen.getByText('You do not have permission')).toBeInTheDocument();
@@ -125,7 +167,7 @@ describe('AuthOverlay', () => {
         render(<AuthOverlay {...props} authStatus='login-required'
           authService={{
             probe: { id: 'http://example.com/auth/probe' },
-            accessService: null, tokenService: null, restricted: true
+            accessService: nullAccessService, tokenService: null, restricted: true
           }} />);
 
         expect(screen.getByText('Restricted content')).toBeInTheDocument();
@@ -281,6 +323,95 @@ describe('AuthOverlay', () => {
     test('does not render the overlay when authStatus=\'cancelled\'', () => {
       render(<AuthOverlay {...props} authStatus='cancelled' />);
       expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('authenticated badge', () => {
+    const onLogoutMock = jest.fn();
+    const logoutServiceId = 'http://example.com/auth/logout';
+    const authorizedProps = {
+      ...props,
+      authStatus: 'authorized',
+      authService: {
+        ...defaultAuthService,
+        logoutService: { id: logoutServiceId, label: 'Log out from Avalon' }
+      },
+      isVideo: true,
+      onLogout: onLogoutMock,
+    };
+
+    afterEach(() => onLogoutMock.mockClear());
+
+    test('renders with an "Authenticated" label', () => {
+      render(<AuthOverlay {...authorizedProps} />);
+      const badge = screen.getByTestId('auth-badge');
+      expect(badge).toBeInTheDocument();
+      expect(badge).toHaveTextContent('Authenticated');
+    });
+
+    test('has the logout menu closed by default', () => {
+      render(<AuthOverlay {...authorizedProps} />);
+      expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+    });
+
+    describe('opens a logout menu', () => {
+      test('when clicked on the authenticated badge', () => {
+        render(<AuthOverlay {...authorizedProps} />);
+        fireEvent.click(screen.getByTestId('auth-badge'));
+        expect(screen.getByTestId('auth-badge-menu')).toBeInTheDocument();
+        expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'true');
+      });
+
+      test('with a logout label and a button when logoutService has a label', () => {
+        render(<AuthOverlay {...authorizedProps} />);
+        fireEvent.click(screen.getByTestId('auth-badge'));
+
+        expect(screen.getByTestId('auth-badge-labelitem')).toBeInTheDocument();
+        expect(screen.getByTestId('auth-badge-logout-btn')).toHaveTextContent('Log out');
+      });
+
+      test('without a logout label when logoutService doesn\'t have a label', () => {
+        render(<AuthOverlay {...authorizedProps}
+          authService={{ ...defaultAuthService, logoutService: { id: logoutServiceId } }} />);
+
+        fireEvent.click(screen.getByTestId('auth-badge'));
+
+        expect(screen.queryByTestId('auth-badge-labelitem')).not.toBeInTheDocument();
+        expect(screen.getByTestId('auth-badge-logout-btn')).toHaveTextContent('Log out');
+      });
+
+      describe('with a logout button that,', () => {
+        test('calls requestLogout and onLogout when clicked', () => {
+          render(<AuthOverlay {...authorizedProps} />);
+          fireEvent.click(screen.getByTestId('auth-badge'));
+          fireEvent.click(screen.getByTestId('auth-badge-logout-btn'));
+
+          expect(authService.requestLogout).toHaveBeenCalledWith(logoutServiceId);
+          expect(onLogoutMock).toHaveBeenCalledTimes(1);
+          expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+          expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
+        });
+      });
+    });
+
+    test('closes the menu when clicked again', () => {
+      render(<AuthOverlay {...authorizedProps} />);
+      const badge = screen.getByTestId('auth-badge');
+      fireEvent.click(badge);
+      fireEvent.click(badge);
+      expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+      expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    test('closes the menu when clicked outside', () => {
+      render(<AuthOverlay {...authorizedProps} />);
+      fireEvent.click(screen.getByTestId('auth-badge'));
+      expect(screen.getByTestId('auth-badge-menu')).toBeInTheDocument();
+      expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'true');
+
+      fireEvent.mouseDown(document.body);
+      expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+      expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
     });
   });
 });

@@ -47,13 +47,13 @@ export default {
                           {
                             id: 'http://example.com/auth/token',
                             type: 'AuthAccessTokenService2',
-                            errorHeading: { en: ['Something went wrong'] },
-                            errorNote: { en: ['Could not get a token.'] }
+                            errorHeading: { en: ['Something went wrong with the token service'] },
+                            errorNote: { en: ['Could not get a token. Please contact support.'] }
                           },
                           {
                             id: 'http://example.com/auth/logout',
                             type: 'AuthLogoutService2',
-                            label: { en: ['Log out'] }
+                            label: { en: ['Log out from service'] }
                           }
                         ]
                       }
@@ -133,17 +133,8 @@ export default {
                             note: { en: ['Please log in with your institution credentials'] },
                             confirmLabel: { en: ['Log in'] },
                             service: [
-                              {
-                                id: 'http://example.com/auth/token',
-                                type: 'AuthAccessTokenService2',
-                                errorHeading: { en: ['Something went wrong'] },
-                                errorNote: { en: ['Could not get a token.'] }
-                              },
-                              {
-                                id: 'http://example.com/auth/logout',
-                                type: 'AuthLogoutService2',
-                                label: { en: ['Log out'] }
-                              }
+                              { id: 'http://example.com/auth/token', type: 'AuthAccessTokenService2' },
+                              { id: 'http://example.com/auth/logout', type: 'AuthLogoutService2' }
                             ]
                           }
                         ]
@@ -172,17 +163,8 @@ export default {
                             note: { en: ['Please log in with your institution credentials'] },
                             confirmLabel: { en: ['Log in'] },
                             service: [
-                              {
-                                id: 'http://example.com/auth/token',
-                                type: 'AuthAccessTokenService2',
-                                errorHeading: { en: ['Something went wrong'] },
-                                errorNote: { en: ['Could not get a token.'] }
-                              },
-                              {
-                                id: 'http://example.com/auth/logout',
-                                type: 'AuthLogoutService2',
-                                label: { en: ['Log out'] }
-                              }
+                              { id: 'http://example.com/auth/token', type: 'AuthAccessTokenService2' },
+                              { id: 'http://example.com/auth/logout', type: 'AuthLogoutService2' }
                             ]
                           }
                         ]
@@ -276,6 +258,33 @@ export default {
           ]
         }
       ]
-    }
+    },
+    {
+      id: 'http://example.com/auth-manifest/canvas/6',
+      type: 'Canvas',
+      duration: 56.6,
+      label: { en: ['Other Service Canvas'] },
+      items: [
+        {
+          id: 'http://example.com/auth-manifest/canvas/6/page/1',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/auth-manifest/canvas/6/page/1/annotation/1',
+              type: 'Annotation',
+              motivation: 'painting',
+              target: 'http://example.com/auth-manifest/canvas/6',
+              body: {
+                id: 'http://example.com/auth-manifest/video/other.mp4',
+                type: 'Video',
+                format: 'video/mp4',
+                duration: 56.6,
+                service: [{ id: 'http://example.com/other', type: 'OtherService' }]
+              }
+            }
+          ]
+        }
+      ]
+    },
   ]
 };

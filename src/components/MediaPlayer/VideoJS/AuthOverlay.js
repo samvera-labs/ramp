@@ -62,7 +62,7 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
       });
   }, [authStatus]);
 
-  // Close the logout menu on outside click or Escape, and restore focus to the badge button
+  // Close the logout menu on outside click
   useEffect(() => {
     if (!menuOpen) return;
 
@@ -213,23 +213,25 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
           onClick={() => setMenuOpen((mo) => !mo)}
           aria-haspopup='true' aria-expanded={menuOpen}
           aria-label={`Account menu for sign-out`}
+          data-testid='auth-badge'
         >
           <UserIcon />
           <span className='ramp--auth-overlay__badge-name'>Authenticated</span>
           <SearchArrow flip={menuOpen} />
         </button>
         {menuOpen && (
-          <div className='ramp--auth-overlay__badge-menu' role='menu'>
+          <div className='ramp--auth-overlay__badge-menu' role='menu' data-testid='auth-badge-menu'>
             {logoutService.label && (
-              <>
+              <div data-testid='auth-badge-labelitem'>
                 <p className='ramp--auth-overlay__badge-menu-name'>{logoutService.label}</p>
                 <div className='ramp--auth-overlay__badge-menu-divider' />
-              </>
+              </div>
             )}
             <button
               className='ramp--auth-overlay__badge-menu-logout'
               onClick={handleLogout}
               role='menuitem'
+              data-testid='auth-badge-logout-btn'
             >
               <SignOutIcon /> Log out
             </button>
@@ -259,7 +261,7 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
         ) : (
           <>
             {heading && (
-              <div className='ramp--auth-overlay__header' data-testid='auth-overlay-heading'>
+              <div className='ramp--auth-overlay__header'>
                 <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(heading) }} />
               </div>
             )}

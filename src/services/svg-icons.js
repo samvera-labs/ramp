@@ -143,7 +143,10 @@ export const LockedSVGIcon = () => {
 export const SearchArrow = ({ flip = false }) => {
   return (
     <svg viewBox="0 0 1024 1024" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"
-      style={{ height: '1rem', width: '1rem', scale: 0.8, transform: flip ? 'rotate(180deg)' : 'rotate(0)' }}>
+      style={{
+        height: '1rem', width: '1rem', scale: 0.8, transform: flip ? 'rotate(180deg)' : 'rotate(0)',
+        transition: 'transform 0.4s ease-in-out'
+      }}>
       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
       <g id="SVGRepo_iconCarrier">
