@@ -56,6 +56,7 @@ export const useMarkers = () => {
  * lastCanvasIndex: number,
  * player: object 
  * getCurrentTime: func, 
+ * resetPlayerContainer: func,
  * }
  */
 export const useMediaPlayer = () => {
@@ -112,6 +113,32 @@ export const useMediaPlayer = () => {
     }
   }, [manifestState]);
 
+  /**
+   * Reset the player to Video player's aspect ratio (16:9) on logout from IIIF Auth.
+   * This restores the player container to a 16:9 aspect ratio before the 'AuthOverlay'
+   * re-renders after auth state transition from 'authorized' -> 'idle'.
+   * At the same time; it resets the player so that, the previously authorized
+   * resource is no longer available for playback after logout.
+   */
+  const resetPlayerContainer = useCallback(() => {
+    const player = playerRef.current;
+
+    if (player) {
+      // Remove the VideoJSAuthMenu control from the control-bar
+      const controlBar = player.getChild('controlBar');
+      controlBar.removeChild('VideoJSAuthMenu');
+      // Restore original 16:9 aspect ratio and remove audio-only-mode
+      player.audioOnlyMode(false);
+      player.removeClass('vjs-audio-only-mode');
+      player.aspectRatio('16:9');
+      // Disable and reset player to remove authenticated resource
+      player.addClass('vjs-disabled');
+      player.src('');
+      player.tech().el().load();
+    }
+  }, [playerRef.current]);
+
+
   return {
     canvasIndex,
     canvasIsEmpty,
@@ -120,6 +147,7 @@ export const useMediaPlayer = () => {
     lastCanvasIndex,
     player,
     getCurrentTime,
+    resetPlayerContainer,
   };
 };
 

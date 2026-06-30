@@ -19,6 +19,12 @@
   .vjs-menu {
     left: unset;
     right: 0;
+
+    li {
+      text-transform: none;
+      text-align: initial;
+      padding-left: 0.5em;
+    }
   }
 }
 

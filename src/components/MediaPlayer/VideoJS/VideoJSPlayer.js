@@ -18,6 +18,7 @@ import {
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
+import { requestLogout } from '@Services/auth-service';
 import { showResumeModal } from './VideoJSResumeModal';
 import { showErrorModal } from './components/js/VideoJSErrorModal';
 import AuthOverlay from './AuthOverlay';
@@ -113,7 +114,7 @@ function VideoJSPlayer({
   const resumeModalRef = useRef(null);
   const vjsErrorModalRef = useRef(null);
 
-  const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
+  const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
 
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -818,7 +819,7 @@ function VideoJSPlayer({
         - appearance of the player: big play button and aspect ratio of the player
         based on media type
         - file download menu
-        - logout menu for authenticated resources
+        - auth menu for authenticated resources
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
@@ -913,11 +914,14 @@ function VideoJSPlayer({
           // Index of the full-screen toggle in the player's control bar
           const fullscreenIndex = controlBar.children()
             .findIndex((c) => c.name_ == 'FullscreenToggle');
-          console.log(authService?.logoutService?.label);
           controlBar.addChild('VideoJSAuthMenu', {
             title: 'Authenticated',
             label: authService?.logoutService?.label,
-            onLogout: () => manifestDispatch({ type: 'logout' }),
+            onLogout: () => {
+              resetPlayerContainer();
+              requestLogout(authService.logoutService.id);
+              manifestDispatch({ type: 'logout' });
+            },
           }, fullscreenIndex);
         } else {
           controlBar.removeChild('VideoJSAuthMenu');
@@ -1717,7 +1721,10 @@ function VideoJSPlayer({
           isVideo={isVideo}
           onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
           onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
-          onLogout={() => manifestDispatch({ type: 'logout' })}
+          onLogout={() => {
+            resetPlayerContainer();
+            manifestDispatch({ type: 'logout' });
+          }}
         />
       )}
       {(hasStructure || isPlaylist) &&

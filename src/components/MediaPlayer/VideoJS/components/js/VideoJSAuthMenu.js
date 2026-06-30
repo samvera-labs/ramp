@@ -76,6 +76,7 @@ class VideoJSAuthMenu extends MenuButton {
     }
 
     const logOutBtn = new MenuItem(player_, { label: 'Log out', selectable: false });
+    logOutBtn.controlText('Log out');
     logOutBtn.el().insertAdjacentHTML('afterbegin', `
       <svg class="vjs-logout-icon" role="presentation">
         <use xlink:href="#log-out"></use>

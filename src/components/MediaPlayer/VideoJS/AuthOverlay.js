@@ -201,11 +201,9 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
 
     const handleLogout = () => {
       setMenuOpen(false);
-      requestLogout(logoutService.id)
-        .catch(() => { })
-        .finally(() => {
-          onLogout();
-        });
+      // Requires requestLogout to be called here for the new tab to open
+      requestLogout(logoutService.id);
+      onLogout();
     };
 
     return (

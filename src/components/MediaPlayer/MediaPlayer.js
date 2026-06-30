@@ -8,6 +8,7 @@ import { useErrorBoundary } from 'react-error-boundary';
 import { IS_ANDROID, IS_IPAD, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
 import { loadVideoJSLanguage } from '@Services/videojs-language-loader';
+import { requestLogout } from '@Services/auth-service';
 
 const PLAYER_ID = 'iiif-media-player';
 
@@ -50,7 +51,7 @@ const MediaPlayer = ({
   let videoJSLangMap = useRef('{}');
   const [languageLoaded, setLanguageLoaded] = useState(false);
 
-  const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
+  const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
 
   const {
@@ -176,7 +177,7 @@ const MediaPlayer = ({
             enablePlaybackRate ? 'playbackRateMenuButton' : '',
             enablePIP ? 'pictureInPictureToggle' : '',
             enableFileDownload ? 'videoJSFileDownload' : '',
-            auth.status === 'authorized' ? 'VideoJSAuthMenu' : '',
+            (auth.status === 'authorized' && !isVideo) ? 'VideoJSAuthMenu' : '',
             'fullscreenToggle',
             // 'vjsYo',             custom component
           ],
@@ -191,10 +192,14 @@ const MediaPlayer = ({
             controlText: 'Alternate resource download',
             files: renderingFiles,
           },
-          VideoJSAuthMenu: {
+          VideoJSAuthMenu: (auth.status === 'authorized' && !isVideo) && {
             title: 'Authenticated',
             label: authService?.logoutService?.label,
-            onLogout: () => manifestDispatch({ type: 'logout' }),
+            onLogout: () => {
+              resetPlayerContainer();
+              requestLogout(authService.logoutService.id);
+              manifestDispatch({ type: 'logout' });
+            },
           },
           videoJSPreviousButton: isMultiCanvased &&
             { canvasIndex, switchPlayer },

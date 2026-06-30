@@ -92,17 +92,14 @@ export function requestTokenViaIframe(tokenServiceUrl, origin) {
 }
 
 /**
- * Request logout from the logout service with type='AuthLogoutService2'
+ * Request logout from the logout service with type='AuthLogoutService2'.
+ * According to the IIIF Auth 2.0 spec, the logout action presents the results of a
+ * GET request on the logout service’s URI in a separate tab/window with an address bar.
+ * https://iiif.io/api/auth/2.0/#logout-interaction
  * @param {String} logoutServiceId URL of the AuthLogoutService2
- * @returns {Promise<void>}
  */
 export function requestLogout(logoutServiceId) {
-  return new Promise((resolve) => {
-    fetch(logoutServiceId, { mode: 'no-cors', credentials: 'include' })
-      .catch(() => { })
-      .finally(resolve);
-    return;
-  });
+  window.open(logoutServiceId, '_blank');
 }
 
 /**
