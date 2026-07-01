@@ -96,7 +96,7 @@ export default {
       id: 'http://example.com/auth-manifest/canvas/3',
       type: 'Canvas',
       duration: 120,
-      label: { en: ['Multi Quality Video'] },
+      label: { en: ['Multi Quality Audio'] },
       items: [
         {
           id: 'http://example.com/auth-manifest/canvas/3/page/1',
@@ -112,14 +112,14 @@ export default {
                 choiceHint: 'user',
                 items: [
                   {
-                    id: 'http://example.com/auth-manifest/video/high.mp4',
-                    type: 'Video',
-                    format: 'video/mp4',
+                    id: 'http://example.com/auth-manifest/audio/high.mp3',
+                    type: 'Sound',
+                    format: 'audio/mp3',
                     duration: 300,
                     label: { en: ['High Quality'] },
                     service: [
                       {
-                        id: 'http://example.com/auth/probe?id=high.mp4',
+                        id: 'http://example.com/auth/probe?id=high.mp3',
                         type: 'AuthProbeService2',
                         errorHeading: { en: ['No access'] },
                         errorNote: { en: ['You do not have permission to access this resource'] },
@@ -142,14 +142,14 @@ export default {
                     ]
                   },
                   {
-                    id: 'http://example.com/auth-manifest/video/medium.mp4',
-                    type: 'Video',
-                    format: 'video/mp4',
+                    id: 'http://example.com/auth-manifest/audio/medium.mp3',
+                    type: 'Sound',
+                    format: 'audio/mp3',
                     duration: 300,
                     label: { en: ['Medium Quality'] },
                     service: [
                       {
-                        id: 'http://example.com/auth/probe?id=medium.mp4',
+                        id: 'http://example.com/auth/probe?id=medium.mp3',
                         type: 'AuthProbeService2',
                         errorHeading: { en: ['No access'] },
                         errorNote: { en: ['You do not have permission to access this resource'] },

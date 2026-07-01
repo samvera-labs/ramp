@@ -54,8 +54,8 @@ const MenuItem = videojs.getComponent('MenuItem');
 class VideoJSAuthMenu extends MenuButton {
   constructor(player, options) {
     super(player, options);
-    this.addClass('vjs-play-control vjs-control vjs-logout-menu');
-    this.setAttribute('data-testid', 'videojs-auth-icon');
+    this.addClass('vjs-play-control vjs-control vjs-auth-menu');
+    this.setAttribute('data-testid', 'videojs-auth-menu');
     this.controlText('Logout menu');
     this.el().firstChild.innerHTML = `
       <svg class="vjs-user-icon" role="presentation">
@@ -77,6 +77,7 @@ class VideoJSAuthMenu extends MenuButton {
 
     const logOutBtn = new MenuItem(player_, { label: 'Log out', selectable: false });
     logOutBtn.controlText('Log out');
+    logOutBtn.setAttribute('data-testid', 'videojs-auth-logout-button');
     logOutBtn.el().insertAdjacentHTML('afterbegin', `
       <svg class="vjs-logout-icon" role="presentation">
         <use xlink:href="#log-out"></use>

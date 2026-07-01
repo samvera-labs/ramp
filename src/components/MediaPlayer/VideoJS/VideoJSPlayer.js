@@ -1648,6 +1648,20 @@ function VideoJSPlayer({
 
   return (
     <div style={{ position: 'relative' }}>
+      {authService && (
+        <AuthOverlay
+          authService={authService}
+          authToken={auth.token}
+          authStatus={auth.status}
+          isVideo={isVideo}
+          onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
+          onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
+          onLogout={() => {
+            resetPlayerContainer();
+            manifestDispatch({ type: 'logout' });
+          }}
+        />
+      )}
       <div data-vjs-player data-canvasindex={cIndexRef.current}>
         {canvasIsEmptyRef.current && (
           <div data-testid="inaccessible-message-display"
@@ -1713,20 +1727,6 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {authService && (
-        <AuthOverlay
-          authService={authService}
-          authToken={auth.token}
-          authStatus={auth.status}
-          isVideo={isVideo}
-          onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
-          onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
-          onLogout={() => {
-            resetPlayerContainer();
-            manifestDispatch({ type: 'logout' });
-          }}
-        />
-      )}
       {(hasStructure || isPlaylist) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>

@@ -206,6 +206,13 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
       onLogout();
     };
 
+    const handleLogoutKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleLogout();
+      }
+    };
+
     return (
       <div className='ramp--auth-overlay__badge-container' ref={badgeRef}>
         <button
@@ -214,6 +221,7 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
           aria-haspopup='true' aria-expanded={menuOpen}
           aria-label={`Account menu for sign-out`}
           data-testid='auth-badge'
+          role='button'
         >
           <UserIcon />
           <span className='ramp--auth-overlay__badge-name'>Authenticated</span>
@@ -230,8 +238,9 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
             <button
               className='ramp--auth-overlay__badge-menu-logout'
               onClick={handleLogout}
+              onKeyDown={handleLogoutKeyDown}
               role='menuitem'
-              data-testid='auth-badge-logout-btn'
+              data-testid='auth-badge-logout-button'
             >
               <SignOutIcon /> Log out
             </button>

@@ -367,7 +367,7 @@ describe('AuthOverlay', () => {
         fireEvent.click(screen.getByTestId('auth-badge'));
 
         expect(screen.getByTestId('auth-badge-labelitem')).toBeInTheDocument();
-        expect(screen.getByTestId('auth-badge-logout-btn')).toHaveTextContent('Log out');
+        expect(screen.getByTestId('auth-badge-logout-button')).toHaveTextContent('Log out');
       });
 
       test('without a logout label when logoutService doesn\'t have a label', () => {
@@ -377,14 +377,14 @@ describe('AuthOverlay', () => {
         fireEvent.click(screen.getByTestId('auth-badge'));
 
         expect(screen.queryByTestId('auth-badge-labelitem')).not.toBeInTheDocument();
-        expect(screen.getByTestId('auth-badge-logout-btn')).toHaveTextContent('Log out');
+        expect(screen.getByTestId('auth-badge-logout-button')).toHaveTextContent('Log out');
       });
 
       describe('with a logout button that,', () => {
         test('calls requestLogout and onLogout when clicked', () => {
           render(<AuthOverlay {...authorizedProps} />);
           fireEvent.click(screen.getByTestId('auth-badge'));
-          fireEvent.click(screen.getByTestId('auth-badge-logout-btn'));
+          fireEvent.click(screen.getByTestId('auth-badge-logout-button'));
 
           expect(authService.requestLogout).toHaveBeenCalledWith(logoutServiceId);
           expect(onLogoutMock).toHaveBeenCalledTimes(1);
@@ -399,6 +399,15 @@ describe('AuthOverlay', () => {
       const badge = screen.getByTestId('auth-badge');
       fireEvent.click(badge);
       fireEvent.click(badge);
+      expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+      expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    test('closes the menu when "Escape" key is pressed', () => {
+      render(<AuthOverlay {...authorizedProps} />);
+      const badge = screen.getByTestId('auth-badge');
+      fireEvent.click(badge);
+      fireEvent.keyDown(badge, { key: 'Escape', keyCode: 47 });
       expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
       expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
     });

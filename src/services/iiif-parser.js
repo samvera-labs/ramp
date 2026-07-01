@@ -742,7 +742,6 @@ export function getAuthService(canvas) {
 
     // Find and parse service type="AuthProbeService2"
     const probe = services.find(s => validAccessService(s, 'AuthProbeService2'));
-    console.log(probe);
     if (probe) {
       // Read probe services as an array
       const probeServicesRaw = probe.service ?? [];

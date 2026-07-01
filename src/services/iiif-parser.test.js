@@ -886,6 +886,12 @@ describe('iiif-parser', () => {
       expect(result.tokenService.type).toBe('AuthAccessTokenService2');
     });
 
+    test('returns auth service from the body object when Annotation body type in not "Choice"', () => {
+      const result = iiifParser.getAuthService(authManifest.items[0]);
+      expect(result).not.toBeNull();
+      expect(result.probe.type).toBe('AuthProbeService2');
+    });
+
     describe('returns restricted=true when', () => {
       test('auth service has no access service', () => {
         const result = iiifParser.getAuthService(authManifest.items[3]);
@@ -901,5 +907,72 @@ describe('iiif-parser', () => {
         expect(result.tokenService).toBeNull();
       });
     });
+
+    test('returns null when no service with type="AuthProbeService2" is in services', () => {
+      const result = iiifParser.getAuthService(authManifest.items[6]);
+      expect(result).toBeNull();
+    });
+
+    test('returns logoutService=null when no service with type="AuthLogoutService2" is in services', () => {
+      const result = iiifParser.getAuthService(authManifest.items[3]);
+      expect(result.logoutService).toBeNull();
+    });
+
+    describe('parses descriptive properties', () => {
+      test('for errorHeading and errorNote from probe when provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[0]);
+        expect(result.probe.errorHeading).toBe('No access');
+        expect(result.probe.errorNote).toBe('You do not have permission to access this resource');
+      });
+
+      test('for heading, note, confirmLable, and label from accessService when provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[0]);
+        expect(result.accessService.heading).toBe('Authentication Required');
+        expect(result.accessService.note).toBe('Please log in with your institution credentials');
+        expect(result.accessService.confirmLabel).toBe('Log in');
+        expect(result.accessService.label).toBe('Login to access restricted content');
+      });
+
+      test('for heading and note from tokenService when provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[0]);
+        expect(result.tokenService.heading).toBe('Something went wrong with the token service');
+        expect(result.tokenService.note).toBe('Could not get a token. Please contact support.');
+      });
+
+      test('for label from logoutService when provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[0]);
+        expect(result.logoutService.label).toBe('Log out from service');
+      });
+    });
+
+    describe('uses hard-coded default values for descriptive properties', () => {
+      test('for probe when not provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[4]);
+        expect(result.probe.errorHeading).toBe('Something went wrong');
+        expect(result.probe.errorNote).toBe('Could not confirm authorization with token.');
+      });
+
+      test('for accessService when not provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[4]);
+        expect(result.accessService.confirmLabel).toBe('Log in');
+        expect(result.accessService.label).toBe('Login');
+        expect(result.accessService.heading).toBe('');
+        expect(result.accessService.note).toBe('');
+      });
+
+      test('for tokenService when not provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[2]);
+        expect(result.tokenService.heading).toBe('Authentication failed');
+        expect(result.tokenService.note).toBe('Could not obtain an access token.');
+      });
+
+      test('for logoutService when not provided', () => {
+        const result = iiifParser.getAuthService(authManifest.items[2]);
+        /* For logoutService, no default values are assigned for label, because the UI is
+        conditionally rendered based on the existence of this value */
+        expect(result.logoutService.label).toBe('');
+      });
+    });
+
   });
 });

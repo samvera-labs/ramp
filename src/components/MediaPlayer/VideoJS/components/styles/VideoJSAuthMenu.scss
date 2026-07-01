@@ -1,4 +1,4 @@
-.vjs-logout-menu {
+.vjs-auth-menu {
   cursor: pointer;
 
   .vjs-user-icon,
@@ -26,10 +26,10 @@
       padding-left: 0.5em;
     }
   }
-}
 
-.vjs-auth-label {
-  cursor: default;
-  opacity: 0.7;
-  pointer-events: none;
+  .vjs-auth-label {
+    cursor: default;
+    opacity: 0.7;
+    pointer-events: none;
+  }
 }

@@ -138,7 +138,6 @@ export const useMediaPlayer = () => {
     }
   }, [playerRef.current]);
 
-
   return {
     canvasIndex,
     canvasIsEmpty,
