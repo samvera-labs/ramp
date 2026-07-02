@@ -1518,4 +1518,314 @@ describe('util helper', () => {
       });
     });
   });
+
+  describe('playerHotKeys()', () => {
+    let player, playerInst, mockEvent;
+
+    beforeEach(() => {
+      playerInst = {
+        paused: jest.fn(),
+        play: jest.fn(),
+        pause: jest.fn(),
+        isFullscreen: jest.fn(),
+        audioOnlyMode: jest.fn().mockReturnValue(false),
+        requestFullscreen: jest.fn(),
+        exitFullscreen: jest.fn(),
+        volume: jest.fn(),
+        lastVolume_: jest.fn(),
+        muted: jest.fn(),
+        currentTime: jest.fn(),
+      };
+      player = { player: jest.fn().mockReturnValue(playerInst) };
+      mockEvent = {
+        which: 0,
+        ctrlKey: false,
+        metaKey: false,
+        altKey: false,
+        shiftKey: false,
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+      };
+
+      // Set the activeElement to be the player by default
+      Object.defineProperty(document, 'activeElement', {
+        value: {
+          className: 'video-js vjs-big-play-centered vjs-theme-ramp',
+          matches: jest.fn().mockReturnValue(false),
+          tagName: 'DIV'
+        },
+        configurable: true,
+      });
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe('returns undefined without triggering hotkeys', () => {
+      test('when Canvas is empty', () => {
+        mockEvent.which = 32;
+        const result = util.playerHotKeys(mockEvent, player, true);
+        expect(result).toBeUndefined();
+        expect(playerInst.play).not.toHaveBeenCalled();
+      });
+
+      test('when player instance is null', () => {
+        player.player = jest.fn().mockReturnValue(null);
+        mockEvent.which = 32;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(result).toBeUndefined();
+        expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+      });
+
+      test('when player instance is undefined', () => {
+        player.player = jest.fn().mockReturnValue(undefined);
+        mockEvent.which = 32;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(result).toBeUndefined();
+      });
+
+      describe('when modifier key', () => {
+        test('"ctrl" is pressed', () => {
+          mockEvent.which = 32;
+          mockEvent.ctrlKey = true;
+          const result = util.playerHotKeys(mockEvent, player);
+          expect(result).toBeUndefined();
+          expect(playerInst.play).not.toHaveBeenCalled();
+        });
+
+        test('"meta" is pressed', () => {
+          mockEvent.which = 32;
+          mockEvent.metaKey = true;
+          const result = util.playerHotKeys(mockEvent, player);
+          expect(result).toBeUndefined();
+        });
+
+        test('"alt" is pressed', () => {
+          mockEvent.which = 32;
+          mockEvent.altKey = true;
+          const result = util.playerHotKeys(mockEvent, player);
+          expect(result).toBeUndefined();
+        });
+
+        test('"shift" is pressed', () => {
+          mockEvent.which = 32;
+          mockEvent.shiftKey = true;
+          const result = util.playerHotKeys(mockEvent, player);
+          expect(result).toBeUndefined();
+        });
+      });
+
+      test('when focus is on an interactive element outside the player', () => {
+        Object.defineProperty(document, 'activeElement', {
+          value: { className: 'some-button', matches: jest.fn().mockReturnValue(true), tagName: 'INPUT' },
+          configurable: true,
+        });
+        mockEvent.which = 32;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(result).toBeUndefined();
+        expect(playerInst.play).not.toHaveBeenCalled();
+      });
+
+      test('when a unrecognized key is pressed', () => {
+        // 'a' key -> does nothing
+        mockEvent.which = 65;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(result).toBeUndefined();
+        expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+      });
+    });
+
+    test('returns hotkeys action when focus is on an interactive element inside player', () => {
+      Object.defineProperty(document, 'activeElement', {
+        value: {
+          className: 'vjs-play-button',
+          matches: jest.fn().mockReturnValue(true),
+          tagName: 'BUTTON'
+        },
+        configurable: true,
+      });
+      playerInst.paused.mockReturnValue(true);
+      mockEvent.which = 32;
+      const result = util.playerHotKeys(mockEvent, player);
+      expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.play);
+    });
+
+    describe('when space key (32) is pressed', () => {
+      test('returns play action when player is paused', () => {
+        playerInst.paused.mockReturnValue(true);
+        mockEvent.which = 32;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.play).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.play);
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+      });
+
+      test('returns pause action when player is playing', () => {
+        playerInst.paused.mockReturnValue(false);
+        mockEvent.which = 32;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.pause).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.pause);
+      });
+    });
+
+    describe('when k key (75) is pressed', () => {
+      test('returns play action when player is paused', () => {
+        playerInst.paused.mockReturnValue(true);
+        mockEvent.which = 75;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.play).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.play);
+      });
+
+      test('returns pause action when player is playing', () => {
+        playerInst.paused.mockReturnValue(false);
+        mockEvent.which = 75;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(playerInst.pause).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.pause);
+      });
+    });
+
+    describe('when f key (70) is pressed', () => {
+      test('returns enterFullscreen action for video when not in fullscreen', () => {
+        playerInst.isFullscreen.mockReturnValue(false);
+        mockEvent.which = 70;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.requestFullscreen).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.enterFullscreen);
+      });
+
+      test('returns exitFullscreen action when already in fullscreen', () => {
+        playerInst.isFullscreen.mockReturnValue(true);
+        mockEvent.which = 70;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(playerInst.exitFullscreen).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.exitFullscreen);
+      });
+
+      test('doesn\'t return an action for audio-only mode', () => {
+        playerInst.audioOnlyMode.mockReturnValue(true);
+        mockEvent.which = 70;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.requestFullscreen).not.toHaveBeenCalled();
+        expect(playerInst.exitFullscreen).not.toHaveBeenCalled();
+
+        expect(result).toBe('');
+        expect(mockEvent.stopPropagation).toHaveBeenCalled();
+      });
+    });
+
+    describe('when m key (77) is pressed', () => {
+      test('returns mute action when volume is above 0', () => {
+        playerInst.volume.mockReturnValue(0.5);
+        playerInst.muted.mockReturnValue(false);
+        mockEvent.which = 77;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.muted).toHaveBeenCalledWith(true);
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.mute);
+      });
+
+      test('returns unmute action and restores volume when volume is 0 and lastVolume >= 0.1', () => {
+        playerInst.volume.mockReturnValue(0);
+        playerInst.lastVolume_.mockReturnValue(0.5);
+        mockEvent.which = 77;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(playerInst.volume).toHaveBeenCalledWith(0.5);
+        expect(playerInst.muted).toHaveBeenCalledWith(false);
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.unmute);
+      });
+
+      test('returns unmute action and sets volume to 0.1 when lastVolume was below 0.1', () => {
+        playerInst.volume.mockReturnValue(0);
+        playerInst.lastVolume_.mockReturnValue(0.05);
+        mockEvent.which = 77;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(playerInst.volume).toHaveBeenCalledWith(0.1);
+        expect(playerInst.muted).toHaveBeenCalledWith(false);
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.unmute);
+      });
+    });
+
+    test('when left arrow key (37) is pressed; returns leftArrow action to seek 5 seconds backward', () => {
+      playerInst.currentTime.mockReturnValue(30);
+      mockEvent.which = 37;
+      const result = util.playerHotKeys(mockEvent, player);
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+      expect(playerInst.currentTime).toHaveBeenCalledWith(25);
+      expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.leftArrow);
+      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+    });
+
+    test('when right arrow key (39) is pressed; returns rightArrow action to seek 5 seconds forward', () => {
+      playerInst.currentTime.mockReturnValue(30);
+      mockEvent.which = 39;
+      const result = util.playerHotKeys(mockEvent, player);
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
+      expect(playerInst.currentTime).toHaveBeenCalledWith(35);
+      expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.rightArrow);
+    });
+
+    describe('when up arrow key (38) is pressed', () => {
+      test('returns upArrow to increase volume by 0.1', () => {
+        playerInst.volume.mockReturnValue(0.5);
+        playerInst.muted.mockReturnValue(false);
+        mockEvent.which = 38;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.volume).toHaveBeenCalledWith(0.6);
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.upArrow);
+      });
+
+      test('when player was muted, returns upArrow to increase volume and unmutes the player', () => {
+        playerInst.volume.mockReturnValue(0.5);
+        playerInst.muted.mockReturnValue(true);
+        mockEvent.which = 38;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(playerInst.muted).toHaveBeenCalledWith(false);
+        expect(playerInst.volume).toHaveBeenCalledWith(0.6);
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.upArrow);
+      });
+    });
+
+    describe('when down arrow key (40) is pressed', () => {
+      test('returns downArrow action to decrease volume by 0.1', () => {
+        playerInst.volume.mockReturnValue(0.5);
+        mockEvent.which = 40;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(playerInst.volume).toHaveBeenCalledWith(0.4);
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.downArrow);
+      });
+
+      test('when volume is at minimum (0.1), returns downArrow action to set volume to 0 and mutes the player', () => {
+        playerInst.volume.mockReturnValue(0.1);
+        playerInst.muted.mockReturnValue(false);
+        mockEvent.which = 40;
+        const result = util.playerHotKeys(mockEvent, player);
+        expect(mockEvent.preventDefault).toHaveBeenCalled();
+        expect(result).toBe(util.HOTKEY_ACTION_OUTPUT.downArrow);
+        expect(playerInst.volume).toHaveBeenCalledWith(0);
+        playerInst.muted.mockReturnValue(true);
+      });
+    });
+
+    describe('stopPropagation is called for all valid hotkeys', () => {
+      const validKeys = [32, 75, 70, 77, 37, 39, 38, 40];
+      validKeys.forEach((keyCode) => {
+        test(`stopPropagation called for key ${keyCode}`, () => {
+          mockEvent.which = keyCode;
+          util.playerHotKeys(mockEvent, player);
+          expect(mockEvent.stopPropagation).toHaveBeenCalled();
+        });
+      });
+    });
+  });
 });
