@@ -2,12 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import VideoJSPlayer from '@Components/MediaPlayer/VideoJS/VideoJSPlayer';
 import { playerHotKeys } from '@Services/utility-helpers';
-import { useManifestState } from '../../context/manifest-context';
+import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
 import { usePlayerState } from '../../context/player-context';
 import { useErrorBoundary } from 'react-error-boundary';
 import { IS_ANDROID, IS_IPAD, IS_IPHONE, IS_MOBILE, IS_SAFARI, IS_TOUCH_ONLY } from '@Services/browser';
 import { useMediaPlayer, useSetupPlayer } from '@Services/ramp-hooks';
 import { loadVideoJSLanguage } from '@Services/videojs-language-loader';
+import { requestLogout } from '@Services/auth-service';
 
 const PLAYER_ID = 'iiif-media-player';
 
@@ -36,6 +37,7 @@ const MediaPlayer = ({
   resumeCache = { enable: false, ttlDays: 30, maxItems: 200 },
 }) => {
   const manifestState = useManifestState();
+  const manifestDispatch = useManifestDispatch();
   const playerState = usePlayerState();
   const { showBoundary } = useErrorBoundary();
 
@@ -49,7 +51,7 @@ const MediaPlayer = ({
   let videoJSLangMap = useRef('{}');
   const [languageLoaded, setLanguageLoaded] = useState(false);
 
-  const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
+  const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
 
   const {
@@ -175,6 +177,7 @@ const MediaPlayer = ({
             enablePlaybackRate ? 'playbackRateMenuButton' : '',
             enablePIP ? 'pictureInPictureToggle' : '',
             enableFileDownload ? 'videoJSFileDownload' : '',
+            (auth.status === 'authorized' && !isVideo) ? 'VideoJSAuthMenu' : '',
             'fullscreenToggle',
             // 'vjsYo',             custom component
           ],
@@ -188,6 +191,15 @@ const MediaPlayer = ({
             title: 'Download Files',
             controlText: 'Alternate resource download',
             files: renderingFiles,
+          },
+          VideoJSAuthMenu: (auth.status === 'authorized' && !isVideo) && {
+            title: 'Authenticated',
+            label: authService?.logoutService?.label,
+            onLogout: () => {
+              resetPlayerContainer();
+              requestLogout(authService.logoutService.id);
+              manifestDispatch({ type: 'logout' });
+            },
           },
           videoJSPreviousButton: isMultiCanvased &&
             { canvasIndex, switchPlayer },

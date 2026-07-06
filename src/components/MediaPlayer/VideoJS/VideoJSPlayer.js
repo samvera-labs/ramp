@@ -18,6 +18,7 @@ import {
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
+import { requestLogout } from '@Services/auth-service';
 import { showResumeModal } from './VideoJSResumeModal';
 import { showErrorModal } from './components/js/VideoJSErrorModal';
 import AuthOverlay from './AuthOverlay';
@@ -37,6 +38,7 @@ import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 import VideoJSADButton from './components/js/VideoJSADButton';
+import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
 
 /**
  * Module to setup VideoJS instance on initial page load and update
@@ -112,7 +114,7 @@ function VideoJSPlayer({
   const resumeModalRef = useRef(null);
   const vjsErrorModalRef = useRef(null);
 
-  const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex } = useMediaPlayer();
+  const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
 
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
@@ -817,6 +819,7 @@ function VideoJSPlayer({
         - appearance of the player: big play button and aspect ratio of the player
         based on media type
         - file download menu
+        - auth menu for authenticated resources
     */
     if (player.getChild('controlBar') != null && !canvasIsEmpty) {
       const controlBar = player.getChild('controlBar');
@@ -903,6 +906,25 @@ function VideoJSPlayer({
           controlBar.addChild('videoJSFileDownload', { ...fileOptions },
             fileDownloadIndex
           );
+        }
+      }
+
+      if (authService?.logoutService && auth.status === 'authorized') {
+        if (!isVideo) {
+          // Index of the full-screen toggle in the player's control bar
+          const fullscreenIndex = controlBar.children()
+            .findIndex((c) => c.name_ == 'FullscreenToggle');
+          controlBar.addChild('VideoJSAuthMenu', {
+            title: 'Authenticated',
+            label: authService?.logoutService?.label,
+            onLogout: () => {
+              resetPlayerContainer();
+              requestLogout(authService.logoutService.id);
+              manifestDispatch({ type: 'logout' });
+            },
+          }, fullscreenIndex);
+        } else {
+          controlBar.removeChild('VideoJSAuthMenu');
         }
       }
     }
@@ -1626,6 +1648,20 @@ function VideoJSPlayer({
 
   return (
     <div style={{ position: 'relative' }}>
+      {authService && (
+        <AuthOverlay
+          authService={authService}
+          authToken={auth.token}
+          authStatus={auth.status}
+          isVideo={isVideo}
+          onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
+          onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
+          onLogout={() => {
+            resetPlayerContainer();
+            manifestDispatch({ type: 'logout' });
+          }}
+        />
+      )}
       <div data-vjs-player data-canvasindex={cIndexRef.current}>
         {canvasIsEmptyRef.current && (
           <div data-testid="inaccessible-message-display"
@@ -1691,15 +1727,6 @@ function VideoJSPlayer({
         >
         </video>
       </div>
-      {authService && auth?.status !== 'authorized' && (
-        <AuthOverlay
-          authService={authService}
-          authToken={auth.token}
-          authStatus={auth.status}
-          onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
-          onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
-        />
-      )}
       {(hasStructure || isPlaylist) &&
         (<div className="vjs-track-scrubber-container hidden" ref={trackScrubberRef} id="track_scrubber">
           <p className="vjs-time track-currenttime" role="presentation"></p>

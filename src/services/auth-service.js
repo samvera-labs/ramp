@@ -92,6 +92,17 @@ export function requestTokenViaIframe(tokenServiceUrl, origin) {
 }
 
 /**
+ * Request logout from the logout service with type='AuthLogoutService2'.
+ * According to the IIIF Auth 2.0 spec, the logout action presents the results of a
+ * GET request on the logout service’s URI in a separate tab/window with an address bar.
+ * https://iiif.io/api/auth/2.0/#logout-interaction
+ * @param {String} logoutServiceId URL of the AuthLogoutService2
+ */
+export function requestLogout(logoutServiceId) {
+  window.open(logoutServiceId, '_blank');
+}
+
+/**
  * Generate a random message ID for correlating postMessage responses
  * @returns {String} randomly generated, 36 character long v4 UUID
  */

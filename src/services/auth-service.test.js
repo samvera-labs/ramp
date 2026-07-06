@@ -1,4 +1,4 @@
-import { probeResource, requestTokenViaIframe } from './auth-service';
+import { probeResource, requestLogout, requestTokenViaIframe } from './auth-service';
 
 describe('auth-service', () => {
   afterEach(() => {
@@ -133,6 +133,19 @@ describe('auth-service', () => {
         const result = await probeResource('http://example.com/probe', null);
         expect(result.status).toBe(401);
       });
+    });
+  });
+
+  describe('requestLogout()', () => {
+    test('opens the logout service URI in a new tab', () => {
+      const logoutServiceId = 'http://example.com/logout';
+      const originalWindowOpen = window.open;
+      window.open = jest.fn();
+
+      requestLogout(logoutServiceId);
+
+      expect(window.open).toHaveBeenCalledWith(logoutServiceId, '_blank');
+      window.open = originalWindowOpen;
     });
   });
 });

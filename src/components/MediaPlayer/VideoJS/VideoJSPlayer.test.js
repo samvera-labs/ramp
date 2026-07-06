@@ -3,9 +3,17 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ErrorBoundary } from 'react-error-boundary';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
 import { withManifestAndPlayerProvider, manifestState } from '@Services/testing-helpers';
+import * as authService from '@Services/auth-service';
 import videoManifest from '@TestData/lunchroom-manners';
 import playlistManifest from '@TestData/playlist';
 import singleCanvasManifest from '@TestData/single-canvas';
+import authManifest from '@TestData/auth-manifest';
+
+// Mock 'requestLogout' from auth-service module
+jest.mock('@Services/auth-service', () => ({
+  ...jest.requireActual('@Services/auth-service'),
+  requestLogout: jest.fn(),
+}));
 
 describe('VideoJSPlayer component', () => {
   const MANIFEST_URL = 'https://example.com/manifest/lunchroom_manners';
@@ -52,11 +60,11 @@ describe('VideoJSPlayer component', () => {
   };
 
   // Helper function to trigger 'loadedmetadata' event on the video element
-  const triggerLoadedMetadata = async () => {
+  const triggerLoadedMetadata = async (testid) => {
     await waitFor(() => {
-      expect(screen.getAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+      expect(screen.getAllByTestId(testid).length).toBeGreaterThan(0);
     });
-    const player = screen.getAllByTestId('videojs-video-element')[0].player;
+    const player = screen.getAllByTestId(testid)[0].player;
     // Wait for player 'ready' to fire, i.e. player.canvasIndex is set
     await waitFor(() => {
       expect(player.canvasIndex).toBeDefined();
@@ -71,7 +79,7 @@ describe('VideoJSPlayer component', () => {
       manifest = videoManifest, canvasIndex = 0, manifestOverrides = {},
       props = { resumeCache: { enable: true } } } = {}) => {
       await renderPlayer({ manifest, canvasIndex, manifestOverrides, props });
-      await triggerLoadedMetadata();
+      await triggerLoadedMetadata('videojs-video-element');
     };
 
     test('doesn\'t render resume modal with default props', async () => {
@@ -320,7 +328,7 @@ describe('VideoJSPlayer component', () => {
     describe('when all sources of a single-source Canvas fail', () => {
       beforeEach(async () => {
         await renderPlayer({ manifest: singleCanvasManifest, canvasIndex: 0 });
-        player = await triggerLoadedMetadata();
+        player = await triggerLoadedMetadata('videojs-video-element');
         // Mark the source as failed to trigger error modal
         player.failedSources = player.currentSources().map((s) => s.src);
         // Fire the 'error' event by setting player.error(err)
@@ -346,7 +354,7 @@ describe('VideoJSPlayer component', () => {
     describe('when all multi-source segments of a Canvas fail', () => {
       beforeEach(async () => {
         await renderPlayer({ manifest: singleCanvasManifest, canvasIndex: 0 });
-        player = await triggerLoadedMetadata();
+        player = await triggerLoadedMetadata('videojs-video-element');
         // Set player.targets to simulate a multi-source Canvas
         player.targets = [
           { start: 0, end: 330, altStart: 0, duration: 330 },
@@ -377,7 +385,7 @@ describe('VideoJSPlayer component', () => {
     describe('when a CORS error exhausts HLS playlist retries', () => {
       test('renders the error display modal with the default message', async () => {
         await renderPlayer({ manifest: singleCanvasManifest, canvasIndex: 0 });
-        const player = await triggerLoadedMetadata();
+        const player = await triggerLoadedMetadata('videojs-video-element');
         const mockVHSTech = {
           vhs: {
             playlistController_: {
@@ -480,4 +488,125 @@ describe('VideoJSPlayer component', () => {
     });
   });
 
+  describe('feature: IIIF Auth logout UI', () => {
+    describe('for video player', () => {
+      test('when not authorized; doesn\'t render auth badge inside the player', async () => {
+        await renderPlayer({
+          manifest: authManifest,
+          canvasIndex: 0,
+          manifestOverrides: { auth: { token: null, status: 'idle' } },
+        });
+        /* No need to call triggerLoadedMetadata() to mimic the player events, as this instance doesn't
+        create the VideoJS instance yet */
+
+        expect(screen.getAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+        expect(screen.queryByTestId('videojs-auth-menu')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+      });
+
+      describe('when authorized', () => {
+        let player;
+        beforeEach(async () => {
+          await renderPlayer({
+            manifest: authManifest,
+            canvasIndex: 0,
+            manifestOverrides: { auth: { token: 'valid-token', status: 'authorized' } },
+          });
+          player = await triggerLoadedMetadata('videojs-video-element');
+        });
+
+        test('renders auth badge inside the player', async () => {
+          expect(screen.getAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+          expect(screen.getByTestId('auth-badge')).toBeInTheDocument();
+        });
+
+        test('doesn\'t render auth menu control in the control-bar', () => {
+          expect(screen.getAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+          expect(screen.queryByTestId('videojs-auth-menu')).not.toBeInTheDocument();
+        });
+
+        test('renders a logout button that calls "requestLogout" when clicked', async () => {
+          expect(screen.getByTestId('auth-badge')).toBeInTheDocument();
+
+          // Open the auth menu and click log out button
+          fireEvent.click(screen.getByTestId('auth-badge'));
+          fireEvent.click(screen.getByTestId('auth-badge-logout-button'));
+
+          expect(authService.requestLogout).toHaveBeenCalledWith('http://example.com/auth/logout');
+        });
+
+        test('disables player and restores aspect-ratio on logout', async () => {
+          const aspectRatioSpy = jest.spyOn(player, 'aspectRatio');
+
+          // Open the auth menu and click log out button
+          fireEvent.click(screen.getByTestId('auth-badge'));
+          fireEvent.click(screen.getByTestId('auth-badge-logout-button'));
+
+          expect(player.hasClass('vjs-audio-only-mode')).toBeFalsy();
+          expect(aspectRatioSpy).toHaveBeenCalledWith('16:9');
+          expect(player.hasClass('vjs-disabled')).toBe(true);
+        });
+      });
+    });
+
+    describe('for audio player', () => {
+      test('when not authorized; doesn\'t render auth menu control in the control-bar', async () => {
+        await renderPlayer({
+          manifest: authManifest,
+          canvasIndex: 2,
+          manifestOverrides: { auth: { token: null, status: 'idle' } },
+        });
+        /* No need to call triggerLoadedMetadata() to mimic the player events, as this instance doesn't
+        create the VideoJS instance yet */
+
+        expect(screen.getAllByTestId('videojs-audio-element').length).toBeGreaterThan(0);
+        expect(screen.queryByTestId('videojs-auth-menu')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+      });
+
+      describe('when authorized', () => {
+        let player;
+        beforeEach(async () => {
+          await renderPlayer({
+            manifest: authManifest,
+            canvasIndex: 2,
+            manifestOverrides: { auth: { token: 'valid-token', status: 'authorized' } },
+          });
+          player = await triggerLoadedMetadata('videojs-audio-element');
+        });
+
+        test('renders auth menu control in the control-bar', async () => {
+          expect(screen.getAllByTestId('videojs-audio-element').length).toBeGreaterThan(0);
+          expect(screen.getByTestId('videojs-auth-menu')).toBeInTheDocument();
+        });
+
+        test('doesn\'t render auth badge', async () => {
+          expect(screen.getAllByTestId('videojs-audio-element').length).toBeGreaterThan(0);
+          expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+        });
+
+        test('renders a logout button that calls "requestLogout" when clicked', async () => {
+          expect(screen.getByTestId('videojs-auth-menu')).toBeInTheDocument();
+
+          // Open auth menu and click log out button
+          fireEvent.click(screen.getByTestId('videojs-auth-menu'));
+          fireEvent.click(screen.getByTestId('videojs-auth-logout-button'));
+
+          expect(authService.requestLogout).toHaveBeenCalledWith('http://example.com/auth/logout');
+        });
+
+        test('disables player and restores aspect-ratio on logout', async () => {
+          const aspectRatioSpy = jest.spyOn(player, 'aspectRatio');
+
+          // Open auth menu and click log out button
+          fireEvent.click(screen.getByTestId('videojs-auth-menu'));
+          fireEvent.click(screen.getByTestId('videojs-auth-logout-button'));
+
+          expect(player.hasClass('vjs-audio-only-mode')).toBeFalsy();
+          expect(aspectRatioSpy).toHaveBeenCalledWith('16:9');
+          expect(player.hasClass('vjs-disabled')).toBe(true);
+        });
+      });
+    });
+  });
 });

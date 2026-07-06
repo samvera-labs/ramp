@@ -270,6 +270,12 @@ function manifestReducer(state = defaultState, action) {
         auth: { ...state.auth, status: action.status },
       };
     }
+    case 'logout': {
+      return {
+        ...state,
+        auth: { token: null, status: 'idle' },
+      };
+    }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
     }

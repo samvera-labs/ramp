@@ -722,6 +722,11 @@ export function getSearchService(resource) {
  * tokenService: Object, logoutService: Object, restricted: Boolean }
  */
 export function getAuthService(canvas) {
+  /* Check if a given access service has an 'id' and the required service 'type' */
+  const validAccessService = (service, serviceType) => {
+    return service?.id != undefined && service?.type === serviceType;
+  };
+
   try {
     const body = canvas?.items?.[0]?.items?.[0]?.body;
     /* For Canvas 'body' with choice, parse auth service from within the an item
@@ -736,21 +741,40 @@ export function getAuthService(canvas) {
     const services = serviceArray.flatMap(s => Array.isArray(s) ? s : [s]);
 
     // Find and parse service type="AuthProbeService2"
-    const probe = services.find(s => s.type === 'AuthProbeService2');
+    const probe = services.find(s => validAccessService(s, 'AuthProbeService2'));
     if (probe) {
       // Read probe services as an array
       const probeServicesRaw = probe.service ?? [];
       const probeServices = Array.isArray(probeServicesRaw) ? probeServicesRaw : [probeServicesRaw];
       const accessService = probeServices.find(
-        s => s.type === 'AuthAccessService2' && ['active', 'kiosk'].includes(s.profile)
+        s => validAccessService(s, 'AuthAccessService2') && ['active', 'kiosk'].includes(s.profile)
       ) ?? null;
+
+      probe.errorHeading = getLabelValue(probe?.errorHeading) || 'Something went wrong';
+      probe.errorNote = getLabelValue(probe?.errorNote) || 'Could not confirm authorization with token.';
+
+      if (accessService) {
+        accessService.confirmLabel = getLabelValue(accessService?.confirmLabel) || 'Log in';
+        accessService.label = getLabelValue(accessService?.label) || 'Login';
+        accessService.heading = getLabelValue(accessService?.heading) ?? null;
+        accessService.note = getLabelValue(accessService?.note) ?? null;
+      }
 
       // Parse access, token, and logout services if they exist
       const accessServices = Array.isArray(accessService?.service)
         ? accessService.service
         : accessService?.service ? [accessService.service] : [];
       const tokenService = accessServices.find(s => s.type === 'AuthAccessTokenService2') ?? null;
-      const logoutService = accessServices.find(s => s.type === 'AuthLogoutService2') ?? null;
+      if (tokenService) {
+        tokenService.heading = getLabelValue(tokenService?.errorHeading) || 'Authentication failed';
+        tokenService.note = getLabelValue(tokenService?.errorNote) || 'Could not obtain an access token.';
+      }
+
+      const logoutService = accessServices.find(s => validAccessService(s, 'AuthLogoutService2')) ?? null;
+      // Do not set default value, because the logout menu UI is changed based on its existence
+      if (logoutService) {
+        logoutService.label = getLabelValue(logoutService?.label);
+      }
       const restricted = !accessService || !tokenService;
 
       return { version: 2, probe, accessService, tokenService, logoutService, restricted };
