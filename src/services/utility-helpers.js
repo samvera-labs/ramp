@@ -712,7 +712,15 @@ export function playerHotKeys(event, player, canvasIsEmpty = false) {
   let playerInst = player?.player();
   let output = '';
 
-  let inputs = ['input', 'textarea', 'select'];
+  /* Selector matching any interactive element that should suppress player hotkeys when focused.
+    Add values to this as needed in the future.  */
+  const HOTKEY_INTERACTIVE_SELECTORS = [
+    'button', 'a[href]', 'input', 'textarea', 'select',
+    '[role="tab"]', '[role="switch"]', '[role="option"]', '[role="slider"]',
+    '[role="spinbutton"]', '[role="combobox"]', '[role="menuitem"]',
+    '[tabindex]:not([tabindex="-1"])',
+  ].join(',');
+
   let activeElement = document.activeElement;
   // Check if the active element is within the player
   let focusedWithinPlayer = activeElement.className.includes('vjs') || activeElement.className.includes('videojs');
@@ -722,71 +730,12 @@ export function playerHotKeys(event, player, canvasIsEmpty = false) {
   // Check if ctrl/cmd/alt/shift keys are pressed when using key combinations
   let isCombKeyPress = event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
 
-  // CSS classes of active buttons to skip
-  let buttonClassesToCheck = ['ramp--transcript_time', 'ramp--structured-nav__section-title',
-    'ramp--structured-nav__item-link', 'ramp--structured-nav__collapse-all-btn',
-    'ramp--annotations__multi-select-header', 'ramp--annotations__show-more-tags',
-    'ramp--annotations__show-more-less', 'ramp--annotations__annotation-row-time-tags',
-    'ramp--transcript__show-more-less', 'placeholder-previous-button', 'placeholder-next-button',
-    'ramp--auth-overlay__badge', 'ramp--auth-overlay__badge-menu-logout'
-  ];
+  /* Suppress hotkeys when focus is on any interactive element outside the player.
+   This covers buttons, links, inputs, specific ARIA role elements etc. */
+  let focusedOnInteractive = activeElement?.matches(HOTKEY_INTERACTIVE_SELECTORS);
 
-  // Check if the activeElement is an anchor tag inside a annotation/cue text
-  let linkInText = false;
-  if (activeElement.tagName == 'A') {
-    let anchorTagsInText = ['ramp--annotations__annotation-text', 'ramp--transcript_text'];
-    const textClassName = activeElement.parentElement?.className;
-    linkInText = anchorTagsInText.includes(textClassName);
-  }
-
-  // Determine the focused element and pressed key combination needs to be skipped
-  let skipActionWithButtonFocus = linkInText || (
-    (activeElement?.role === 'button' || activeElement.tagName === 'BUTTON')
-    && (
-      (
-        buttonClassesToCheck.some(c => activeElement?.classList?.contains(c))
-        && (pressedKey === 38 || pressedKey === 40 || pressedKey === 32 || pressedKey === 13)
-      ) // Skip hot-keys when focused on transcript item/structure item/annotation row for ArrowUp/ArrowDown/Space/Enter keys
-      || (
-        ((
-          activeElement?.classList?.contains('ramp--structured-nav__section-title')
-          || activeElement?.classList?.contains('ramp--structured-nav__collapse-all-btn')
-        )
-          && (pressedKey === 37 || pressedKey === 39)
-        ) // Skip hot-keys when focused on a section or close/expand button for ArrowLeft/ArrowRight keys 
-      )
-    )
-  ) || (
-      (activeElement?.role === 'button' && activeElement?.classList?.contains('ramp--annotations__multi-select-header'))
-      || (activeElement?.role === 'option' && activeElement?.classList?.contains('annotations-dropdown-item'))
-      // Skip hot-keys when focused on annotation set dropdown/item, since it allows printable characters for keyboard navigation
-    );
-
-  /*
-    Avoid player hotkey activation when;
-    - keyboard focus in on some element on the page
-      - AND it is an input, textarea field, or a select element on the page
-          - OR a tab element AND the key pressed is left/right arrow keys as
-            this specific combination is avoided to allow keyboard navigation between 
-            tabbed UI components
-          - OR a switch element AND the key pressed is enter/space as this combination is avoided
-            to allow keyboard activation of a switch (toggle)
-          - OR a transcript cue element or a clickable structure item
-      - AND is not focused within the player, to avoid activation of player toolbar buttons
-    - OR key combinations are not in use with a key associated with hotkeys
-    - OR current Canvas is empty
-  */
   if (
-    (activeElement
-      && (
-        inputs.indexOf(activeElement.tagName.toLowerCase()) !== -1
-        || (activeElement.role === 'tab' && (pressedKey === 37 || pressedKey === 39))
-        || (activeElement.role === 'switch' && (pressedKey === 13 || pressedKey === 32))
-        || (activeElement?.classList?.contains('transcript_content') && (pressedKey === 38 || pressedKey === 40))
-        || (activeElement?.classList?.contains('ramp--transcript_item')) && (pressedKey === 38 || pressedKey === 40)
-        || skipActionWithButtonFocus
-      )
-      && !focusedWithinPlayer)
+    (!focusedWithinPlayer && focusedOnInteractive)
     || isCombKeyPress || canvasIsEmpty
   ) {
     return;
