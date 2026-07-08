@@ -6663,14 +6663,10 @@ function Xi(i, e, t = !1) {
   }
 }
 function zf(i, e, t = !1) {
-  let n = e?.player(), r = "", a = ["input", "textarea", "select"], s = document.activeElement, o = s.className.includes("vjs") || s.className.includes("videojs"), c = i.which, l = i.ctrlKey || i.metaKey || i.altKey || i.shiftKey, u = ["ramp--transcript_time", "ramp--structured-nav__section-title", "ramp--structured-nav__item-link", "ramp--structured-nav__collapse-all-btn", "ramp--annotations__multi-select-header", "ramp--annotations__show-more-tags", "ramp--annotations__show-more-less", "ramp--annotations__annotation-row-time-tags", "ramp--transcript__show-more-less", "placeholder-previous-button", "placeholder-next-button", "ramp--auth-overlay__badge", "ramp--auth-overlay__badge-menu-logout"], d = !1;
-  if (s.tagName == "A") {
-    let h = ["ramp--annotations__annotation-text", "ramp--transcript_text"];
-    const g = s.parentElement?.className;
-    d = h.includes(g);
-  }
-  let f = d || (s?.role === "button" || s.tagName === "BUTTON") && (u.some((h) => s?.classList?.contains(h)) && (c === 38 || c === 40 || c === 32 || c === 13) || (s?.classList?.contains("ramp--structured-nav__section-title") || s?.classList?.contains("ramp--structured-nav__collapse-all-btn")) && (c === 37 || c === 39)) || s?.role === "button" && s?.classList?.contains("ramp--annotations__multi-select-header") || s?.role === "option" && s?.classList?.contains("annotations-dropdown-item");
-  if (!(s && (a.indexOf(s.tagName.toLowerCase()) !== -1 || s.role === "tab" && (c === 37 || c === 39) || s.role === "switch" && (c === 13 || c === 32) || s?.classList?.contains("transcript_content") && (c === 38 || c === 40) || s?.classList?.contains("ramp--transcript_item") && (c === 38 || c === 40) || f) && !o || l || t)) {
+  let n = e?.player(), r = "";
+  const a = ["button", "a[href]", "input", "textarea", "select", '[role="tab"]', '[role="switch"]', '[role="option"]', '[role="slider"]', '[role="spinbutton"]', '[role="combobox"]', '[role="menuitem"]', '[tabindex]:not([tabindex="-1"])'].join(",");
+  let s = document.activeElement, o = s.className.includes("vjs") || s.className.includes("videojs"), c = i.which, l = i.ctrlKey || i.metaKey || i.altKey || i.shiftKey, u = s?.matches(a);
+  if (!(!o && u || l || t)) {
     if (n == null)
       return;
     switch (c) {
@@ -6687,10 +6683,10 @@ function zf(i, e, t = !1) {
       // m toggles mute
       case 77:
         i.preventDefault();
-        const h = n.volume(), g = n.lastVolume_();
-        if (h === 0) {
-          const p = g < 0.1 ? 0.1 : g;
-          n.volume(p), r = ir.unmute, n.muted(!1);
+        const d = n.volume(), f = n.lastVolume_();
+        if (d === 0) {
+          const h = f < 0.1 ? 0.1 : f;
+          n.volume(h), r = ir.unmute, n.muted(!1);
         } else
           r = ir.mute, n.muted(!n.muted());
         break;
