@@ -134,6 +134,44 @@ describe('auth-service', () => {
         expect(result.status).toBe(401);
       });
     });
+
+    describe('falls back to a HEAD request when GET returns a 406', () => {
+      test('and resolves with the HEAD response status when authorized', async () => {
+        global.fetch = jest.fn()
+          .mockResolvedValueOnce({ status: 406 })
+          .mockResolvedValueOnce({ status: 200 });
+
+        const result = await probeResource('http://example.com/probe', null);
+
+        expect(global.fetch).toHaveBeenCalledTimes(2);
+        const [headUrl, headOptions] = fetch.mock.calls[1];
+        expect(headUrl).toBe('http://example.com/probe');
+        expect(headOptions.method).toBe('HEAD');
+        expect(result.status).toBe(200);
+      });
+
+      test('and resolves with the HEAD response status when unauthorized', async () => {
+        global.fetch = jest.fn()
+          .mockResolvedValueOnce({ status: 406 })
+          .mockResolvedValueOnce({ status: 401 });
+
+        const result = await probeResource('http://example.com/probe', null);
+
+        expect(global.fetch).toHaveBeenCalledTimes(2);
+        expect(result.status).toBe(401);
+      });
+
+      test('does not fall back to HEAD for other failed statuses', async () => {
+        global.fetch = jest.fn().mockResolvedValue({
+          status: 401,
+          json: jest.fn().mockResolvedValue({}),
+        });
+
+        await probeResource('http://example.com/probe', null);
+
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
   describe('requestLogout()', () => {
