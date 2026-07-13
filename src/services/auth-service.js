@@ -6,7 +6,7 @@
  * https://iiif.io/api/auth/2.0/#probe-service-request
  * @param {String} probeUrl URL of the AuthProbeService2
  * @param {String} token access token from AuthAccessTokenService2 if exists
- * @returns {Promise<Object>} { status: Number, heading: Object, note: Object, substitute: Array }
+ * @returns {Promise<Object>} { status: Number, heading: Object, note: Object, substitute: Array, authIsExternal: Boolean }
  */
 export async function probeResource(probeUrl, token = null) {
   const headers = new Headers({ 'Accept': 'application/json' });
@@ -27,7 +27,8 @@ export async function probeResource(probeUrl, token = null) {
   status of a given resource without triggering the auth prompt when Ramp is used within Avalon. */
   if (response.status === 406) {
     const headResponse = await fetch(probeUrl, { ...requestOptions, method: 'HEAD' });
-    return { status: headResponse.status };
+    // 'authIsExternal' signals that auth status was derived a fallback HEAD response
+    return { status: headResponse.status, authIsExternal: true };
   }
 
   let body = {};

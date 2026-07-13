@@ -148,6 +148,7 @@ describe('auth-service', () => {
         expect(headUrl).toBe('http://example.com/probe');
         expect(headOptions.method).toBe('HEAD');
         expect(result.status).toBe(200);
+        expect(result.authIsExternal).toBe(true);
       });
 
       test('and resolves with the HEAD response status when unauthorized', async () => {
@@ -159,6 +160,7 @@ describe('auth-service', () => {
 
         expect(global.fetch).toHaveBeenCalledTimes(2);
         expect(result.status).toBe(401);
+        expect(result.authIsExternal).toBe(true);
       });
 
       test('does not fall back to HEAD for other failed statuses', async () => {

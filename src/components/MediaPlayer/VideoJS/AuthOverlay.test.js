@@ -112,6 +112,22 @@ describe('AuthOverlay', () => {
         expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
       });
     });
+
+    describe('authenticated badge when authStatus="authorized-external" for', () => {
+      test('a video player with a logoutService', () => {
+        render(<AuthOverlay {...props} authStatus='authorized-external' isVideo={true}
+          authService={{ ...defaultAuthService, logoutService: { id: 'http://example.com/auth/logout' } }} />);
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
+
+      test('an audio-only player', () => {
+        render(<AuthOverlay {...props} authStatus='authorized-external' isVideo={false}
+          authService={{ ...defaultAuthService, logoutService: { id: 'http://example.com/auth/logout' } }} />);
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('renders the login', () => {
@@ -194,6 +210,15 @@ describe('AuthOverlay', () => {
         expect(onAuthStatusMock).toHaveBeenCalledWith('authorized');
       });
     });
+
+    test('updates authStatus=\'authorized-external\' in state when probe HEAD request returns 200', async () => {
+      authService.probeResource.mockResolvedValue({ status: 200, authIsExternal: true });
+      render(<AuthOverlay {...props} authStatus='idle' />);
+      await waitFor(() => {
+        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized-external');
+      });
+      expect(onTokenReceivedMock).not.toHaveBeenCalled();
+    });
   });
 
   describe('re-probes to confirm authorization and', () => {
@@ -218,6 +243,19 @@ describe('AuthOverlay', () => {
         expect(onTokenReceivedMock).toHaveBeenCalledWith('valid-token');
         expect(onAuthStatusMock).toHaveBeenCalledWith('authorized');
       });
+    });
+
+    test('updates state and skips the token when it falls back to a HEAD request', async () => {
+      authService.requestTokenViaIframe.mockResolvedValue({ accessToken: 'valid-token' });
+      authService.probeResource.mockResolvedValue({ status: 200, authIsExternal: true });
+
+      render(<AuthOverlay {...updatedProps} />);
+      fireEvent.click(screen.getByTestId('auth-login-btn'));
+
+      await waitFor(() => {
+        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized-external');
+      });
+      expect(onTokenReceivedMock).not.toHaveBeenCalled();
     });
 
     test('displays an error when probe 401', async () => {
