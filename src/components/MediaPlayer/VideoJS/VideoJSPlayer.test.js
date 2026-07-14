@@ -546,6 +546,47 @@ describe('VideoJSPlayer component', () => {
           expect(aspectRatioSpy).toHaveBeenCalledWith('16:9');
           expect(player.hasClass('vjs-disabled')).toBe(true);
         });
+
+        test('hides the auth badge on player "userinactive" event', () => {
+          const badgeContainer = screen.getByTestId('auth-badge').closest('.ramp--auth-overlay__badge-container');
+          expect(badgeContainer).not.toHaveClass('hidden');
+
+          act(() => { player.trigger('userinactive'); });
+          expect(badgeContainer).toHaveClass('hidden');
+        });
+
+        test('shows the auth badge again on player "useractive" event', () => {
+          // Setup: hide the auth badge first
+          act(() => { player.trigger('userinactive'); });
+          const badgeContainer = screen.getByTestId('auth-badge').closest('.ramp--auth-overlay__badge-container');
+          expect(badgeContainer).toHaveClass('hidden');
+
+          // Simulate user activity
+          act(() => { player.trigger('useractive'); });
+
+          expect(badgeContainer).not.toHaveClass('hidden');
+        });
+
+        test('closes open logout menu on player "userinactive" event', () => {
+          // Setup: open the auth badge menu
+          fireEvent.click(screen.getByTestId('auth-badge'));
+          expect(screen.getByTestId('auth-badge-menu')).toBeInTheDocument();
+
+          // Simulate user inactivity
+          act(() => { player.trigger('userinactive'); });
+
+          expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+        });
+
+        test('triggers "reportUserActivity" when the badge receives focus while hidden', () => {
+          const reportUserActivitySpy = jest.spyOn(player, 'reportUserActivity');
+          // Setup: hide the auth badge first
+          act(() => { player.trigger('userinactive'); });
+
+          // Simulate focus event on the auth badge
+          act(() => { screen.getByTestId('auth-badge').focus(); });
+          expect(reportUserActivitySpy).toHaveBeenCalled();
+        });
       });
     });
 

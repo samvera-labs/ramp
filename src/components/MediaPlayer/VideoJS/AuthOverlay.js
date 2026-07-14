@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import { getLabelValue, sanitizeHTML } from '@Services/utility-helpers';
 import { probeResource, requestLogout, requestTokenViaIframe } from '@Services/auth-service';
 import { SearchArrow, SignOutIcon, UserIcon } from '@Services/svg-icons';
+import { useIsUserInactive } from '@Services/ramp-hooks';
 import './VideoJSPlayer.scss';
 
 /**
@@ -20,14 +22,16 @@ import './VideoJSPlayer.scss';
  * @param {Object} props.authService
  * @param {String} props.authStatus
  * @param {Boolean} props.isVideo
+ * @param {Function} props.onBadgeFocus
  * @param {Function} props.onTokenReceived
  * @param {Function} props.onAuthStatus
  * @param {Function} props.onLogout
  */
-function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuthStatus, onLogout }) {
+function AuthOverlay({ authService, authStatus, isVideo, onBadgeFocus, onTokenReceived, onAuthStatus, onLogout }) {
   const [errorMessage, setErrorMessage] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isUserInactive } = useIsUserInactive();
 
   const loginTabRef = useRef(null);
   const pollIntervalRef = useRef(null);
@@ -94,6 +98,11 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
       clearInterval(pollIntervalRef.current);
     };
   }, []);
+
+  // Close the menu when the badge is hidden due to user inactivity
+  useEffect(() => {
+    if (isUserInactive) setMenuOpen(false);
+  }, [isUserInactive]);
 
   /**
    * Acquire token via a hidden iframe using postMessage API, then save this token
@@ -214,10 +223,14 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
     };
 
     return (
-      <div className='ramp--auth-overlay__badge-container' ref={badgeRef}>
+      <div
+        className={cx('ramp--auth-overlay__badge-container', isUserInactive && 'hidden')}
+        ref={badgeRef}
+      >
         <button
           className='ramp--auth-overlay__badge'
           onClick={() => setMenuOpen((mo) => !mo)}
+          onFocus={onBadgeFocus}
           aria-haspopup='true' aria-expanded={menuOpen}
           aria-label={`Account menu for sign-out`}
           data-testid='auth-badge'
@@ -307,6 +320,7 @@ AuthOverlay.propTypes = {
   }).isRequired,
   authStatus: PropTypes.string.isRequired,
   isVideo: PropTypes.bool,
+  onBadgeFocus: PropTypes.func.isRequired,
   onTokenReceived: PropTypes.func.isRequired,
   onAuthStatus: PropTypes.func.isRequired,
   onLogout: PropTypes.func,

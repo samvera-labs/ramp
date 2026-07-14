@@ -725,6 +725,39 @@ export const useVideoJSPlayer = ({
 };
 
 /**
+ * Track user (in)activity in the VideoJS player instance based on the 'useractive' and
+ * 'userinactive' events emitted by VideoJS.
+ * This hook isolates the state updates based on these events to avoid re-rendering the
+ * whole VideoJSPlayer component tree on each user-interaction.
+ * @returns {
+ *  isUserInactive: Boolean
+ * }
+ */
+export const useIsUserInactive = () => {
+  const playerState = useContext(PlayerStateContext);
+  const { player } = playerState;
+
+  const [isUserInactive, setIsUserInactive] = useState(false);
+
+  useEffect(() => {
+    if (!player) return;
+
+    const handleActive = () => setIsUserInactive(false);
+    const handleInactive = () => setIsUserInactive(true);
+
+    player.on('useractive', handleActive);
+    player.on('userinactive', handleInactive);
+
+    return () => {
+      player.off('useractive', handleActive);
+      player.off('userinactive', handleInactive);
+    };
+  }, [player]);
+
+  return { isUserInactive };
+};
+
+/**
  * Handle display of inaccessible message timer and interval for
  * countdown
  * @param {Object} obj

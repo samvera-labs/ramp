@@ -1654,6 +1654,7 @@ function VideoJSPlayer({
           authToken={auth.token}
           authStatus={auth.status}
           isVideo={isVideo}
+          onBadgeFocus={() => playerRef.current?.reportUserActivity()}
           onTokenReceived={(token) => manifestDispatch({ token, type: 'setAuthToken' })}
           onAuthStatus={(status) => manifestDispatch({ status, type: 'setAuthStatus' })}
           onLogout={() => {
