@@ -1,7 +1,7 @@
 import React, { act, useEffect } from 'react';
 import { render } from "@testing-library/react";
 import * as hooks from "./ramp-hooks";
-import { manifestState, withManifestAndPlayerProvider } from "./testing-helpers";
+import { manifestState, withManifestAndPlayerProvider, withPlayerProvider } from "./testing-helpers";
 import playlist from "@TestData/playlist";
 import singleCanvas from '@TestData/single-canvas';
 import multiSourceManifest from '@TestData/multi-source-manifest';
@@ -221,6 +221,58 @@ describe('useSetupPlayer', () => {
     expect(resultRef.current.playerConfig.error)
       .toEqual('You do not have permission to playback this item.');
     expect(resultRef.current.playerConfig.sources).toEqual([]);
+  });
+});
+
+describe('useIsUserInactive', () => {
+  // not a real ref because react throws warning if we use outside a component
+  const resultRef = { current: null };
+  let UIComponent, player;
+  beforeEach(() => {
+    resultRef.current = null;
+
+    // Player instance with minimal event handling required for testing the hook
+    const handlers = {};
+    player = {
+      on: jest.fn((event, handler) => { handlers[event] = handler; }),
+      off: jest.fn((event) => { delete handlers[event]; }),
+      trigger: (event) => handlers[event]?.(),
+    };
+
+    UIComponent = () => {
+      const isUserInactive = hooks.useIsUserInactive();
+      useEffect(() => {
+        resultRef.current = isUserInactive;
+      }, [isUserInactive]);
+      return (<div></div>);
+    };
+  });
+
+  test('returns false when there is no player', () => {
+    const CustomComponent = withPlayerProvider(UIComponent, { initialState: {} });
+    render(<CustomComponent />);
+    expect(resultRef.current.isUserInactive).toBeFalsy();
+  });
+
+  test('returns true after player emits "userinactive", and false again after "useractive"', () => {
+    const CustomComponent = withPlayerProvider(UIComponent, { initialState: { player } });
+    render(<CustomComponent />);
+
+    act(() => player.trigger('userinactive'));
+    expect(resultRef.current.isUserInactive).toBeTruthy();
+
+    act(() => player.trigger('useractive'));
+    expect(resultRef.current.isUserInactive).toBeFalsy();
+  });
+
+  test('unregisters event listeners on unmount', () => {
+    const CustomComponent = withPlayerProvider(UIComponent, { initialState: { player } });
+    const { unmount } = render(<CustomComponent />);
+
+    unmount();
+
+    expect(player.off).toHaveBeenCalledWith('useractive', expect.any(Function));
+    expect(player.off).toHaveBeenCalledWith('userinactive', expect.any(Function));
   });
 });
 

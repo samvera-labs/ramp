@@ -2,12 +2,18 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import AuthOverlay from './AuthOverlay';
 import * as authService from '@Services/auth-service';
+import * as hooks from '@Services/ramp-hooks';
 
 jest.mock('dompurify', () => ({ sanitize: (html) => html }));
 jest.mock('@Services/auth-service', () => ({
   probeResource: jest.fn(),
   requestTokenViaIframe: jest.fn(),
   requestLogout: jest.fn(),
+}));
+/* Mock the hook entirley so that, the test setup can control the return value instead of
+relying on the player, which needs to be mocked if the real hook is used. */
+jest.mock('@Services/ramp-hooks', () => ({
+  useIsUserInactive: jest.fn(() => false),
 }));
 
 const mockAccessService = {
@@ -421,6 +427,51 @@ describe('AuthOverlay', () => {
       fireEvent.mouseDown(document.body);
       expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
       expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    describe('on user inactivity', () => {
+      // Re-set hook value after each test
+      afterEach(() => {
+        hooks.useIsUserInactive.mockReturnValue({ isUserInactive: false });
+      });
+
+      test('gets a hidden', () => {
+        hooks.useIsUserInactive.mockReturnValue({ isUserInactive: true });
+        render(<AuthOverlay {...authorizedProps} />);
+        const container = screen.getByTestId('auth-badge').closest('.ramp--auth-overlay__badge-container');
+        expect(container).toHaveClass('hidden');
+      });
+
+      test('stays in the tab order while hidden', () => {
+        hooks.useIsUserInactive.mockReturnValue({ isUserInactive: true });
+        render(<AuthOverlay {...authorizedProps} />);
+        expect(screen.getByTestId('auth-badge')).not.toHaveAttribute('tabIndex', '-1');
+      });
+
+      test('closes open logout menu when it gets hidden', () => {
+        hooks.useIsUserInactive.mockReturnValue({ isUserInactive: false });
+        const { rerender } = render(<AuthOverlay {...authorizedProps} />);
+
+        // Setup: open the logout menu
+        fireEvent.click(screen.getByTestId('auth-badge'));
+        expect(screen.getByTestId('auth-badge-menu')).toBeInTheDocument();
+
+        // Simulate 'userinactive' state in player and rerender component
+        hooks.useIsUserInactive.mockReturnValue({ isUserInactive: true });
+        rerender(<AuthOverlay {...authorizedProps} />);
+
+        expect(screen.queryByTestId('auth-badge-menu')).not.toBeInTheDocument();
+        expect(screen.getByTestId('auth-badge')).toHaveAttribute('aria-expanded', 'false');
+      });
+
+      test('calls "onBadgeFocus" when the badge receives keyboard focus', () => {
+        hooks.useIsUserInactive.mockReturnValue({ isUserInactive: true });
+        const onBadgeFocusMock = jest.fn();
+        render(<AuthOverlay {...authorizedProps} onBadgeFocus={onBadgeFocusMock} />);
+
+        fireEvent.focus(screen.getByTestId('auth-badge'));
+        expect(onBadgeFocusMock).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });

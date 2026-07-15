@@ -129,6 +129,14 @@
     z-index: 102;
     font-size: 1rem;
     color: #767676;
+    opacity: 1;
+    transition: opacity 0.3s;
+
+    &.hidden {
+      visibility: visible;
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 
   &__badge {
