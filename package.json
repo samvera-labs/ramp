@@ -8,6 +8,9 @@
   "files": [
     "/dist"
   ],
+  "engines": {
+    "node": "^20.19 || ^22.12 || >=24"
+  },
   "scripts": {
     "build": "npm run clean && NODE_ENV=production npm run bundle",
     "bundle": "vite build && PREACT=true vite build",
