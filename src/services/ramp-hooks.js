@@ -183,6 +183,7 @@ export const useSetupPlayer = ({
     customStart,
     manifest,
     playlist,
+    iiifVersion,
     renderings,
     srcIndex
   } = manifestState;
@@ -244,6 +245,7 @@ export const useSetupPlayer = ({
         ? customStart.startTime : 0,
       srcIndex,
       isPlaylist,
+      version: iiifVersion,
     });
 
     if (withCredentials) {
@@ -1108,6 +1110,10 @@ export const useTranscripts = ({
   const [cachedTranscripts, setCachedTranscripts] = useState([]);
   const [selectedTranscript, setSelectedTranscript] = useState({ url: '', isTimed: false });
 
+  // Read IIIF Presentation API version from manifestState or defaults to '3'
+  const iiifVersion = useMemo(() => {
+    return manifestState === undefined ? '3' : manifestState.iiifVersion;
+  }, [manifestState]);
   // Read annotations from ManifestState if it exists
   const annotations = useMemo(() => {
     return manifestState === undefined ? [] : manifestState.annotations;
@@ -1234,9 +1240,9 @@ export const useTranscripts = ({
   const loadTranscripts = async (transcripts) => {
     let allTranscripts = (transcripts?.length > 0)
       // transcripts prop is processed first if given
-      ? await sanitizeTranscripts(transcripts)
+      ? await sanitizeTranscripts(transcripts, iiifVersion)
       // Read supplementing annotations from the given manifest
-      : await readSupplementingAnnotations(manifestUrl, '', transcriptParseAbort.current.signal);
+      : await readSupplementingAnnotations(manifestUrl, '', transcriptParseAbort.current.signal, iiifVersion);
 
     // Do nothing if the transcript parsing was aborted
     if (transcriptParseAbort.current.signal.aborted) {
