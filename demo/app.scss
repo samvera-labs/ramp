@@ -96,6 +96,10 @@ html {
     display: grid;
     gap: 0.1rem;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+    .ramp--structured-nav {
+      margin-top: 1em;
+    }
   }
 
   /*Reference: https://accessible-react.eevis.codes/components/tabs */

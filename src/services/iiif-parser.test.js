@@ -935,8 +935,8 @@ describe('iiif-parser', () => {
 
       test('for heading and note from tokenService when provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[0]);
-        expect(result.tokenService.heading).toBe('Something went wrong with the token service');
-        expect(result.tokenService.note).toBe('Could not get a token. Please contact support.');
+        expect(result.tokenService.errorHeading).toBe('Something went wrong with the token service');
+        expect(result.tokenService.errorNote).toBe('Could not get a token. Please contact support.');
       });
 
       test('for label from logoutService when provided', () => {
@@ -962,8 +962,8 @@ describe('iiif-parser', () => {
 
       test('for tokenService when not provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[2]);
-        expect(result.tokenService.heading).toBe('Authentication failed');
-        expect(result.tokenService.note).toBe('Could not obtain an access token.');
+        expect(result.tokenService.errorHeading).toBe('Authentication failed');
+        expect(result.tokenService.errorNote).toBe('Could not obtain an access token.');
       });
 
       test('for logoutService when not provided', () => {
