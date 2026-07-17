@@ -1,4 +1,4 @@
-import { parseManifest, PropertyValue } from 'manifesto.js';
+import { parseManifest } from 'manifesto.js';
 import mimeTypes from 'mime-types';
 import {
   GENERIC_EMPTY_MANIFEST_MESSAGE,
@@ -35,7 +35,7 @@ export function canvasesInManifest(manifest) {
       canvases.map((canvas, index) => {
         let summary = undefined;
         if (canvas.summary && canvas.summary != undefined) {
-          summary = PropertyValue.parse(canvas.summary).getValue();
+          summary = getLabelValue(canvas.summary);
         }
         let homepage = undefined;
         if (canvas.homepage && canvas.homepage.length > 0) {
@@ -150,15 +150,17 @@ export function getMediaInfo({ manifest, canvasIndex, startTime, srcIndex = 0, i
     const duration = Number(canvas.duration);
 
     // Read painting resources from annotations
-    const {
-      resources, canvasTargets, isMultiSource, error, poster
-    } = parseResourceAnnotations(canvas, duration, 'painting', startTime, isPlaylist, version);
+    const { resources, canvasTargets, isMultiSource, error, poster } = parseResourceAnnotations({
+      annotation: canvas, duration, motivation: 'painting', start: startTime, isPlaylist, version
+    });
 
     // Set default src to auto
     sources = setDefaultSrc(resources, isMultiSource, srcIndex);
 
     // Read supplementing resources fom annotations
-    const supplementingRes = parseResourceAnnotations(annotations, duration, 'supplementing', 0, false, version);
+    const supplementingRes = parseResourceAnnotations({
+      annotation: annotations, duration, motivation: 'supplementing', version
+    });
 
     const allSupplementing = supplementingRes ? supplementingRes.resources : [];
     const audioDescTracks = allSupplementing.filter(t => t.kind === 'descriptions');
@@ -246,18 +248,18 @@ export function getCanvasId(uri) {
 
 /**
  * Get placeholderCanvas value for images and text messages
- * @function IIIFParser#getPlaceholderCanvas
+ * @function IIIFParser#getPlaceholderResource
  * @param {Object} annotation IIIF Annotation object
  * @param {Boolean} isPoster flag to indicate whether text/image
  * @param {String} version Presentation API version of the Manifest
  * @return {String}
  */
-export function getPlaceholderCanvas(annotation, isPoster = false, version = '3') {
+export function getPlaceholderResource(annotation, isPoster = false, version = '3') {
   let placeholder;
   try {
-    let placeholderCanvas = annotation[getPlaceholderProp(version)];
-    if (placeholderCanvas && placeholderCanvas != undefined) {
-      let items = placeholderCanvas.items[0].items;
+    let placeholderResource = annotation[getPlaceholderProp(version)];
+    if (placeholderResource && placeholderResource != undefined) {
+      let items = placeholderResource.items[0].items;
       if (items?.length > 0 && items[0].body != undefined
         && resolveMotivation(items[0].motivation, 'painting')) {
         const body = items[0].body;
@@ -265,13 +267,14 @@ export function getPlaceholderCanvas(annotation, isPoster = false, version = '3'
           placeholder = body.id;
         } else {
           placeholder = getLabelValue(body.label) || 'This item cannot be played.';
-          setCanvasMessageTimeout(placeholderCanvas.duration);
+          setCanvasMessageTimeout(placeholderResource.duration);
         }
         return placeholder;
       }
     } else if (!isPoster) {
+      const errMsgRes = version == '4' ? 'placeholderContainer' : 'placeholderCanvas';
       console.error(
-        'iiif-parser -> getPlaceholderCanvas() -> placeholderCanvas property not defined'
+        `iiif-parser -> getPlaceholderResource() -> ${errMsgRes} property not defined`
       );
       return 'This item cannot be played.';
     } else {

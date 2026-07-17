@@ -2,7 +2,7 @@ import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import mimeTypes from 'mime-types';
 import DOMPurify from 'dompurify';
-import { getPlaceholderCanvas } from './iiif-parser';
+import { getPlaceholderResource } from './iiif-parser';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 import { resolveMotivation } from '@Services/iiif-version-parser';
 
@@ -365,6 +365,7 @@ export function getAnnotations(annotation, motivation = '', version = '3') {
     unconditionally because it works without issues. */
   const isPlayableCanvas = annotation.type === 'Canvas'
     && (version !== '4' || annotation.duration != undefined);
+
   if (isPlayableCanvas || annotation.type === 'Timeline') {
     content = annotation.items[0].items;
   } else if (Array.isArray(annotation) && annotation?.length > 0) {
@@ -386,15 +387,16 @@ export function getAnnotations(annotation, motivation = '', version = '3') {
  * Parse a list of annotations or a single annotation to extract information related to
  * a given Canvas. Assumes the annotation type as either 'painting' or 'supplementing'.
  * @function Utils#parseResourceAnnotations
- * @param {Array} annotation list of painting/supplementing annotations to be parsed
- * @param {Number} duration duration of the current canvas
- * @param {String} motivation motivation type
- * @param {Number} start custom start time from props or Manifest's start property
- * @param {Boolean} isPlaylist
- * @param {String} version Presentation API version of the Manifest
+ * @param {Object} obj
+ * @param {Array} obj.annotation list of painting/supplementing annotations to be parsed
+ * @param {Number} obj.duration duration of the current canvas
+ * @param {String} obj.motivation motivation type
+ * @param {String} obj.version Presentation API version of the Manifest
+ * @param {Number} obj.start custom start time from props or Manifest's start property
+ * @param {Boolean} obj.isPlaylist
  * @returns {Object} { resources, canvasTargets, isMultiSource, poster, error }
  */
-export function parseResourceAnnotations(annotation, duration, motivation, start = 0, isPlaylist = false, version = '3') {
+export function parseResourceAnnotations({ annotation, duration, motivation, version = '3', start = 0, isPlaylist = false }) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false,
@@ -421,7 +423,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     if (items.length === 0) {
       return {
         resources, canvasTargets, isMultiSource,
-        poster: getPlaceholderCanvas(annotation, false, version)
+        poster: getPlaceholderResource(annotation, false, version)
       };
     }
     // When multiple resources/annotations are in a single Canvas
@@ -447,7 +449,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     else if (!isEmpty(items[0].body) && items[0].body?.id != '' && resolveMotivation(items[0]?.motivation, motivation)) {
       parseAnnotation(items[0].body);
     } else if (motivation === 'painting') {
-      return { resources, error, poster: getPlaceholderCanvas(annotation, false, version), canvasTargets };
+      return { resources, error, poster: getPlaceholderResource(annotation, false, version), canvasTargets };
     }
 
     // Set canvasTargets for non-multisource Canvases to use when building progressbar
@@ -469,7 +471,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     }
 
     // Read image placeholder
-    poster = getPlaceholderCanvas(annotation, true, version);
+    poster = getPlaceholderResource(annotation, true, version);
     return { canvasTargets, isMultiSource, resources, poster };
   } else {
     return { canvasTargets, isMultiSource, resources, poster, error };

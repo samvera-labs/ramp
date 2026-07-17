@@ -286,7 +286,7 @@ describe('transcript-parser', () => {
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
         expect(fetchSpy).toHaveBeenCalledWith(
-          'https://example.com/volleyball-for-boys.json', { signal: undefined }
+          'https://example.com/volleyball-for-boys.json', { signal: null }
         );
         expect(transcripts).toHaveLength(1);
         expect(transcripts.filter(c => c.canvasId === 0)[0].items).toEqual([
@@ -323,7 +323,7 @@ describe('transcript-parser', () => {
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
         expect(fetchSpy).toHaveBeenCalledWith(
-          'https://example.com/transcript-canvas.json', { signal: undefined }
+          'https://example.com/transcript-canvas.json', { signal: null }
         );
         expect(transcripts).toHaveLength(2);
         expect(transcripts.filter(c => c.canvasId === 1)[0].items).toEqual([
@@ -360,7 +360,7 @@ describe('transcript-parser', () => {
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
         expect(fetchSpy).toHaveBeenCalledWith(
-          'https://example.com/transcript-canvas.json', { signal: undefined }
+          'https://example.com/transcript-canvas.json', { signal: null }
         );
         expect(transcripts).toHaveLength(2);
         expect(transcripts.filter(c => c.canvasId === 0)[0].items).toHaveLength(0);
