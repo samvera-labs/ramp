@@ -1,4 +1,5 @@
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 /** SVG icons for the edit buttons in Annotations component */
 export const EditIcon = () => {
@@ -203,4 +204,20 @@ export const UserIcon = () => {
       </g>
     </svg>
   );
+};
+
+/**
+ * Convert a React SVG icon component into an SVG <symbol> markup string to be used in
+ * custom VideoJS components.
+ * @param {Function} IconComponent React SVG icon component
+ * @param {String} id id of the SVG <symbol>
+ * @param {Object} props props to pass to IconComponent when rendering
+ * @returns {String} `<symbol id="${id}">...</symbol>` markup string
+ */
+export const svgIconToSymbol = (IconComponent, id, props = {}) => {
+  const markup = renderToStaticMarkup(<IconComponent {...props} />);
+  const viewBoxMatch = markup.match(/viewBox="([^"]*)"/);
+  const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 24 24';
+  const innerContent = markup.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+  return `<symbol id="${id}" viewBox="${viewBox}">${innerContent}</symbol>`;
 };
