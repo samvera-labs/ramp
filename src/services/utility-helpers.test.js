@@ -114,6 +114,15 @@ describe('util helper', () => {
         start: 473.9, end: 476.5
       });
     });
+
+    it('returns duration when end time is not defined in hh:mm:ss format with a trailing comma', () => {
+      const expectedObject = { start: 473, end: 1985 };
+      expect(
+        util.getMediaFragment(
+          'http://example.com/sample/manifest/canvas#t=00:07:53,', 1985
+        )
+      ).toEqual(expectedObject);
+    });
   });
 
   describe('parseResourceAnnotations()', () => {

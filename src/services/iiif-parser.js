@@ -576,29 +576,6 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
       }
 
-      // Consider collapsible structure only for ranges non-equivalent to root-level items
-      if (range.getRanges()?.length > 0 && !isRoot && isCanvas) hasCollapsibleStructure = true;
-      let rangeDuration = range.getDuration();
-      if (rangeDuration != undefined && !isRoot) {
-        let { start, end } = rangeDuration;
-        duration = end - start;
-        if (isCanvas) { canvasDuration = duration; }
-      }
-      if (canvases.length > 0 && canvasesInfo?.length > 0) {
-        let canvasInfo = canvasesInfo
-          .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
-        isEmpty = canvasInfo.isEmpty;
-        summary = canvasInfo.summary;
-        homepage = canvasInfo.homepage;
-        // Mark all timespans as clickable, and provide desired behavior in TreeNode component
-        isClickable = true;
-        if (canvasInfo.range != undefined) {
-          const { start, end } = canvasInfo.range;
-          canvasDuration = end - start;
-          if (isCanvas) { duration = end - start; }
-        }
-      }
-
       // Increment index for children timespans within a Canvas
       if (!isCanvas && canvases.length > 0) subIndex++;
 
@@ -616,6 +593,36 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
           }
         } else {
           id = canvases[0];
+        }
+      }
+
+      // Consider collapsible structure only for ranges non-equivalent to root-level items
+      if (range.getRanges()?.length > 0 && !isRoot && isCanvas) hasCollapsibleStructure = true;
+      // Get range start and end time from id using manifesto.js Range class method
+      let rangeDuration = range.getDuration();
+      if (rangeDuration != undefined && !isRoot) {
+        let { start, end } = rangeDuration;
+        duration = end - start;
+        if (isNaN(duration) && id != undefined) {
+          /* Fallback: parse range start and end time from media fragment in 'id'. 'getMediaFragment()'
+          parses both '#t=511,527' and '#t=00:08:31,00:08:47' formats. */
+          let { start, end } = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
+          duration = end - start;
+        }
+        if (isCanvas) { canvasDuration = duration; }
+      }
+      if (canvases.length > 0 && canvasesInfo?.length > 0) {
+        let canvasInfo = canvasesInfo
+          .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
+        isEmpty = canvasInfo.isEmpty;
+        summary = canvasInfo.summary;
+        homepage = canvasInfo.homepage;
+        // Mark all timespans as clickable, and provide desired behavior in TreeNode component
+        isClickable = true;
+        if (canvasInfo.range != undefined) {
+          const { start, end } = canvasInfo.range;
+          canvasDuration = end - start;
+          if (isCanvas) { duration = end - start; }
         }
       }
 
