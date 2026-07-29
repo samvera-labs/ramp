@@ -4,7 +4,7 @@ import mimeTypes from 'mime-types';
 import DOMPurify from 'dompurify';
 import { getPlaceholderResource } from './iiif-parser';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
-import { resolveMotivation } from '@Services/iiif-version-parser';
+import { hasMotivation, normalizeMotivation } from '@Services/iiif-version-parser';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3, audioDescription: 4 };
 // Number of decimal places for milliseconds used in time calculations. 
@@ -373,7 +373,7 @@ export function getAnnotations(annotation, motivation = '', version = '3') {
   }
 
   // Normalize 'motivation' to an array on each Annotation
-  content = content.map((a) => ({ ...a, motivation: resolveMotivation(a.motivation) }));
+  content = content.map((a) => ({ ...a, motivation: normalizeMotivation(a.motivation) }));
   // Filter the annotations if a motivation is given
   if (content && motivation != '') {
     const relevantAnnotations = content.filter(
@@ -429,7 +429,7 @@ export function parseResourceAnnotations({ annotation, duration, motivation, ver
     // When multiple resources/annotations are in a single Canvas
     else if (items?.length > 1) {
       items.map((p, index) => {
-        if (resolveMotivation(p.motivation, motivation)) {
+        if (hasMotivation(p.motivation, motivation)) {
           parseAnnotation(p.body);
           if (motivation === 'painting') {
             isMultiSource = true;
@@ -440,13 +440,13 @@ export function parseResourceAnnotations({ annotation, duration, motivation, ver
       });
     }
     // When multiple qualities/sources are given for the resource in the Canvas => choice
-    else if (items[0].body.items?.length > 0 && resolveMotivation(items[0]?.motivation, motivation)) {
+    else if (items[0].body.items?.length > 0 && hasMotivation(items[0]?.motivation, motivation)) {
       items[0].body.items.map((p) => {
         parseAnnotation(p);
       });
     }
     // When a singe source is given for the resource in the Canvas
-    else if (!isEmpty(items[0].body) && items[0].body?.id != '' && resolveMotivation(items[0]?.motivation, motivation)) {
+    else if (!isEmpty(items[0].body) && items[0].body?.id != '' && hasMotivation(items[0]?.motivation, motivation)) {
       parseAnnotation(items[0].body);
     } else if (motivation === 'painting') {
       return { resources, error, poster: getPlaceholderResource(annotation, false, version), canvasTargets };

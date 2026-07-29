@@ -30,21 +30,26 @@ export function getPlaceholderProp(version) {
 }
 
 /**
- * Normalize an Annotation/AnnotationPage's 'motivation' to an array and if an expected
- * motivation value is given check for its existence. Otherwise return the normalized
- * motivation vlaues. This allows to read and parse 'motivation' values for both Presentations
- * v3 and v4;
- * - in Presentation v3 'motivation' is conventionally a single String (e.g. 'painting')
- * - in Presentation v4 'motivation' is required to be an Array of strings (e.g. ['painting'])
- * @function VersionParser#normalizeMotivation
+ * Check if a motivation string value is contained in the 'motivation' read from the
+ * IIIF resource in Manifest
+ * @function VersionParser#hasMotivation
  * @param {String|Array} motivation 'motivation' value read off an Annotation
- * @param {String|Null} expected given value to be checked whether it is included
+ * @param {String} expected given value to be checked whether it is included
  * @returns {Array}
  */
-export function resolveMotivation(motivation, expected = null) {
-  const motivations = [].concat(motivation ?? []);
-  if (expected != null) {
-    return motivations.includes(expected);
-  }
-  return motivations;
+export function hasMotivation(motivation, expected) {
+  const motivations = normalizeMotivation(motivation);
+  return motivations.includes(expected);
+}
+
+/**
+ * Normalize an Annotation/AnnotationPage 'motivation' to an array. This allows to read and parse
+ * 'motivation' values for both Presentation v3 and v4;
+ * - in Presentation v3 'motivation' is conventionally a single String (e.g. 'painting')
+ * @function VersionParser#normalizeMotivation
+ * @param {String|Array} motivation 'motivation' value read off an Annotation
+ * @returns {Array}
+ */
+export function normalizeMotivation(motivation) {
+  return [].concat(motivation ?? []);
 }

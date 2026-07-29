@@ -11,7 +11,7 @@ import {
   identifyMachineGen,
   sanitizeHTML,
 } from './utility-helpers';
-import { getPlaceholderProp, resolveMotivation } from './iiif-version-parser';
+import { getPlaceholderProp, hasMotivation } from './iiif-version-parser';
 
 // Do not build structures for the following 'Range' behaviors:
 // Reference: https://iiif.io/api/presentation/3.0/#behavior
@@ -261,7 +261,7 @@ export function getPlaceholderResource(annotation, isPoster = false, version = '
     if (placeholderResource && placeholderResource != undefined) {
       let items = placeholderResource.items[0].items;
       if (items?.length > 0 && items[0].body != undefined
-        && resolveMotivation(items[0].motivation, 'painting')) {
+        && hasMotivation(items[0].motivation, 'painting')) {
         const body = items[0].body;
         if (isPoster) {
           placeholder = body.id;

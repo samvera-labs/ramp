@@ -1,4 +1,4 @@
-import { getIIIFAPIVersion, getPlaceholderProp, resolveMotivation } from './iiif-version-parser';
+import { getIIIFAPIVersion, getPlaceholderProp, hasMotivation, normalizeMotivation } from './iiif-version-parser';
 
 describe('iiif-version-parser', () => {
   describe('getIIIFAPIVersion()', () => {
@@ -61,41 +61,43 @@ describe('iiif-version-parser', () => {
     });
   });
 
-  describe('resolveMotivation()', () => {
-    describe('when expected param is null', () => {
-      test('converts a string motivation into an array', () => {
-        expect(resolveMotivation('painting')).toEqual(['painting']);
+  describe('hasMotivation()', () => {
+    describe('when the motivation is a string value', () => {
+      test('returns true when it is equal to expected value', () => {
+        expect(hasMotivation('painting', 'painting')).toBeTruthy();
       });
 
-      test('returns an array-like motivation unchanged', () => {
-        expect(resolveMotivation(['painting'])).toEqual(['painting']);
-      });
-
-      test('returns an empty array when motivation is missing', () => {
-        expect(resolveMotivation(undefined)).toEqual([]);
+      test('returns false when it is not equal to expected value', () => {
+        expect(hasMotivation('painting', 'commenting')).toBeFalsy();
       });
     });
 
-    describe('when expected param is provided', () => {
-      describe('and it is included in the given motivation', () => {
-        test('returns true for a string motivation', () => {
-          expect(resolveMotivation('painting', 'painting')).toBeTruthy();
-        });
-
-        test('returns true for an array-like motivation', () => {
-          expect(resolveMotivation(['painting', 'timeline'], 'painting')).toBeTruthy();
-        });
+    describe('when the motivation is an array value', () => {
+      test('returns true when expected value is included', () => {
+        expect(hasMotivation(['painting', 'timeline'], 'painting')).toBeTruthy();
       });
 
-      describe('and it is not included in the given motivation', () => {
-        test('returns false for a string motivation', () => {
-          expect(resolveMotivation('painting', 'commenting')).toBeFalsy();
-        });
-
-        test('returns false for an array-like motivation', () => {
-          expect(resolveMotivation(['painting', 'timeline'], 'commenting')).toBeFalsy();
-        });
+      test('returns true when expected value is not included', () => {
+        expect(hasMotivation(['painting', 'timeline'], 'commenting')).toBeFalsy();
       });
+    });
+  });
+
+  describe('normalizeMotivation()', () => {
+    test('converts a string motivation into an array', () => {
+      expect(normalizeMotivation('painting')).toEqual(['painting']);
+    });
+
+    test('returns an array motivation unchanged', () => {
+      expect(normalizeMotivation(['painting'])).toEqual(['painting']);
+    });
+
+    test('returns an empty array when motivation is undefined', () => {
+      expect(normalizeMotivation(undefined)).toEqual([]);
+    });
+
+    test('returns an empty array when motivation is null', () => {
+      expect(normalizeMotivation(null)).toEqual([]);
     });
   });
 });
