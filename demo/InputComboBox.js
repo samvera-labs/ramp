@@ -7,7 +7,8 @@ import React from 'react';
  * in W3C's a11y design patterns library.
  */
 const InputComboBox = ({ value, options, onChange }) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  // Expand the dropdown on initial page load to highlight the pre-loaded sample Manifests
+  const [isOpen, setIsOpen] = React.useState(true);
   const [activeIndex, setActiveIndex] = React.useState(-1);
 
   const containerRef = React.useRef(null);

@@ -19,7 +19,9 @@ const DEMO_MANIFEST_OPTIONS = DEMO_MANIFESTS.map(({ label, filename }) => ({
 
 const manifestURL = () => {
   const params = new URLSearchParams(window.location.search);
-  let url = `${config.url}/manifests/${config.env}/lunchroom_manners.json`;
+  // Do not pre-select a sample Manifest from combobox on initial page load
+  let url = '';
+  // But, if 'iiif-content' query param is present respect it and set Manifest URL
   if (params.has('iiif-content')) {
     url = params.get('iiif-content');
   }
