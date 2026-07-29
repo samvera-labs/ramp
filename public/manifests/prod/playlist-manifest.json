@@ -4,7 +4,7 @@
     "http://iiif.io/api/presentation/3/context.json"
   ],
   "type": "Manifest",
-  "id": "http://localhost:3003/manifests/dev/playlist-manifest.json",
+  "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest.json",
   "label": {
     "none": [
       "Ramp test [Playlist]"
@@ -29,7 +29,7 @@
   ],
   "homepage": [
     {
-      "id": "http://localhost:3003",
+      "id": "https://ramp.avalonmediasystem.org",
       "type": "Text",
       "label": {
         "none": [
@@ -42,7 +42,7 @@
   "items": [
     {
       "type": "Canvas",
-      "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1",
+      "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1",
       "label": {
         "none": [
           "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners"
@@ -51,19 +51,19 @@
       "items": [
         {
           "type": "AnnotationPage",
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1/page/1",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1/page/1",
           "items": [
             {
               "type": "Annotation",
               "motivation": "painting",
-              "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1/page/1/annotation/1",
-              "target": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/46",
+              "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1/page/1/annotation/1",
+              "target": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/46",
               "body": {
                 "type": "Choice",
                 "choiceHint": "user",
                 "items": [
                   {
-                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0.0,572.0",
+                    "id": "https://ramp.avalonmediasystem.org/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=0.0,572.0",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
@@ -76,7 +76,7 @@
                     }
                   },
                   {
-                    "id": "http://localhost:3003/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0.0,572.0",
+                    "id": "https://ramp.avalonmediasystem.org/lunchroom_manners/high/lunchroom_manners_1024kb.mp4#t=0.0,572.0",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
@@ -97,7 +97,7 @@
       "annotations": [
         {
           "type": "AnnotationPage",
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1/page/2",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1/page/2",
           "items": [
             {
               "type": "Annotation",
@@ -108,8 +108,8 @@
                 "format": "text/html",
                 "value": "Marker 1"
               },
-              "id": "http://localhost:3003/avalon_marker/35",
-              "target": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1#t=369.811"
+              "id": "https://ramp.avalonmediasystem.org/avalon_marker/35",
+              "target": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1#t=369.811"
             },
             {
               "type": "Annotation",
@@ -120,8 +120,8 @@
                 "format": "text/html",
                 "value": "Marker 2"
               },
-              "id": "http://localhost:3003/avalon_marker/54",
-              "target": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1#t=430.236"
+              "id": "https://ramp.avalonmediasystem.org/avalon_marker/54",
+              "target": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1#t=430.236"
             }
           ]
         }
@@ -130,7 +130,7 @@
       "partOf": [
         {
           "type": "manifest",
-          "id": "http://localhost:3003/manifests/dev/lunchroom_manners.json"
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners.json"
         }
       ],
       "width": 480,
@@ -143,7 +143,7 @@
       },
       "homepage": [
         {
-          "id": "http://localhost:3003/playlists/33?position=1",
+          "id": "https://ramp.avalonmediasystem.org/playlists/33?position=1",
           "type": "Text",
           "label": {
             "none": [
@@ -184,7 +184,7 @@
     },
     {
       "type": "Canvas",
-      "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/2",
+      "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/2",
       "label": {
         "none": [
           "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners - There will be Cake"
@@ -193,19 +193,19 @@
       "items": [
         {
           "type": "AnnotationPage",
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/2/page/3",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/2/page/3",
           "items": [
             {
               "type": "Annotation",
               "motivation": "painting",
-              "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/2/page/3/annotation/1",
-              "target": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/2",
+              "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/2/page/3/annotation/1",
+              "target": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/2",
               "body": {
                 "type": "Choice",
                 "choiceHint": "user",
                 "items": [
                   {
-                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=301,400",
+                    "id": "https://ramp.avalonmediasystem.org/lunchroom_manners/low/lunchroom_manners_256kb.mp4#t=301,400",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
@@ -218,7 +218,7 @@
                     }
                   },
                   {
-                    "id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_1024kb.mp4#t=301,400",
+                    "id": "https://ramp.avalonmediasystem.org/lunchroom_manners/low/lunchroom_manners_1024kb.mp4#t=301,400",
                     "type": "Video",
                     "height": 360,
                     "width": 480,
@@ -239,7 +239,7 @@
       "partOf": [
         {
           "type": "manifest",
-          "id": "http://localhost:3003/manifests/dev/lunchroom_manners.json"
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners.json"
         }
       ],
       "width": 480,
@@ -247,7 +247,7 @@
       "duration": 572.0,
       "homepage": [
         {
-          "id": "http://localhost:3003/playlists/33?position=2",
+          "id": "https://ramp.avalonmediasystem.org/playlists/33?position=2",
           "type": "Text",
           "label": {
             "none": [
@@ -259,7 +259,7 @@
       ]
     },
     {
-      "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3",
+      "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3",
       "type": "Canvas",
       "label": {
         "none": [
@@ -271,7 +271,7 @@
       "duration": 662.037,
       "homepage": [
         {
-          "id": "http://localhost:3003/playlists/33?position=3",
+          "id": "https://ramp.avalonmediasystem.org/playlists/33?position=3",
           "type": "Text",
           "label": {
             "none": [
@@ -283,16 +283,16 @@
       ],
       "items": [
         {
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3/page/1",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3/page/1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3/page/1/annotation/1",
+              "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3/page/1/annotation/1",
               "type": "Annotation",
               "motivation": "painting",
-              "target": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3",
+              "target": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3",
               "body": {
-                "id": "http://localhost:3003/volleyball-for-boys/volleyball-for-boys.mp4#t=400.32,642.45",
+                "id": "https://ramp.avalonmediasystem.org/volleyball-for-boys/volleyball-for-boys.mp4#t=400.32,642.45",
                 "type": "Video",
                 "format": "video/mp4",
                 "height": 1080,
@@ -305,15 +305,15 @@
       ],
       "annotations": [
         {
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3/page/2",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3/page/2",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/manifest/volleyball-for-boys/canvas/3/page/2/annotation/1",
+              "id": "https://ramp.avalonmediasystem.org/manifest/volleyball-for-boys/canvas/3/page/2/annotation/1",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
-                "id": "http://localhost:3003/volleyball-for-boys/volleyball.txt",
+                "id": "https://ramp.avalonmediasystem.org/volleyball-for-boys/volleyball.txt",
                 "type": "Text",
                 "format": "text/plain",
                 "label": {
@@ -322,7 +322,7 @@
                   ]
                 }
               },
-              "target": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3"
+              "target": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3"
             }
           ]
         }
@@ -332,13 +332,13 @@
   "structures": [
     {
       "type": "Range",
-      "id": "http://localhost:3003/manifests/dev/playlist-manifest/range/1",
+      "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/range/1",
       "label": null,
       "behavior": "top",
       "items": [
         {
           "type": "Range",
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/range/2",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/range/2",
           "label": {
             "none": [
               "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners"
@@ -347,13 +347,13 @@
           "items": [
             {
               "type": "Canvas",
-              "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/1#t=0,"
+              "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/1#t=0,"
             }
           ]
         },
         {
           "type": "Range",
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/range/3",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/range/3",
           "label": {
             "none": [
               "Beginning Responsibility: Lunchroom Manners - Lunchroom Manners - There will be Cake"
@@ -362,13 +362,13 @@
           "items": [
             {
               "type": "Canvas",
-              "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/2#t=301,400"
+              "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/2#t=301,400"
             }
           ]
         },
         {
           "type": "Range",
-          "id": "http://localhost:3003/manifests/dev/playlist-manifest/range/4",
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/range/4",
           "label": {
             "none": [
               "Volleyball for Booys - Timespan 1"
@@ -377,7 +377,7 @@
           "items": [
             {
               "type": "Canvas",
-              "id": "http://localhost:3003/manifests/dev/playlist-manifest/canvas/3#t=400.32,642.45"
+              "id": "https://ramp.avalonmediasystem.org/manifests/prod/playlist-manifest/canvas/3#t=400.32,642.45"
             }
           ]
         }

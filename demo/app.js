@@ -10,9 +10,10 @@ import MetadataDisplay from '@Components/MetadataDisplay/MetadataDisplay';
 import SupplementalFiles from '@Components/SupplementalFiles/SupplementalFiles';
 import AutoAdvanceToggle from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
 import Annotations from '@Components/Annotations/Annotations';
+import InputComboBox from './InputComboBox';
 import './app.scss';
 
-const App = ({ manifestURL }) => {
+const App = ({ manifestURL, DEMO_MANIFEST_OPTIONS }) => {
   const [userURL, setUserURL] = React.useState(manifestURL);
   const [manifestUrl, setManifestUrl] = React.useState(manifestURL);
 
@@ -32,9 +33,9 @@ const App = ({ manifestURL }) => {
     setManifestUrl(userURL);
   };
 
-  const handleUserInput = (e) => {
+  const handleUserInput = (newValue) => {
     setManifestUrl();
-    setUserURL(e.target.value);
+    setUserURL(newValue);
   };
 
   return (
@@ -54,13 +55,10 @@ const App = ({ manifestURL }) => {
               <label htmlFor='manifesturl' className='ramp-demo__manifest-input-label'>Manifest URL</label>
             </div>
             <div className='col-2'>
-              <input type='url'
-                id='manifesturl'
-                name='manifesturl'
+              <InputComboBox
                 value={userURL}
-                onChange={handleUserInput}
-                placeholder='Manifest URL'
-                className='ramp-demo__manifest-input' />
+                options={DEMO_MANIFEST_OPTIONS}
+                onChange={handleUserInput} />
               <input type='submit' value='Set Manifest' className='ramp-demo__manifest-submit' />
             </div>
           </form>

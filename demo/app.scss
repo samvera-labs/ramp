@@ -21,8 +21,8 @@ html {
     grid-column-end: end;
   }
 
-  .ramp-demo__manifest-input {
-    width: 80%;
+  &__manifest-input {
+    width: 100%;
     padding: 11px;
     border: 1px solid #ccc;
     border-radius: 4px 0 0 4px;
@@ -31,12 +31,69 @@ html {
     resize: none;
   }
 
-  .ramp-demo__manifest-input-label {
+  &__combobox {
+    position: relative;
+    display: inline-block;
+    width: 80%;
+    vertical-align: top;
+
+    .ramp-demo__manifest-input:focus {
+      outline: none;
+      border-color: #2a5459;
+      box-shadow: 0 0 0 1px #2a5459;
+    }
+  }
+
+  &__combobox-listbox {
+    position: absolute;
+    z-index: 1000;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 4px;
+    list-style: none;
+    max-height: 260px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &__combobox-option {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &.is-active,
+    &:hover {
+      background-color: #ebebeb;
+    }
+  }
+
+  &__combobox-option-label {
+    font-size: medium;
+    color: #292929;
+  }
+
+  &__combobox-option-url {
+    font-size: 0.75rem;
+    color: #7e7e7e;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__manifest-input-label {
     padding: 0.75em 0.75em 0.75em 0;
     display: inline-block;
   }
 
-  .ramp-demo__manifest-submit {
+  &__manifest-submit {
     background-color: #2a5459;
     color: white;
     padding: 0.75em 1.25em;
@@ -46,7 +103,7 @@ html {
     font-size: medium;
   }
 
-  .ramp-demo__manifest-submit:hover {
+  &__manifest-submit:hover {
     background-color: #80a590;
   }
 
@@ -98,6 +155,10 @@ html {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 
+  .ramp--structured-nav {
+    margin-top: 1em;
+  }
+
   /*Reference: https://accessible-react.eevis.codes/components/tabs */
   .tablist {
     display: flex;
@@ -133,6 +194,7 @@ html {
     flex: 1;
     position: relative;
     padding: 1rem;
+    padding-top: 0;
   }
 
   /* From Every Layout (https://every-layout.dev/) */
