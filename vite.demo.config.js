@@ -42,21 +42,13 @@ function copyLunchroomMannersFiles() {
           copyDirSync(srcDir, destDir);
         }
 
-        // Copy only lunchroom_manners related prod manifest
+        // Copy all prod manifests
         const dir = 'prod';
         const dirPath = join(publicDir, 'manifests', dir);
 
         if (existsSync(dirPath)) {
-          const filePath = join(dirPath, 'lunchroom_manners.json');
-          if (existsSync(filePath)) {
-            const destDir = join(outDir, 'manifests', dir);
-            const destFile = join(destDir, 'lunchroom_manners.json');
-
-            if (!existsSync(destDir)) {
-              mkdirSync(destDir, { recursive: true });
-            }
-            copyFileSync(filePath, destFile);
-          }
+          const destDir = join(outDir, 'manifests', dir);
+          copyDirSync(dirPath, destDir);
         }
       }
     }
