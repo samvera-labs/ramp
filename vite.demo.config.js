@@ -26,8 +26,8 @@ function copyDirSync(src, dest) {
   }
 }
 
-// Plugin to copy only lunchroom_manners related files
-function copyLunchroomMannersFiles() {
+// Plugin to copy sample Manifest resource files
+function copySampleResourceFiles() {
   return {
     name: 'copy-lunchroom-manners',
     closeBundle() {
@@ -35,11 +35,12 @@ function copyLunchroomMannersFiles() {
         const publicDir = resolve(__dirname, 'public');
         const outDir = resolve(__dirname, 'demo/dist');
 
-        // Copy lunchroom_manners resources directory
-        const srcDir = join(publicDir, 'lunchroom_manners');
-        const destDir = join(outDir, 'lunchroom_manners');
-        if (existsSync(srcDir)) {
-          copyDirSync(srcDir, destDir);
+        // Copy sample resources directories
+        for (const name of ['lunchroom_manners', 'volleyball-for-boys']) {
+          const srcDir = join(publicDir, name);
+          if (existsSync(srcDir)) {
+            copyDirSync(srcDir, join(outDir, name));
+          }
         }
 
         // Copy all prod manifests
@@ -67,7 +68,7 @@ export default defineConfig({
       },
     }),
     commonjs(),
-    copyLunchroomMannersFiles()
+    copySampleResourceFiles()
   ],
   // Handle .js files that contains JSX
   esbuild: {
