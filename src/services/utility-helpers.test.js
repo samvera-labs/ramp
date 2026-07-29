@@ -171,7 +171,7 @@ describe('util helper', () => {
           };
           test('without a custom start', () => {
             const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-              annotations, 572.32, 'painting'
+              { annotation: annotations, duration: 572.32, motivation: 'painting' }
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
@@ -191,7 +191,7 @@ describe('util helper', () => {
 
           test('with a custom start', () => {
             const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-              annotations, 572.32, 'painting', 120
+              { annotation: annotations, duration: 572.32, motivation: 'painting', start: 120 }
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
@@ -245,7 +245,7 @@ describe('util helper', () => {
             ],
           };
           const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-            annotations, 572.32, 'painting'
+            { annotation: annotations, duration: 572.32, motivation: 'painting' }
           );
           expect(resources).toHaveLength(3);
           expect(canvasTargets).toHaveLength(1);
@@ -303,7 +303,7 @@ describe('util helper', () => {
               ],
             };
             const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-              annotations, 572.32, 'painting', 0, true
+              { annotation: annotations, duration: 572.32, motivation: 'painting', isPlaylist: true }
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
@@ -356,7 +356,7 @@ describe('util helper', () => {
               ],
             };
             const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-              annotations, 572.32, 'painting', 0, true
+              { annotation: annotations, duration: 572.32, motivation: 'painting', isPlaylist: true }
             );
             expect(resources).toHaveLength(2);
             expect(canvasTargets).toHaveLength(1);
@@ -424,7 +424,7 @@ describe('util helper', () => {
           ],
         };
         const { resources, canvasTargets, isMultiSource } = util.parseResourceAnnotations(
-          annotations, 896.55, 'painting'
+          { annotation: annotations, duration: 896.55, motivation: 'painting' }
         );
         expect(resources).toHaveLength(2);
         expect(canvasTargets).toHaveLength(2);
@@ -491,7 +491,7 @@ describe('util helper', () => {
           }
         ],
       };
-      const { resources } = util.parseResourceAnnotations(annotations, 896.55, 'painting');
+      const { resources } = util.parseResourceAnnotations({ annotation: annotations, duration: 896.55, motivation: 'painting' });
       expect(resources).toHaveLength(0);
       jest.restoreAllMocks();
     });
@@ -531,7 +531,7 @@ describe('util helper', () => {
         }
       ];
       const { resources, _, isMultiResource } = util.parseResourceAnnotations(
-        annotations, 896.55, 'supplementing'
+        { annotation: annotations, duration: 896.55, motivation: 'supplementing' }
       );
       expect(resources).toHaveLength(2);
       expect(resources[0]).toEqual({
@@ -574,14 +574,14 @@ describe('util helper', () => {
           ]
         }
       ];
-      const { resources } = util.parseResourceAnnotations(annotations, 896.55, 'supplementing');
+      const { resources } = util.parseResourceAnnotations({ annotation: annotations, duration: 896.55, motivation: 'supplementing' });
       expect(resources).toHaveLength(1);
       expect(resources[0].label).toEqual('lunchroom_manners.vtt [forced]');
       expect(resources[0].forced).toBe(true);
     });
 
     test('with annotations undefined', () => {
-      expect(util.parseResourceAnnotations(undefined, 572.32, 'supplementing')).toEqual({
+      expect(util.parseResourceAnnotations({ annotation: undefined, duration: 572.32, motivation: 'supplementing' })).toEqual({
         resources: [], error: 'No resources found in Canvas', poster: '',
         canvasTargets: [], isMultiSource: false
       });
@@ -590,7 +590,7 @@ describe('util helper', () => {
     describe('for empty Canvas', () => {
       /** Use-case: Avalon's empty Canvas representation for restricted/deleted resources */
       test('with zero annotations', () => {
-        expect(util.parseResourceAnnotations([], NaN, 'painting')).toEqual({
+        expect(util.parseResourceAnnotations({ annotation: [], duration: NaN, motivation: 'painting' })).toEqual({
           resources: [],
           canvasTargets: [],
           isMultiSource: false,
@@ -625,7 +625,7 @@ describe('util helper', () => {
           ]
         };
         const { resources, canvasTargets, isMultiResource, poster } = util.parseResourceAnnotations(
-          annotations, 3204.0, 'painting'
+          { annotation: annotations, duration: 3204.0, motivation: 'painting' }
         );
         expect(resources).toHaveLength(0);
         expect(canvasTargets).toHaveLength(0);
@@ -1825,6 +1825,45 @@ describe('util helper', () => {
           util.playerHotKeys(mockEvent, player);
           expect(mockEvent.stopPropagation).toHaveBeenCalled();
         });
+      });
+    });
+  });
+  describe('getAnnotations()', () => {
+    describe('for a Presentation 3 Manifest, returns annotation content', () => {
+      test('with a motivation array for a painting annotation', () => {
+        const canvas = { type: 'Canvas', items: [{ items: [{ motivation: 'painting' }] }] };
+        expect(util.getAnnotations(canvas)).toEqual([{ motivation: ['painting'] }]);
+      });
+
+      test('with a motivation array for a supplementing annotation', () => {
+        const canvas = { type: 'Canvas', items: [{ items: [{ motivation: 'supplementing' }] }] };
+        expect(util.getAnnotations(canvas)).toEqual([{ motivation: ['supplementing'] }]);
+      });
+    });
+
+    describe('for a Presentation 4 Manifest, returns annotation content', () => {
+      test('for a painting timeline annotation', () => {
+        const timeline = { type: 'Timeline', items: [{ items: [{ motivation: ['painting'] }] }] };
+        const content = util.getAnnotations(timeline, 'painting', '4');
+        expect(content).toHaveLength(1);
+        expect(content[0].motivation).toEqual(['painting']);
+      });
+
+      test('for a painting canvas annotation with a duration (video)', () => {
+        const canvas = {
+          type: 'Canvas', width: 1920, height: 1080, duration: 572.034,
+          items: [{ items: [{ motivation: ['painting'] }] }]
+        };
+        const content = util.getAnnotations(canvas, 'painting', '4');
+        expect(content[0].motivation).toEqual(['painting']);
+      });
+
+      test('as an empty array for a painting canvas annotation without a duration (image)', () => {
+        const canvas = {
+          type: 'Canvas', width: 1920, height: 1080, items: [{ items: [{ motivation: ['painting'] }] }]
+        };
+        const content = util.getAnnotations(canvas, 'painting', '4');
+        expect(content).toEqual([]);
       });
     });
   });

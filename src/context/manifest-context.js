@@ -1,6 +1,7 @@
 import { parseAnnotationSets } from '@Services/annotations-parser';
 import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
+import { getIIIFAPIVersion } from '@Services/iiif-version-parser';
 import React, { createContext, useContext, useReducer } from 'react';
 
 export const ManifestStateContext = createContext();
@@ -11,6 +12,7 @@ export const ManifestDispatchContext = createContext();
  */
 const defaultState = {
   manifest: null,
+  iiifVersion: '3', // IIIF Presentation API version ('3' or '4')
   allCanvases: [],
   canvasIndex: 0, // index for active canvas
   currentNavItem: null,
@@ -69,6 +71,7 @@ function manifestReducer(state = defaultState, action) {
   switch (action.type) {
     case 'updateManifest': {
       const manifest = action.manifest;
+      const iiifVersion = getIIIFAPIVersion(manifest);
       const canvases = canvasesInManifest(manifest);
       const manifestBehavior = parseAutoAdvance(manifest.behavior);
       const isPlaylist = getIsPlaylist(manifest.label);
@@ -77,6 +80,7 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         manifest: manifest,
+        iiifVersion: iiifVersion,
         allCanvases: canvases,
         autoAdvance: manifestBehavior,
         playlist: {

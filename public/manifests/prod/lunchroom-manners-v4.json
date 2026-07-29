@@ -1,0 +1,394 @@
+{
+	"@context": "http://iiif.io/api/presentation/4/context.json",
+	"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-v4.json",
+	"type": "Manifest",
+	"label": {
+		"en": [
+			"Beginning Reponsibility: Lunchroom Manners [motion picture] Coronet Films"
+		]
+	},
+	"items": [
+		{
+			"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1",
+			"type": "Canvas",
+			"height": 360,
+			"width": 480,
+			"duration": 572.034,
+			"timeMode": "trim",
+			"placeholderContainer": {
+				"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/placeholder",
+				"type": "Canvas",
+				"height": 728,
+				"width": 962,
+				"items": [
+					{
+						"id": "https://example.org/image/placeholder/annopage",
+						"type": "AnnotationPage",
+						"items": [
+							{
+								"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/placeholder/image",
+								"type": "Annotation",
+								"motivation": [
+									"painting"
+								],
+								"body": {
+									"id": "http://localhost:3003/lunchroom_manners/lunchroom_manners_poster.jpg",
+									"type": "Image",
+									"format": "image/png",
+									"height": 728,
+									"width": 962
+								},
+								"target": {
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/placeholder",
+									"type": "Canvas"
+								}
+							}
+						]
+					}
+				]
+			},
+			"items": [
+				{
+					"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/annopage1",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/anno1",
+							"type": "Annotation",
+							"motivation": [
+								"painting"
+							],
+							"body": {
+								"type": "Choice",
+								"items": [
+									{
+										"id": "http://localhost:3003/lunchroom_manners/low/lunchroom_manners_256kb.mp4",
+										"type": "Video",
+										"label": {
+											"en": [
+												"Low"
+											]
+										},
+										"height": 360,
+										"width": 480,
+										"duration": 572.034,
+										"format": "video/mp4",
+										"fileSize": 78666676
+									},
+									{
+										"id": "http://localhost:3003/lunchroom_manners/high/lunchroom_manners_1024kb.mp4",
+										"type": "Video",
+										"label": {
+											"en": [
+												"High"
+											]
+										},
+										"height": 360,
+										"width": 480,
+										"duration": 572.034,
+										"format": "video/mp4",
+										"fileSize": 78666676
+									}
+								]
+							},
+							"target": {
+								"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas",
+								"type": "Canvas"
+							}
+						}
+					]
+				}
+			],
+			"annotations": [
+				{
+					"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/subtitles",
+					"type": "AnnotationPage",
+					"items": [
+						{
+							"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/subtitles/anno",
+							"type": "Annotation",
+							"motivation": [
+								"supplementing"
+							],
+							"provides": [
+								"subtitles"
+							],
+							"body": {
+								"id": "http://localhost:3003/lunchroom_manners/lunchroom_manners.vtt",
+								"type": "Text",
+								"format": "text/vtt",
+								"label": {
+									"en": [
+										"Subtitles in WebVTT format"
+									]
+								},
+								"language": [
+									"en"
+								]
+							},
+							"target": {
+								"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas",
+								"type": "Canvas"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"structures": [
+		{
+			"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/0",
+			"type": "Range",
+			"label": {
+				"en": [
+					"Table of Contents"
+				]
+			},
+			"items": [
+				{
+					"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1",
+					"type": "Range",
+					"label": {
+						"en": [
+							"Lunchroom Manners"
+						]
+					},
+					"items": [
+						{
+							"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1-1",
+							"type": "Range",
+							"label": {
+								"en": [
+									"Washing Hands"
+								]
+							},
+							"items": [
+								{
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1-1-1",
+									"type": "Range",
+									"label": {
+										"en": [
+											"Using Soap"
+										]
+									},
+									"items": [
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=157,160",
+											"type": "Canvas"
+										}
+									]
+								},
+								{
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1-1-3",
+									"type": "Range",
+									"label": {
+										"en": [
+											"Rinsing Well"
+										]
+									},
+									"items": [
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=165,170",
+											"type": "Canvas"
+										}
+									]
+								},
+								{
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1-2",
+									"type": "Range",
+									"label": {
+										"en": [
+											"After Washing Hands"
+										]
+									},
+									"items": [
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1-2-1",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Drying Hands"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=170,180",
+													"type": "Canvas"
+												}
+											]
+										},
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/1-2-2",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Getting Ready"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=180,190",
+													"type": "Canvas"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2",
+							"type": "Range",
+							"label": {
+								"en": [
+									"In the Lunchroom"
+								]
+							},
+							"items": [
+								{
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-1",
+									"type": "Range",
+									"label": {
+										"en": [
+											"At the Counter"
+										]
+									},
+									"items": [
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-1-1",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Getting Tray"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=227,245",
+													"type": "Canvas"
+												}
+											]
+										},
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-1-2",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Choosing Food"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=258,288",
+													"type": "Canvas"
+												}
+											]
+										},
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-1-3",
+											"type": "Range",
+											"label": {
+												"en": [
+													"There will be Cake"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=301,308",
+													"type": "Canvas"
+												}
+											]
+										}
+									]
+								},
+								{
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-2",
+									"type": "Range",
+									"label": {
+										"en": [
+											"At the Table"
+										]
+									},
+									"items": [
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-2-1",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Sitting Quietly"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=323,333",
+													"type": "Canvas"
+												}
+											]
+										},
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-2-2",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Eating Neatly"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=362,378",
+													"type": "Canvas"
+												}
+											]
+										}
+									]
+								},
+								{
+									"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-3",
+									"type": "Range",
+									"label": {
+										"en": [
+											"Leavning the Lunchroom"
+										]
+									},
+									"items": [
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-3-1",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Cleaning Up"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=448,492",
+													"type": "Canvas"
+												}
+											]
+										},
+										{
+											"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/range/2-3-2",
+											"type": "Range",
+											"label": {
+												"en": [
+													"Putting Things Away"
+												]
+											},
+											"items": [
+												{
+													"id": "https://iiif-react-media-player.netlify.app/prod/lunchroom-manners-4/canvas/1#t=573,600",
+													"type": "Canvas"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

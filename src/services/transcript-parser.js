@@ -58,10 +58,11 @@ export const TRANSCRIPT_MOTIVATION = 'supplementing';
  * @param {String} manifestURL IIIF Presentation 3.0 manifest URL
  * @param {String} title optional title given in the transcripts list in props
  * @param {AbortSignal} signal AbortSignal to cancel the fetch request
+ * @param {String} version Presentation API version of the Manifest
  * @returns {Array<Object>} array of supplementing annotations for transcripts for all
  * canvases in the Manifest
  */
-export async function readSupplementingAnnotations(manifestURL, title = '', signal) {
+export async function readSupplementingAnnotations(manifestURL, title = '', signal = null, version = '3') {
   if (manifestURL === undefined) {
     return [];
   }
@@ -77,14 +78,14 @@ export async function readSupplementingAnnotations(manifestURL, title = '', sign
       }
     }).then((manifest) => {
       // Parse supplementing annotations at Manifest level and display for each Canvas
-      const manifestAnnotations = getAnnotations(manifest.annotations, TRANSCRIPT_MOTIVATION) ?? [];
+      const manifestAnnotations = getAnnotations(manifest.annotations, TRANSCRIPT_MOTIVATION, version) ?? [];
       const manifestTranscripts =
         buildTranscriptAnnotation(manifestAnnotations, 0, manifestURL, manifest, title);
 
       let newTranscriptsList = [];
       if (manifest.items?.length > 0) {
         manifest.items.map((canvas, index) => {
-          let annotations = getAnnotations(canvas.annotations, TRANSCRIPT_MOTIVATION);
+          let annotations = getAnnotations(canvas.annotations, TRANSCRIPT_MOTIVATION, version);
           const canvasTranscripts =
             buildTranscriptAnnotation(annotations, index, manifestURL, canvas, title);
           newTranscriptsList.push({
@@ -176,11 +177,12 @@ function buildTranscriptAnnotation(annotations, index, manifestURL, resource, ti
  * in the given array process them to find supplementing annotations in the manifest and
  * them to the transcripts array to be displayed in the component.
  * @param {Array} transcripts list of transcripts from Transcript component's props
+ * @param {String} version Presentation API version of the Manifest
  * @returns {Array} a refined transcripts array for each canvas with the following json
  * structure;
  * { canvasId: <canvas index>, items: [{ title, filename, url, isMachineGen, id }]}
  */
-export async function sanitizeTranscripts(transcripts) {
+export async function sanitizeTranscripts(transcripts, version = '3') {
   // When transcripts list is empty in the props
   if (!transcripts || transcripts == undefined || transcripts.length == 0) {
     console.error('No transcripts given as input');
@@ -202,7 +204,7 @@ export async function sanitizeTranscripts(transcripts) {
             // For each item in the list check if it is a manifest and parse
             // the it to identify any supplementing annotations in the
             // manifest for each canvas
-            const manifestTranscripts = await readSupplementingAnnotations(url, title);
+            const manifestTranscripts = await readSupplementingAnnotations(url, title, null, version);
             let { isMachineGen, labelText } = identifyMachineGen(title);
             let manifestItems = [];
             if (manifestTranscripts?.length > 0) {

@@ -2,8 +2,9 @@ import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import mimeTypes from 'mime-types';
 import DOMPurify from 'dompurify';
-import { getPlaceholderCanvas } from './iiif-parser';
+import { getPlaceholderResource } from './iiif-parser';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
+import { hasMotivation, normalizeMotivation } from '@Services/iiif-version-parser';
 
 const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3, audioDescription: 4 };
 // Number of decimal places for milliseconds used in time calculations. 
@@ -348,21 +349,35 @@ export function parseTimeStrings(fragment, duration = 0) {
  * @function Utils#getAnnotations
  * @param {Object/Array} annotation
  * @param {String} motivation
+ * @param {String} version Presentation API version of the Manifest
  * @returns {Array} array of AnnotationPage
  */
-export function getAnnotations(annotation, motivation = '') {
+export function getAnnotations(annotation, motivation = '', version = '3') {
   let content = [];
   if (!annotation) return content;
 
-  if (annotation.type === 'Canvas') {
+  /* In Presentation v4, 
+      - type='Canvas' is typically used for Image and Video content
+      - type='Timeline' is typically used for Audio content
+    To avoid parsing Image resources with type='Canvas' enforce a duration check for
+    Presentation v4 manifests.
+    In Presentation 3, Ramp never carried this ambiguity for type='Canvas', so it's accepted
+    unconditionally because it works without issues. */
+  const isPlayableCanvas = annotation.type === 'Canvas'
+    && (version !== '4' || annotation.duration != undefined);
+
+  if (isPlayableCanvas || annotation.type === 'Timeline') {
     content = annotation.items[0].items;
   } else if (Array.isArray(annotation) && annotation?.length > 0) {
     content = annotation[0].items;
   }
+
+  // Normalize 'motivation' to an array on each Annotation
+  content = content.map((a) => ({ ...a, motivation: normalizeMotivation(a.motivation) }));
   // Filter the annotations if a motivation is given
   if (content && motivation != '') {
     const relevantAnnotations = content.filter(
-      (a) => a.motivation === motivation);
+      (a) => a.motivation.includes(motivation));
     content = relevantAnnotations;
   }
   return content;
@@ -372,14 +387,16 @@ export function getAnnotations(annotation, motivation = '') {
  * Parse a list of annotations or a single annotation to extract information related to
  * a given Canvas. Assumes the annotation type as either 'painting' or 'supplementing'.
  * @function Utils#parseResourceAnnotations
- * @param {Array} annotation list of painting/supplementing annotations to be parsed
- * @param {Number} duration duration of the current canvas
- * @param {String} motivation motivation type
- * @param {Number} start custom start time from props or Manifest's start property
- * @param {Boolean} isPlaylist
+ * @param {Object} obj
+ * @param {Array} obj.annotation list of painting/supplementing annotations to be parsed
+ * @param {Number} obj.duration duration of the current canvas
+ * @param {String} obj.motivation motivation type
+ * @param {String} obj.version Presentation API version of the Manifest
+ * @param {Number} obj.start custom start time from props or Manifest's start property
+ * @param {Boolean} obj.isPlaylist
  * @returns {Object} { resources, canvasTargets, isMultiSource, poster, error }
  */
-export function parseResourceAnnotations(annotation, duration, motivation, start = 0, isPlaylist = false) {
+export function parseResourceAnnotations({ annotation, duration, motivation, version = '3', start = 0, isPlaylist = false }) {
   let resources = [],
     canvasTargets = [],
     isMultiSource = false,
@@ -401,18 +418,18 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
   };
 
   if (annotation && annotation != undefined) {
-    const items = getAnnotations(annotation);
+    const items = getAnnotations(annotation, '', version);
     if (!items) { return { resources, canvasTargets, error }; }
     if (items.length === 0) {
       return {
         resources, canvasTargets, isMultiSource,
-        poster: getPlaceholderCanvas(annotation)
+        poster: getPlaceholderResource(annotation, false, version)
       };
     }
     // When multiple resources/annotations are in a single Canvas
     else if (items?.length > 1) {
       items.map((p, index) => {
-        if (p.motivation === motivation) {
+        if (hasMotivation(p.motivation, motivation)) {
           parseAnnotation(p.body);
           if (motivation === 'painting') {
             isMultiSource = true;
@@ -423,16 +440,16 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
       });
     }
     // When multiple qualities/sources are given for the resource in the Canvas => choice
-    else if (items[0].body.items?.length > 0 && items[0]?.motivation === motivation) {
+    else if (items[0].body.items?.length > 0 && hasMotivation(items[0]?.motivation, motivation)) {
       items[0].body.items.map((p) => {
         parseAnnotation(p);
       });
     }
     // When a singe source is given for the resource in the Canvas
-    else if (!isEmpty(items[0].body) && items[0].body?.id != '' && items[0]?.motivation === motivation) {
+    else if (!isEmpty(items[0].body) && items[0].body?.id != '' && hasMotivation(items[0]?.motivation, motivation)) {
       parseAnnotation(items[0].body);
     } else if (motivation === 'painting') {
-      return { resources, error, poster: getPlaceholderCanvas(annotation), canvasTargets };
+      return { resources, error, poster: getPlaceholderResource(annotation, false, version), canvasTargets };
     }
 
     // Set canvasTargets for non-multisource Canvases to use when building progressbar
@@ -454,7 +471,7 @@ export function parseResourceAnnotations(annotation, duration, motivation, start
     }
 
     // Read image placeholder
-    poster = getPlaceholderCanvas(annotation, true);
+    poster = getPlaceholderResource(annotation, true, version);
     return { canvasTargets, isMultiSource, resources, poster };
   } else {
     return { canvasTargets, isMultiSource, resources, poster, error };

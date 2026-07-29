@@ -6,6 +6,7 @@ import {
   parseTimeStrings, sortAnnotations,
   timeToHHmmss
 } from "./utility-helpers";
+import { hasMotivation, normalizeMotivation } from "./iiif-version-parser";
 
 // Global variable to store random tag colors for the current tags
 let TAG_COLORS = [];
@@ -137,7 +138,7 @@ function parseAnnotationPages(annotationPages, duration, manifestLabel = '') {
             // Parse linked resources as a single annotation set
             if (isExternalAnnotation(item.body)) {
               const { body, id, motivation, target } = item;
-              const annotationMotivation = Array.isArray(motivation) ? motivation : [motivation];
+              const annotationMotivation = normalizeMotivation(motivation);
               // Only add WebVTT, SRT, and JSON files as annotations
               const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
               const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
@@ -154,7 +155,7 @@ function parseAnnotationPages(annotationPages, duration, manifestLabel = '') {
             } else {
               // Parse individual TextualBody annotation as an item/a marker in an annotation set
               const parsedAnnotation = parseAnnotationItem(item, duration);
-              if (item.motivation === 'highlighting') {
+              if (hasMotivation(item.motivation, 'highlighting')) {
                 markers.push(convertAnnotationToMarker(parsedAnnotation));
               } else {
                 // Check if any of the annotations are with 'supplementing' motivation
@@ -235,8 +236,7 @@ export function parseAnnotationItem(annotation, duration) {
     canvasId = source.id;
     times = parseSelector(selector, duration);
   }
-  const motivations = Array.isArray(annotation.motivation)
-    ? annotation.motivation : [annotation.motivation];
+  const motivations = normalizeMotivation(annotation.motivation);
   const item = {
     motivation: motivations,
     id: annotation.id,

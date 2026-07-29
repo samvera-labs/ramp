@@ -7,6 +7,7 @@ import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
 import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import singleCanvasManifest from '@TestData/single-canvas';
+import multiCanvasV4Manifest from '@TestData/multi-canvas-v4';
 import audiannotateTest from '@TestData/audiannotate-test';
 import adManifest from '@TestData/ad-annotation';
 import authManifest from '@TestData/auth-manifest';
@@ -139,7 +140,8 @@ describe('iiif-parser', () => {
     afterEach(() => {
       jest.restoreAllMocks();
     });
-    describe('with a valid canvasIndex', () => {
+
+    describe('with Presentation 3 Manifest', () => {
       it('returns sources, mediaType and parsing error (if any)', () => {
         const { sources, mediaType, error } = iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
@@ -201,6 +203,93 @@ describe('iiif-parser', () => {
           startTime: 120.5
         });
         expect(sources[0].src).toEqual('https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660');
+      });
+    });
+
+    describe('with a Presentation 4 Manifest', () => {
+      let originalError;
+      beforeAll(() => {
+        originalError = console.error;
+        console.error = jest.fn();
+      });
+
+      afterAll(() => console.error = originalError);
+
+      it('returns sources, mediaType for a video resource with type="Canvas"', () => {
+        const { sources, mediaType, error } = iiifParser.getMediaInfo({
+          manifest: multiCanvasV4Manifest,
+          canvasIndex: 0, version: '4'
+        });
+        expect(sources).toHaveLength(1);
+        expect(mediaType).toBe('video');
+        expect(error).toBeNull();
+        expect(sources[0]).toEqual({
+          src: 'http://example.com/low.mp4', key: 'http://example.com/low.mp4',
+          type: 'video/mp4', label: 'Low', kind: 'Video', selected: true,
+        });
+      });
+
+      it('returns sources, mediaType for an audio resource with type="Timeline"', () => {
+        const { sources, mediaType, error } = iiifParser.getMediaInfo({
+          manifest: multiCanvasV4Manifest,
+          canvasIndex: 2, version: '4'
+        });
+        expect(sources).toHaveLength(1);
+        expect(mediaType).toBe('sound');
+        expect(error).toBeNull();
+        expect(sources[0]).toEqual({
+          src: 'http://example.com/audio-canvas.mp3', key: 'http://example.com/audio-canvas.mp3',
+          type: 'audio/mpeg', label: 'auto', kind: 'Sound', selected: true,
+        });
+      });
+
+      it('returns nothing for an image resource with type="Canvas"', () => {
+        const originalError = console.error;
+        console.error = jest.fn();
+        const { sources, mediaType, poster } = iiifParser.getMediaInfo({
+          manifest: multiCanvasV4Manifest,
+          canvasIndex: 1, version: '4'
+        });
+        expect(sources).toHaveLength(0);
+        // Media type defaults to video to show any error messages in the player container in UI
+        expect(mediaType).toBe('video');
+        expect(poster).toEqual('This item cannot be played.');
+        console.error = originalError;
+      });
+
+      it('resolves quality to auto, when not given', () => {
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: multiCanvasV4Manifest,
+          canvasIndex: 3, version: '4'
+        });
+        expect(sources).toHaveLength(3);
+        expect(sources[2]).toEqual({
+          src: 'https://example.com/manifest/low/audio_256kb.mp3',
+          key: 'https://example.com/manifest/low/audio_256kb.mp3',
+          label: 'auto', type: 'audio/mpeg', selected: true, kind: 'Sound',
+        });
+        expect(sources[2].selected).toBeTruthy();
+      });
+
+      it('sets default source when not multisourced', () => {
+        const originalWarn = console.warn;
+        console.warn = jest.fn();
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: multiCanvasV4Manifest,
+          canvasIndex: 0, version: '4'
+        });
+        expect(sources).toHaveLength(1);
+        expect(sources[0].src).toEqual('http://example.com/low.mp4');
+        console.warn = originalWarn;
+      });
+
+      it('appends start time to src when there is a custom start', () => {
+        const { sources } = iiifParser.getMediaInfo({
+          manifest: multiCanvasV4Manifest,
+          canvasIndex: 0, version: '4',
+          startTime: 120.5
+        });
+        expect(sources[0].src).toEqual('http://example.com/low.mp4#t=120.5,7278.422');
       });
     });
 
@@ -303,7 +392,7 @@ describe('iiif-parser', () => {
     ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
   });
 
-  describe('getPlaceholderCanvas()', () => {
+  describe('getPlaceholderResource()', () => {
     let originalError;
     beforeAll(() => {
       // Mock console.error function
@@ -314,40 +403,58 @@ describe('iiif-parser', () => {
       console.error = originalError;
     });
     it('returns url for video manifest', () => {
-      const posterUrl = iiifParser.getPlaceholderCanvas(lunchroomManifest.items[0], true);
+      const posterUrl = iiifParser.getPlaceholderResource(lunchroomManifest.items[0], true);
       expect(posterUrl).toEqual(
         'https://example.com/manifest/poster/lunchroom_manners_poster.jpg'
       );
     });
 
     it('returns null for audio manifest', () => {
-      const posterUrl = iiifParser.getPlaceholderCanvas(manifest.items[0], true);
+      const posterUrl = iiifParser.getPlaceholderResource(manifest.items[0], true);
       expect(posterUrl).toBeNull();
     });
 
     it('returns placeholderCanvas text and sets timer to given duration', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(manifest.items[1]);
+      const itemMessage = iiifParser.getPlaceholderResource(manifest.items[1]);
       expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(4000);
     });
 
     it('returns placeholderCanvas text and sets timer to default when duration is not defined', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(playlistManifest.items[0]);
+      const itemMessage = iiifParser.getPlaceholderResource(playlistManifest.items[0]);
       expect(itemMessage).toEqual('You do not have permission to playback this item.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns hard coded text when placeholderCanvas has no text and sets timer to default', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(lunchroomManifest.items[0]);
+      const itemMessage = iiifParser.getPlaceholderResource(lunchroomManifest.items[0]);
       expect(itemMessage).toEqual('This item cannot be played.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns default message when no placeholderCanvas is in the Canvas and sets timer to default', () => {
-      const itemMessage = iiifParser.getPlaceholderCanvas(singleSrcManifest.items[0]);
+      const itemMessage = iiifParser.getPlaceholderResource(singleSrcManifest.items[0]);
       expect(console.error).toBeCalledTimes(1);
       expect(itemMessage).toEqual('This item cannot be played.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
+    });
+
+    describe('with a Presentation 4 Canvas', () => {
+      it('returns url from placeholderContainer', () => {
+        const posterUrl = iiifParser.getPlaceholderResource(
+          multiCanvasV4Manifest.items[0], true, '4'
+        );
+        expect(posterUrl).toEqual(
+          'http://example.com/multi-canvas-manifest-v4/poster/poster.jpg'
+        );
+      });
+
+      it('does not find placeholderContainer when read as version "3"', () => {
+        const posterUrl = iiifParser.getPlaceholderResource(
+          multiCanvasV4Manifest.items[0], true, '3'
+        );
+        expect(posterUrl).toBeNull();
+      });
     });
   });
 
