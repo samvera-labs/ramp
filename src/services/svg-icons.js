@@ -221,7 +221,7 @@ export const svgIconToSymbol = (IconComponent, id, props = {}) => {
   flushSync(() => root.render(<IconComponent {...props} />));
 
   const svgEl = container.firstElementChild;
-  const viewBox = svgEl.getAttribute('viewBox') || '0 0 24 24' || '0 0 20 20';
+  const viewBox = svgEl.getAttribute('viewBox') || '0 0 20 20';
   const innerContent = svgEl.innerHTML;
 
   root.unmount();
