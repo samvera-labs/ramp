@@ -11,7 +11,7 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { checkSrcRange, getMediaFragment, offsetTextTrackCues, roundToPrecision } from '@Services/utility-helpers';
+import { getMediaFragment, offsetTextTrackCues } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -1077,7 +1077,8 @@ function VideoJSPlayer({
   };
 
   const {
-    activeId, fragmentMarker, isReadyRef, playerRef, setActiveId, setFragmentMarker, setIsReady, updateMenuDirection
+    activeId, getActiveSegment, fragmentMarker, isReadyRef, playerRef,
+    setActiveId, setFragmentMarker, setIsReady, updateMenuDirection
   } = useVideoJSPlayer({
     audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
   });
@@ -1087,6 +1088,9 @@ function VideoJSPlayer({
 
   const activeIdRef = useRef();
   activeIdRef.current = useMemo(() => { return activeId; }, [activeId]);
+
+  const getActiveSegmentRef = useRef();
+  getActiveSegmentRef.current = getActiveSegment;
 
   /**
    * Remove any VideoJS modals instances in the DOM. Call close() to restore
@@ -1104,6 +1108,7 @@ function VideoJSPlayer({
       vjsErrorModalRef.current = null;
     }
   };
+
   /**
    * Setup captions for the player based on context
    * @param {Object} player Video.js player instance
@@ -1335,7 +1340,7 @@ function VideoJSPlayer({
   const handleEnded = useMemo(() => throttle(() => {
     const isLastCanvas = cIndexRef.current === lastCanvasIndex;
     /**
-     * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off 
+     * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off
      * OR current Canvas is the last Canvas in the Manifest
      */
     if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
@@ -1431,7 +1436,7 @@ function VideoJSPlayer({
         savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
       }
 
-      const activeSegment = getActiveSegment(playerTime);
+      const activeSegment = getActiveSegmentRef.current(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
         if (!activeSegment) {
@@ -1509,69 +1514,6 @@ function VideoJSPlayer({
   const saveTouchStartCoords = (e) => {
     touchX = e.touches[0].clientX;
     touchY = e.touches[0].clientY;
-  };
-
-  /**
-   * Get the segment, which encapsulates the current time of the playhead,
-   * from a list of media fragments in the current canvas.
-   * @param {Number} time playhead's current time
-   * @returns {Object|null} active segment or null if not found
-   */
-  const getActiveSegment = (time) => {
-    if (isPlaylist) {
-      /* In playlist Manifests, the segments are mapped one-to-one with canvases. And when the component
-      library is used in a playlist context without the 'StructuredNavigation' component, 'canvasSegments'
-      is empty. So, build a temporary active segment from the information available from 'allCanvases'.
-      Edge-case scenario, because Avalon playlists use 'StructuredNavigation' component in playlists. */
-      if (canvasSegments?.length === 0) {
-        const currentCanvas = allCanvases[cIndexRef.current];
-        if (currentCanvas) {
-          const { canvasId, canvasIndex, duration, label, range, summary } = currentCanvas;
-          return {
-            canvasIndex: canvasIndex, duration: String(duration), homepage: '', id: canvasId,
-            isCanvas: true, isClickable: false, isEmpty: false, isRoot: false, isTitle: false,
-            itemIndex: canvasIndex + 1, items: [], label: label, rangeId: '', summary: summary,
-            times: range ? { start: range.start, end: range.end } : { start: 0, end: duration }
-          };
-        }
-      }
-      // For playlists timespans and canvasIdex are mapped one-to-one
-      return canvasSegments[cIndexRef.current];
-    } else {
-      const timeRounded = roundToPrecision(time);
-      // Segments that contains the current time of the player
-      let possibleActiveSegments = canvasSegments.filter((c) => {
-        const inCanvas = checkSrcRange(c.times, c.canvasDuration);
-        if (inCanvas && timeRounded >= c.times.start && timeRounded < c.times.end) {
-          return c;
-        }
-      });
-      /**
-       * If the last clicked timespan is a possibly active segment, then remove others.
-       * This prioritizes and visualizes user interactions with StructuredNavigation. 
-       */
-      if (clickedUrlRef.current) {
-        const clickedSegment = possibleActiveSegments.filter((s) => s.id === clickedUrlRef.current);
-        possibleActiveSegments = clickedSegment?.length > 0 ? clickedSegment : possibleActiveSegments;
-      }
-      // Find the relevant media segment from given possibilities
-      for (let segment of possibleActiveSegments) {
-        const { isCanvas, canvasDuration, canvasIndex, times } = segment;
-        if (canvasIndex == cIndexRef.current + 1) {
-          // Canvases without structure has the Canvas information
-          // in Canvas-level item as a navigable link
-          if (isCanvas) {
-            return segment;
-          }
-          const isInRange = checkSrcRange(times, canvasDuration);
-          const isInSegment = timeRounded >= times.start && timeRounded < times.end;
-          if (isInSegment && isInRange) {
-            return segment;
-          }
-        }
-      }
-      return null;
-    }
   };
 
   /**

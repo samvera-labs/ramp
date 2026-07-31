@@ -535,7 +535,9 @@ export function parseAutoAdvance(behavior) {
 
 /**
  * Parse 'structures' into an array of nested JSON objects with
- * required information for structured navigation UI rendering
+ * required information for structured navigation UI rendering.
+ * IMPORTANT: Ramp only displays Ranges with Canvas references to canvases in the current
+ * Manifest in the current implementation.
  * @param {Object} manifest
  * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
  * @param {Boolean} isPlaylist
@@ -567,7 +569,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       let isCanvas;
       let isClickable = false; let isEmpty = false;
       let summary = undefined; let homepage = undefined;
-      let id = undefined;
+      let id = undefined; let ranges = [];
 
       if (hasRoot) {
         // When parsing the root Range in structures, treat it as a Canvas
@@ -585,6 +587,30 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       // Increment index for children timespans within a Canvas
       if (!isCanvas && canvases.length > 0) subIndex++;
 
+      /* In IIIF Presentation 3.0 API, multiple Canvas items are allowed to be contained under a single Range.
+      This helper builds ranges for each Canvas item in the Range to be displayed in StructuredNavigation.
+      The common case: a single Canvas reference. When there are multiple Canvas references this produces
+      a range for each Canvas, which enables playback across Canvases. */
+      const buildRange = (mediaFragmentId) => {
+        const canvasId = getCanvasId(mediaFragmentId);
+        let canvasInfo = null;
+        if (canvasesInfo?.length > 0) {
+          canvasInfo = canvasesInfo.filter((c) => c.canvasId === canvasId)[0];
+        }
+        // Only include the range if referenced Canvas is in the Manifest
+        if (canvasInfo != null) {
+          const rangeFragment = mediaFragmentId.includes('#')
+            ? mediaFragmentId : `${mediaFragmentId}#t=0,${canvasInfo.duration}`;
+          return {
+            canvasId: canvasId,
+            canvasIndex: (canvasInfo?.canvasIndex ?? -1) + 1,
+            id: rangeFragment,
+            times: getMediaFragment(rangeFragment, canvasInfo.duration),
+          };
+        }
+        return null;
+      };
+
       // Set 'id' in the form of a mediafragment
       if (canvases.length > 0) {
         if (isCanvas) {
@@ -600,6 +626,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         } else {
           id = canvases[0];
         }
+        ranges = canvases.map(buildRange).filter(s => s != null);
       }
 
       // Consider collapsible structure only for ranges non-equivalent to root-level items
@@ -636,8 +663,14 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
       let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
 
+      /* For Ranges spanning multiple canvases, show the combined duration of all ranges instead
+      of only the duration derived from the first one. */
+      const displayDuration = ranges.length > 1
+        ? ranges.reduce((sum, s) => sum + (s.times.end - s.times.start), 0)
+        : duration;
+
       let item = {
-        label, summary, isRoot, homepage, canvasDuration, id, times,
+        label, summary, isRoot, homepage, canvasDuration, id, times, ranges,
         isTitle: canvases.length === 0 ? true : false,
         rangeId: range.id,
         isEmpty: isEmpty,
@@ -645,7 +678,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         itemIndex: isCanvas ? cIndex : subIndex,
         canvasIndex: cIndex,
         items: range.getRanges()?.length > 0 ? range.getRanges().map(r => parseItem(r, rootNode)) : [],
-        duration: timeToHHmmss(duration),
+        duration: timeToHHmmss(displayDuration),
         isClickable: isClickable,
       };
       // Collect timespans in a separate array
