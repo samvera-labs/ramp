@@ -73,6 +73,7 @@
     transition: 0.25s;
     text-decoration: none;
     display: inline-flex;
+    align-items: center;
     gap: 0.1em;
 
     &:hover,
@@ -193,12 +194,22 @@ ul.ramp--structured-nav__tree {
       vertical-align: middle;
     }
 
+    .structure-item-cross-canvas {
+      vertical-align: middle;
+      margin-right: 0.2em;
+    }
+
     // Set line-height to create clickable space around link
     .ramp--structured-nav__item-link {
       line-height: 1.65em;
 
       .structured-nav__item-label {
         margin-left: 0.2em;
+
+        .ramp--structured-nav__item-part {
+          color: vars.$primaryDark;
+          font-size: vars.$fontSizeMedium;
+        }
       }
     }
 
