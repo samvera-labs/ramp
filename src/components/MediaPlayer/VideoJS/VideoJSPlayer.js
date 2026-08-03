@@ -1362,10 +1362,8 @@ function VideoJSPlayer({
    */
   const handleEnded = useMemo(() => throttle(() => {
     const isLastCanvas = cIndexRef.current === lastCanvasIndex;
-    /**
-     * Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off
-     * OR current Canvas is the last Canvas in the Manifest
-     */
+    /* Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off
+    OR current Canvas is the last Canvas in the Manifest.  */
     if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
       return;
     } else {
@@ -1375,6 +1373,34 @@ function VideoJSPlayer({
         setFragmentMarker(null);
         playerRef.current.markers.removeAll();
       }
+
+      /* When the timespan at the end is one part of a Range spanning multiple Canvases,
+      the next sibling in the timespan has the same rangeId. Since these parts can be
+      used to refer any Canvas in the Manifest, look up the parts by 'rangeId' and use the
+      next sibling part's Canvas index for the switch. To find the timespan at the end of
+      the current Canvas, use the current Canvas index, and the canvasDuration on canvasSegments
+      array. */
+      const endedItem = canvasSegments.find(
+        (t) => t.canvasIndex === cIndexRef.current + 1 && t.times.end >= t.canvasDuration - 0.1
+      );
+      const rangeParts = endedItem?.isMultiRange
+        ? canvasSegments.filter((t) => t.rangeId === endedItem.rangeId)
+        : [];
+      const endedPartIndex = rangeParts.findIndex((t) => t.id === endedItem.id);
+      const nextRangePart = endedPartIndex > -1 ? rangeParts[endedPartIndex + 1] : undefined;
+
+      if (nextRangePart) {
+        manifestDispatch({ canvasIndex: nextRangePart.canvasIndex - 1, type: 'switchCanvas' });
+        playerDispatch({ startTime: 0, type: 'setTimeFragment' });
+        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
+        manifestDispatch({ item: nextRangePart, type: 'switchItem' });
+        if (!nextRangePart.isEmpty) {
+          playerRef.current.currentTime(nextRangePart.times.start);
+          playerRef.current.play();
+        }
+        return;
+      }
+
       if (hasMultiItems) {
         // When there are multiple sources in a single canvas advance to next source
         if (srcIndexRef.current + 1 < targets.length) {
@@ -1384,7 +1410,7 @@ function VideoJSPlayer({
         } else {
           return;
         }
-      } else if (structItems?.length > 0) {
+      } else if (structItems?.length > 0 && structItems.length > cIndexRef.current + 1) {
         const nextItem = structItems[cIndexRef.current + 1];
 
         if (nextItem) {
@@ -1401,8 +1427,8 @@ function VideoJSPlayer({
           let firstTimespanInNextCanvas = canvasSegments.filter(
             (t) => t.canvasIndex === nextItem.canvasIndex && t.itemIndex === 1
           );
-          // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first timespan
-          // in the next Canvas
+          // If the nextItem doesn't have an ID (a Canvas media fragment) pick the first
+          // timespan in the next Canvas
           let nextFirstItem = nextItem.id != undefined ? nextItem : firstTimespanInNextCanvas[0];
           let start = 0;
           if (nextFirstItem != undefined && nextFirstItem.id != undefined) {
@@ -1425,10 +1451,11 @@ function VideoJSPlayer({
         /* When the component library is used without StructuredNavigation, 'structures.structItems' is unavailable
         in state and the auto-advance feature doesn't have enough information to function properly.
         This code branch is a fallback to provide auto-advance functionality using other available data
-        such as 'allCanvases' */
+        such as 'allCanvases'  */
         const nextCanvasIndex = cIndexRef.current + 1;
         if (nextCanvasIndex <= lastCanvasIndex) {
           manifestDispatch({ canvasIndex: nextCanvasIndex, type: 'switchCanvas' });
+          playerDispatch({ startTime: 0, type: 'setTimeFragment' });
           playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
         }
       }

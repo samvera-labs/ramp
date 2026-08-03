@@ -572,7 +572,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       let isCanvas;
       let isClickable = false; let isEmpty = false;
       let summary = undefined; let homepage = undefined;
-      let id = undefined; let ranges = [];
+      let id = undefined;
 
       if (hasRoot) {
         // When parsing the root Range in structures, treat it as a Canvas
@@ -587,32 +587,42 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
       }
 
-      // Increment index for children timespans within a Canvas
-      if (!isCanvas && canvases.length > 0) subIndex++;
-
-      /* In IIIF Presentation 3.0 API, multiple Canvas items are allowed to be contained under a single Range.
-      This helper builds ranges for each Canvas item in the Range to be displayed in StructuredNavigation.
-      The common case: a single Canvas reference. When there are multiple Canvas references this produces
-      a range for each Canvas, which enables playback across Canvases. */
-      const buildRange = (mediaFragmentId) => {
+      /* According to the IIIF Presentation 3.0 spec, if a Range includes parts (mediafragments)
+      of Canvas references then, each part needs to be rendered as an entry in the navigation display.
+      This function builds independent clickable items for each Canvas fragment in the Range. */
+      const parseCanvasPart = (mediaFragmentId, itemIndex, itemIndexLabel) => {
         const canvasId = getCanvasId(mediaFragmentId);
-        let canvasInfo = null;
-        if (canvasesInfo?.length > 0) {
-          canvasInfo = canvasesInfo.filter((c) => c.canvasId === canvasId)[0];
-        }
-        // Only include the range if referenced Canvas is in the Manifest
-        if (canvasInfo != null) {
-          const rangeFragment = mediaFragmentId.includes('#')
-            ? mediaFragmentId : `${mediaFragmentId}#t=0,${canvasInfo.duration}`;
-          return {
-            canvasId: canvasId,
-            canvasIndex: (canvasInfo?.canvasIndex ?? -1) + 1,
-            id: rangeFragment,
-            times: getMediaFragment(rangeFragment, canvasInfo.duration),
-          };
-        }
-        return null;
+        let fragmentCanvas = canvasesInfo?.length > 0
+          ? canvasesInfo.filter((c) => c.canvasId === canvasId)[0]
+          : null;
+        if (fragmentCanvas == null) return null;
+
+        const [uri, mediafragment] = mediaFragmentId.split('#');
+        // Build mediafragment if it is not given in the Canvas id for the Range
+        const partId = mediafragment ? mediaFragmentId : `${uri}#t=0,${fragmentCanvas.duration}`;
+        const { start, end } = getMediaFragment(partId, fragmentCanvas.duration);
+
+        return {
+          label, summary, isRoot: false, homepage, canvasDuration: fragmentCanvas.duration,
+          id: partId, times: { start, end }, isTitle: false, rangeId: range.id,
+          isEmpty: fragmentCanvas.isEmpty, isCanvas: false, itemIndex, itemIndexLabel,
+          canvasIndex: (fragmentCanvas?.canvasIndex ?? -1) + 1,
+          items: [], duration: timeToHHmmss(end - start),
+          isClickable: true, isMultiRange: true,
+        };
       };
+
+      /* When a Range has multiple items (Canvas parts), create one item per part to display
+      in the navigation display independetly. Sibling Canvas parts under the same Range has
+      the same item index suffixed by lower-case letters (e.g. 10a, 10b) */
+      if (!isCanvas && canvases.length > 1) {
+        const groupIndex = ++subIndex;
+        const partItems = canvases
+          .map((c, i) => parseCanvasPart(c, groupIndex, `${groupIndex}${String.fromCharCode(97 + i)}`))
+          .filter((s) => s != null);
+        timespans.push(...partItems);
+        return partItems;
+      }
 
       // Set 'id' in the form of a mediafragment
       if (canvases.length > 0) {
@@ -629,7 +639,6 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         } else {
           id = canvases[0];
         }
-        ranges = canvases.map(buildRange).filter(s => s != null);
       }
 
       // Consider collapsible structure only for ranges non-equivalent to root-level items
@@ -669,22 +678,19 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isClickable = checkSrcRange(times, { end: canvasDuration });
       }
 
-      /* For Ranges spanning multiple canvases, show the combined duration of all ranges instead
-      of only the duration derived from the first one. */
-      const displayDuration = ranges.length > 1
-        ? ranges.reduce((sum, s) => sum + (s.times.end - s.times.start), 0)
-        : duration;
+      // Increment index for children timespans within a Canvas
+      if (!isCanvas && canvases.length > 0) subIndex++;
 
       let item = {
-        label, summary, isRoot, homepage, canvasDuration, id, times, ranges,
+        label, summary, isRoot, homepage, canvasDuration, id, times,
         isTitle: canvases.length === 0 ? true : false,
         rangeId: range.id,
         isEmpty: isEmpty,
         isCanvas: isCanvas,
         itemIndex: isCanvas ? cIndex : subIndex,
         canvasIndex: cIndex,
-        items: range.getRanges()?.length > 0 ? range.getRanges().map(r => parseItem(r, rootNode)) : [],
-        duration: timeToHHmmss(displayDuration),
+        items: range.getRanges()?.length > 0 ? range.getRanges().flatMap(r => parseItem(r, rootNode)) : [],
+        duration: timeToHHmmss(duration),
         isClickable: isClickable,
       };
       // Collect timespans in a separate array

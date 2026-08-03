@@ -196,7 +196,7 @@ ul.ramp--structured-nav__tree {
 
     .structure-item-cross-canvas {
       vertical-align: middle;
-      margin-right: 0.2em;
+      margin-left: 0.3em;
     }
 
     // Set line-height to create clickable space around link
@@ -205,11 +205,6 @@ ul.ramp--structured-nav__tree {
 
       .structured-nav__item-label {
         margin-left: 0.2em;
-
-        .ramp--structured-nav__item-part {
-          color: vars.$primaryDark;
-          font-size: vars.$fontSizeMedium;
-        }
       }
 
       // Out-of-range timespans rendered as plain text

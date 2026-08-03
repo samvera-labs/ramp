@@ -16,8 +16,8 @@ import {
 } from './transcript-parser';
 import {
   CANVAS_MESSAGE_TIMEOUT, checkSrcRange, HOTKEY_ACTION_OUTPUT, playerHotKeys,
-  screenReaderFriendlyTime, identifyMachineGen, getActiveRangeForCanvas,
-  truncateText, autoScroll, roundToPrecision, getNextRange
+  screenReaderFriendlyTime, identifyMachineGen,
+  truncateText, autoScroll, roundToPrecision
 } from '@Services/utility-helpers';
 import { IS_IPAD } from '@Services/browser';
 import { getMediaInfo } from '@Services/iiif-parser';
@@ -384,10 +384,9 @@ export const useVideoJSPlayer = ({
 }) => {
   const manifestState = useContext(ManifestStateContext);
   const playerState = useContext(PlayerStateContext);
-  const manifestDispatch = useContext(ManifestDispatchContext);
   const playerDispatch = useContext(PlayerDispatchContext);
   const { allCanvases, canvasDuration, canvasIndex, canvasIsEmpty,
-    currentNavItem, canvasSegments, playlist, structures } = manifestState;
+    currentNavItem, canvasSegments, playlist } = manifestState;
   const { clickedUrl, currentTime, isClicked, player, searchMarkers } = playerState;
 
   const [activeId, setActiveId] = useState('');
@@ -755,17 +754,13 @@ export const useVideoJSPlayer = ({
       activeSegment = canvasSegments[canvasIndex];
     } else {
       const timeRounded = roundToPrecision(time);
-      const currentCanvasIndex = canvasIndex + 1;
-      /* For a structure item spanning across multiple canvases, match against the item's times relevant for the
-      current Canvas OR canvasDuration instead of the timespan's default times. This helps to keep the structure
-      highlights in StructuredNavigation component and player's progress-bar markers as Ramp plays across canvases. */
-      let possibleActiveSegments = canvasSegments
-        .map((c) => getActiveRangeForCanvas(c, currentCanvasIndex, c.canvasDuration))
-        .filter((c) => {
-          if (!c) return false;
-          const inCanvas = checkSrcRange(c.times, c.canvasDuration);
-          return inCanvas && timeRounded >= c.times.start && timeRounded < c.times.end;
-        });
+      // Segments that contains the current time of the player
+      let possibleActiveSegments = canvasSegments.filter((c) => {
+        const inCanvas = checkSrcRange(c.times, c.canvasDuration);
+        if (inCanvas && timeRounded >= c.times.start && timeRounded < c.times.end) {
+          return c;
+        }
+      });
       /**
        * If the last clicked timespan is a possibly active segment, then remove others.
        * This prioritizes and visualizes user interactions with StructuredNavigation.
@@ -776,8 +771,8 @@ export const useVideoJSPlayer = ({
       }
       // Find the relevant media segment from given possibilities
       for (let segment of possibleActiveSegments) {
-        const { isCanvas, canvasDuration, canvasIndex, times } = segment;
-        if (canvasIndex == currentCanvasIndex) {
+        const { isCanvas, canvasDuration, canvasIndex: segmentCanvasIndex, times } = segment;
+        if (segmentCanvasIndex == canvasIndex + 1) {
           // Canvases without structure has the Canvas information in Canvas-level item as a navigable link
           if (isCanvas) {
             activeSegment = segment;
@@ -790,76 +785,7 @@ export const useVideoJSPlayer = ({
         }
       }
     }
-    findActiveRangeWithin(activeSegment, time);
     return activeSegment;
-  };
-
-  /**
-   * Find and update state when a cross Canvas range that falls after active timespan's time range
-   * is present. This allows to synchronize structure highlighting with cross Canvas
-   * range playback.
-   * This extends the activeSegment calculation in 'getActiveSegment()' above, which
-   * briefly resolves to null right at the activeSegment's boundary.
-   * @param {Object} activeSegment active timespan at first-level in structures
-   * @param {Time} time playhead's current time
-   */
-  const findActiveRangeWithin = (activeSegment, time) => {
-    let { ranges, index } = structures.multiCanvas;
-    if (activeSegment?.ranges?.length > 1) {
-      // Update state when activeSegment has multiple ranges
-      const activeSegmentIndex = activeSegment.ranges.findIndex(
-        (s) => s.canvasIndex === activeSegment.canvasIndex
-      );
-      if (ranges !== activeSegment.ranges || index !== activeSegmentIndex) {
-        ranges = activeSegment.ranges;
-        index = activeSegmentIndex >= 0 ? activeSegmentIndex : 0;
-        manifestDispatch({ ranges, index, type: 'setMultiCanvasRanges' });
-      }
-    } else if (activeSegment && ranges.length > 0) {
-      ranges = [];
-      index = 0;
-      manifestDispatch({ ranges, index, type: 'setMultiCanvasRanges' });
-    }
-
-    /* Check whether playback has reached the end of the currently playing segment of a
-    playback continues seamlessly. */
-    const nextRange = getNextRange(ranges, index, canvasIndex + 1, time);
-    if (nextRange) {
-      const { canvasIndex, times } = nextRange;
-      manifestDispatch({ ranges, index: index + 1, type: 'setMultiCanvasRanges' });
-      manifestDispatch({ canvasIndex: canvasIndex - 1, type: 'switchCanvas' });
-      playerDispatch({
-        startTime: times.start, endTime: times.end, type: 'setTimeFragment'
-      });
-      playerDispatch({ currentTime: times.start, type: 'setCurrentTime' });
-      player.structStart = times.start;
-
-      /* Update 'StructuredNavigation' highlighting and the progress-bar marker for the
-      new Canvas immediately. */
-      const nextActiveSegment = {
-        ...(activeSegment ?? {}),
-        canvasIndex: canvasIndex,
-        times: times,
-        canvasDuration: allCanvases[canvasIndex - 1]?.duration ?? activeSegment?.canvasDuration,
-      };
-      manifestDispatch({ item: nextActiveSegment, type: 'switchItem' });
-      setActiveId(nextActiveSegment.id);
-      if (!playlist.isPlaylist && player.markers) {
-        const { start, end } = nextActiveSegment.times;
-        if (start !== end) {
-          const markerEnd = end > nextActiveSegment.canvasDuration ? nextActiveSegment.canvasDuration : end;
-          setFragmentMarker({
-            time: start,
-            duration: markerEnd - start,
-            text: start,
-            class: 'ramp--track-marker--fragment'
-          });
-        } else {
-          setFragmentMarker(null);
-        }
-      }
-      return;
-    }
   };
 
   return {
@@ -988,16 +914,13 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setSectionIsCollapsed
  * @param {Object} obj.times start and end times of the structure timespan
- * @param {Array} obj.ranges Canvas ranges in the structure timespan
- * @returns { 
- * activeRangePart,
+ * @returns {
  * canvasIndex,
  * currentNavItem,
  * handleClick,
  * isActiveLi,
  * isActiveSection,
  * isPlaylist,
- * multiRangeTimespan,
  * screenReaderTime
  * }
  */
@@ -1013,11 +936,10 @@ export const useActiveStructure = ({
   canvasDuration,
   setSectionIsCollapsed,
   times,
-  ranges
 }) => {
   const playerDispatch = useContext(PlayerDispatchContext);
   const manifestState = useContext(ManifestStateContext);
-  const { canvasIndex, currentNavItem, playlist, structures } = manifestState;
+  const { canvasIndex, currentNavItem, playlist } = manifestState;
   const { isPlaylist } = playlist;
   const playerState = useContext(PlayerStateContext);
   const { isPlaying } = playerState;
@@ -1055,17 +977,6 @@ export const useActiveStructure = ({
     }
   }, [itemId, canvasDuration]);
 
-  // Item's media spans multiple Canvases, i.e. more than one Canvas segment in 'ranges'
-  const multiRangeTimespan = useMemo(() => { return ranges?.length > 1; }, [ranges]);
-
-  /* Get the index of the active range from the multi-range timespan to display the
-  currently playing range in the UI. */
-  const activeRangePart = useMemo(() => {
-    if (!multiRangeTimespan) return null;
-    return isActiveLi ? (structures?.multiCanvas?.index ?? 0) + 1 : 1;
-  }, [multiRangeTimespan, isActiveLi, structures?.multiCanvas?.index]);
-
-
   const handleClick = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1095,13 +1006,11 @@ export const useActiveStructure = ({
   });
 
   return {
-    activeRangePart,
     canvasIndex,
     currentNavItem,
     handleClick,
     isActiveLi,
     isActiveSection,
-    multiRangeTimespan,
     isPlaylist,
     screenReaderTime,
   };
