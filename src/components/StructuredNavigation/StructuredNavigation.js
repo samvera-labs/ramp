@@ -34,7 +34,6 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     playlist,
     canvasIsEmpty,
     canvasSegments,
-    structures,
   } = useManifestState();
 
   const { showBoundary } = useErrorBoundary();
@@ -100,17 +99,6 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         if (!isCanvas || (items.length == 0 && isCanvas)) {
           manifestDispatch({ item: clickedItem[0], type: 'switchItem' });
         }
-        /* If a structure item has ranges spanning across canvases, save them in
-        state to provide continuous playback and structure highlights. */
-        const { ranges } = clickedItem[0];
-        if (ranges?.length > 1) {
-          manifestDispatch({ ranges, index: 0, type: 'setMultiCanvasRanges' });
-        } else if (structures?.multiCanvas?.ranges.length > 0) {
-          manifestDispatch({ ranges: [], index: 0, type: 'setMultiCanvasRanges' });
-        }
-      } else if (structures?.multiCanvas?.ranges.length > 0) {
-        // Clear the ranges in state when highlights are cleared
-        manifestDispatch({ ranges: [], index: 0, type: 'setMultiCanvasRanges' });
       }
       const currentCanvasIndex = allCanvases.findIndex(
         (c) => c.canvasURL === getCanvasId(clickedUrl)
@@ -142,7 +130,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
             canvasIndex: currentCanvasIndex,
             type: 'switchCanvas',
           });
-          canvasIsEmptyRef.current = canvasStructRef.current[currentCanvasIndex].isEmpty;
+          canvasIsEmptyRef.current = allCanvases[currentCanvasIndex]?.isEmpty;
         }
       }
 
