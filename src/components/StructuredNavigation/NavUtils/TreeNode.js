@@ -21,10 +21,11 @@ import { useActiveStructure, useCollapseExpandAll } from '@Services/ramp-hooks';
  * @param {String} props.summary summary associated with the item (in playlist context)
  * @param {String} props.homepage homepage associated with the item (in playlist context)
  * @param {String} props.isRoot root level node for structure
+ * @param {Boolean} props.isMultiRange flag to indicate item is a multi-range timespan
  * @param {Array} props.items list of children for the item
  * @param {Number} props.itemIndex index of the item within the section/canvas
+ * @param {String} props.itemIndexLabel display label for the item's index
  * @param {String} props.rangeId unique id of the item
- * @param {Array} props.ranges Canvas ranges within the item
  * @param {Number} props.sectionCount total number of sections in structure
  * @param {Object} props.sectionRef React ref of the section element associated with the item
  * @param {Object} props.structureContainerRef React ref of the structure container
@@ -44,10 +45,11 @@ const TreeNode = ({
   summary,
   homepage,
   isRoot,
+  isMultiRange,
   items,
   itemIndex,
+  itemIndexLabel,
   rangeId,
-  ranges,
   sectionCount,
   sectionRef,
   structureContainerRef,
@@ -60,8 +62,8 @@ const TreeNode = ({
   // Root structure items are always expanded
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
-  const { activeRangePart, currentNavItem, handleClick, isActiveLi, isActiveSection,
-    isPlaylist, multiRangeTimespan, screenReaderTime } = useActiveStructure({
+  const { currentNavItem, handleClick, isActiveLi, isActiveSection,
+    isPlaylist, screenReaderTime } = useActiveStructure({
       itemId: id,
       itemIndex,
       liRef,
@@ -72,7 +74,6 @@ const TreeNode = ({
       canvasDuration,
       setSectionIsCollapsed,
       times,
-      ranges,
     });
 
   // Identify item as a section for canvases in non-playlist contexts
@@ -81,14 +82,11 @@ const TreeNode = ({
   // Determine if the item has children
   const hasChildren = useMemo(() => { return items?.length > 0; }, [items]);
 
-  /* Derive the timespan link's href attribute value in the following priority order;
-  - if the 'homepage' value exists use it
-  - if the timespan has multiple ranges, use the active range's mediafragment
-  - else use the timespan's given id which is the mediafragment */
-  const itemLinkHref = useMemo(() => {
-    if (homepage) return homepage;
-    return multiRangeTimespan ? ranges[activeRangePart - 1].id : id;
-  }, [homepage, multiRangeTimespan, ranges, activeRangePart, id]);
+  // Derive the timespan link's href attribute value, preferring 'homepage' when it exists
+  const itemLinkHref = useMemo(() => homepage || id, [homepage, id]);
+
+  // Displayed index in the structure item's label
+  const displayIndex = itemIndexLabel ?? itemIndex;
 
   /*
     Auto-scroll active structure item with mediafragment into view only when user 
@@ -146,13 +144,13 @@ const TreeNode = ({
       return id != undefined
         ? `Load media for Canvas ${itemIndex},${label},${duration}`
         : isRoot ? `Table of contents for ${label},${duration}` : `Section for Canvas ${itemIndex}${label},${duration}`;
-    } else if (multiRangeTimespan) {
-      return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} \
-        in Canvas ${canvasIndex}, spans ${ranges.length} canvases, part ${activeRangePart} of ${ranges.length}`;
+    } else if (isMultiRange) {
+      return `Timespan with label ${displayIndex}${label} ${duration} starting at ${screenReaderTime} \
+        in Canvas ${canvasIndex}, part of a Range spanning multiple Canvases`;
     } else {
-      return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
+      return `Timespan with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
     }
-  }, [screenReaderTime, isPlaylist, isSection, multiRangeTimespan, activeRangePart]);
+  }, [screenReaderTime, isPlaylist, isSection, isMultiRange, displayIndex]);
 
   const toggleOpen = () => {
     // Update collapse/expand status in the component state
@@ -309,15 +307,11 @@ const TreeNode = ({
                       onKeyDown={handleLinkKeyDown}
                       tabIndex={-1}>
                       {isEmpty && <LockedSVGIcon />}
-                      {multiRangeTimespan && <MultiRangeSVGIcon />}
-                      {`${itemIndex}.`}
+                      {`${displayIndex}.`}
                       <span className='structured-nav__item-label' aria-label={label}>
                         {label} {duration.length > 0 ? ` (${duration})` : ''}
-                        {multiRangeTimespan &&
-                          <span className='ramp--structured-nav__item-part'>
-                            {` · Part ${activeRangePart} of ${ranges.length}`}
-                          </span>}
                       </span>
+                      {isMultiRange && <MultiRangeSVGIcon />}
                     </a>
                   ) : (
                     <span aria-label={label}>{label}</span>
@@ -384,9 +378,10 @@ TreeNode.propTypes = {
   summary: PropTypes.string,
   homepage: PropTypes.string,
   isRoot: PropTypes.bool.isRequired,
+  isMultiRange: PropTypes.bool,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
-  ranges: PropTypes.array,
+  itemIndexLabel: PropTypes.string,
   rangeId: PropTypes.string.isRequired,
   sectionCount: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,

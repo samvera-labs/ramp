@@ -41,10 +41,6 @@ const defaultState = {
     hasStructure: false, // current Canvas has structure timespans
     isCollapsed: false, // all sections are expanded by default
     structItems: [],
-    multiCanvas: {
-      ranges: [], // Canvas ranges in the active structure item
-      index: 0 // index of the currently playing range in structure item
-    }
   },
   annotations: [], // [{ canvasIndex: Number, annotationSets: Array }]
   clickedAnnotation: null, // clicked annotation in the Canvas
@@ -58,12 +54,9 @@ function getHasStructure(canvasSegments, canvasIndex) {
   // Update hasStructure flag when canvas changes
   const canvasStructures =
     canvasSegments?.length > 0
-      ? canvasSegments.filter((c) => {
-        /* A Range spanning across canvases only carries its first canvas's canvasIndex
-        on the timespan. Therefore, look inside its 'ranges' to match other canvases. */
-        const inRanges = c.ranges?.some((s) => s.canvasIndex == canvasIndex + 1);
-        return !c.isCanvas && (c.canvasIndex == canvasIndex + 1 || inRanges);
-      })
+      ? canvasSegments.filter((c) =>
+        c.canvasIndex == canvasIndex + 1 && !c.isCanvas
+      )
       : [];
 
   return canvasStructures.length > 0;
@@ -148,17 +141,6 @@ function manifestReducer(state = defaultState, action) {
         srcIndex: action.srcIndex,
       };
     }
-    case 'setMultiCanvasRanges': {
-      return {
-        ...state,
-        structures: {
-          ...state.structures,
-          multiCanvas: {
-            ranges: action.ranges, index: action.index ?? 0
-          }
-        }
-      };
-    }
     case 'setItemStartTime': {
       return {
         ...state,
@@ -224,13 +206,17 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'setCanvasSegments': {
+      // Update hasStructure flag when canvasSegments are calculated
+      const canvasStructures =
+        action.timespans.filter((c) =>
+          c.canvasIndex == state.canvasIndex + 1 && !c.isCanvas
+        );
       return {
         ...state,
         canvasSegments: action.timespans,
         structures: {
           ...state.structures,
-          // Update hasStructure flag when canvasSegments are calculated
-          hasStructure: getHasStructure(action.timespans, state.canvasIndex),
+          hasStructure: canvasStructures.length > 0,
         },
       };
     }
