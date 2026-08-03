@@ -3,35 +3,13 @@ import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
 import { timeToHHmmss } from '@Services/utility-helpers';
-
-// SVG icons for zoom-in and zoom-out icons as strings
-const zoomOutIconSVG = `
-<symbol id="zoomed-out" viewBox="0 0 20 20">
-  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-  <g id="SVGRepo_iconCarrier">
-    <path fill="#ffffff" fill-rule="evenodd" d="M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 
-      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 
-      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z">
-    </path>
-  </g>
-</symbol>`;
-
-const zoomInIconSVG = `
-<symbol id="zoomed-in" viewBox="0 0 20 20">
-  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-  <g id="SVGRepo_iconCarrier">
-    <path fill="#ffffff" fill-rule="evenodd" d="M9 4a5 5 0 100 10A5 5 0 009 4zM2 9a7 
-      7 0 1112.6 4.2.999.999 0 01.107.093l3 3a1 1 0 01-1.414 1.414l-3-3a.999.999 0 
-      01-.093-.107A7 7 0 012 9zm10.5 0a1 1 0 00-1-1h-5a1 1 0 100 2h5a1 1 0 001-1z">
-    </path>
-  </g>
-</symbol>`;
-
+import { svgIconToSymbol, TrackScrubberZoomInIcon, TrackScrubberZoomOutIcon } from '@Services/svg-icons';
 
 // Function to inject SVGs into the DOM
 function injectSVGIcons() {
+  const zoomOutIconSVG = svgIconToSymbol(TrackScrubberZoomOutIcon, 'zoomed-out');
+  const zoomInIconSVG = svgIconToSymbol(TrackScrubberZoomInIcon, 'zoomed-in');
+
   const svgContainer = document.createElement('div');
   svgContainer.style.display = 'none';
   svgContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg">${zoomOutIconSVG}${zoomInIconSVG}</svg>`;

@@ -85,12 +85,18 @@ export default defineConfig({
     // Rollup options for external dependencies
     rollupOptions: {
       external: [
-        ...Object.keys(pkg.peerDependencies || {})
+        ...Object.keys(pkg.peerDependencies || {}),
+        /* This is not an explicit perrDependency, however this must stay external like 'react'
+        and 'react-dom' so that, a second copy of React internals doesn't get bundled parallel
+        to a host application's own copy. */
+        'react-dom/client',
       ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          // 'createRoot' from 'react-dom/client' is exposed on the same ReactDOM UMD in the bundle
+          'react-dom/client': 'ReactDOM',
           'manifesto.js': 'manifesto',
           'mime-db': 'mimeDB',
           'dompurify': 'DOMPurify',

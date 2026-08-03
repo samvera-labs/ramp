@@ -1,4 +1,6 @@
 import React from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 /** SVG icons for the edit buttons in Annotations component */
 export const EditIcon = () => {
@@ -91,10 +93,12 @@ export const TrackScrubberZoomInIcon = ({ scale }) => {
   return (
     <svg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'
       style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
-      <g strokeWidth='0' strokeLinecap='round' strokeLinejoin='round'>
-        <path fill='#ffffff' fillRule='evenodd' d='M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 0 104.2 12.6.999.999 
-				0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 
-				1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z'>
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier">
+        <path fill="#ffffff" fillRule="evenodd" d="M9 4a5 5 0 100 10A5 5 0 009 4zM2 9a7 
+      7 0 1112.6 4.2.999.999 0 01.107.093l3 3a1 1 0 01-1.414 1.414l-3-3a.999.999 0 
+      01-.093-.107A7 7 0 012 9zm10.5 0a1 1 0 00-1-1h-5a1 1 0 100 2h5a1 1 0 001-1z">
         </path>
       </g>
     </svg>
@@ -103,16 +107,14 @@ export const TrackScrubberZoomInIcon = ({ scale }) => {
 
 export const TrackScrubberZoomOutIcon = ({ scale }) => {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"
       style={{ fill: 'white', height: '1.25rem', width: '1.25rem', scale: scale }}>
-      <g strokeWidth="0" strokeLinecap="round" strokeLinejoin="round">
-        <path fillRule="evenodd" clipRule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 
-				14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 
-				19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 
-				20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="#ffffff">
-        </path>
-        <path fillRule="evenodd" clipRule="evenodd" d="M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15 
-				11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z" fill="#ffffff">
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier">
+        <path fill="#ffffff" fillRule="evenodd" d="M4 9a5 5 0 1110 0A5 5 0 014 9zm5-7a7 7 
+      0 104.2 12.6.999.999 0 00.093.107l3 3a1 1 0 001.414-1.414l-3-3a.999.999 0 00-.107-.093A7 
+      7 0 009 2zM8 6.5a1 1 0 112 0V8h1.5a1 1 0 110 2H10v1.5a1 1 0 11-2 0V10H6.5a1 1 0 010-2H8V6.5z">
         </path>
       </g>
     </svg>
@@ -203,4 +205,25 @@ export const UserIcon = () => {
       </g>
     </svg>
   );
+};
+
+/**
+ * Convert a React SVG icon component into an SVG <symbol> markup string to be used in
+ * custom VideoJS components.
+ * @param {Function} IconComponent React SVG icon component
+ * @param {String} id id of the SVG <symbol>
+ * @param {Object} props props to pass to IconComponent when rendering
+ * @returns {String} `<symbol id="${id}">...</symbol>` markup string
+ */
+export const svgIconToSymbol = (IconComponent, id, props = {}) => {
+  const container = document.createElement('div');
+  const root = createRoot(container);
+  flushSync(() => root.render(<IconComponent {...props} />));
+
+  const svgEl = container.firstElementChild;
+  const viewBox = svgEl.getAttribute('viewBox') || '0 0 20 20';
+  const innerContent = svgEl.innerHTML;
+
+  root.unmount();
+  return `<symbol id="${id}" viewBox="${viewBox}">${innerContent}</symbol>`;
 };
