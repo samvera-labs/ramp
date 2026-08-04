@@ -1,6 +1,7 @@
 import manifest from '@TestData/transcript-annotation';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
+import crossRangeManifest from '@TestData/multi-part-ranges';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
@@ -931,6 +932,67 @@ describe('iiif-parser', () => {
       expect(timespans).toHaveLength(0);
       expect(markRoot).toBeFalsy();
       expect(hasCollapsibleStructure).toBeFalsy();
+    });
+
+    describe('with multi-part Range', () => {
+      let timespans;
+
+      beforeAll(() => {
+        ({ timespans } = iiifParser.getStructureRanges(
+          crossRangeManifest, iiifParser.canvasesInManifest(crossRangeManifest)
+        ));
+      });
+
+      it('returns one item per Canvas part', () => {
+        const parts = timespans.filter((t) => t.label === 'Track spanning both sides');
+        expect(parts).toHaveLength(2);
+      });
+
+      it('returns each item per Canvas part with relevant information', () => {
+        const parts = timespans.filter((t) => t.label === 'Track spanning both sides');
+        expect(parts[0]).toMatchObject({
+          id: 'http://example.com/multi-part-ranges/canvas/1#t=550,600',
+          canvasIndex: 1, times: { start: 550, end: 600 }, duration: '00:50',
+          isMultiRange: true,
+        });
+        expect(parts[1]).toMatchObject({
+          id: 'http://example.com/multi-part-ranges/canvas/2#t=0,100',
+          canvasIndex: 2, times: { start: 0, end: 100 }, duration: '01:40',
+          isMultiRange: true,
+        });
+      });
+
+      it('shares the same rangeId across Canvas parts in a single Range', () => {
+        const parts = timespans.filter((t) => t.label === 'Track spanning both sides');
+        expect(parts[0].rangeId).toEqual(parts[1].rangeId);
+      });
+
+      it('shares one itemIndex across Canvas parts', () => {
+        const parts = timespans.filter((t) => t.label === 'Track spanning both sides');
+        expect(parts[0].itemIndex).toEqual(parts[1].itemIndex);
+
+        /* Item indices in timespans are in the order of 1,2,2, and 3 where,
+        the two parts of the same Range share itemIndex 2. */
+        expect(timespans.map((t) => t.itemIndex)).toEqual([1, 2, 2, 3]);
+      });
+
+      it('assigns Canvas parts a display index label with a letter', () => {
+        const parts = timespans.filter((t) => t.label === 'Track spanning both sides');
+        expect(parts[0].itemIndexLabel).toEqual('2a');
+        expect(parts[1].itemIndexLabel).toEqual('2b');
+      });
+
+      it('does not set itemIndexLabel for a single Canvas part Range', () => {
+        // First and last single Canvas items
+        expect(timespans[0].itemIndexLabel).toBeUndefined();
+        expect(timespans[3].itemIndexLabel).toBeUndefined();
+      });
+
+      it('doest not set "isMultiRange=true" flag for a single Canvas part Range', () => {
+        // First and last single Canvas items
+        expect(timespans[0].isMultiRange).toBeFalsy();
+        expect(timespans[3].isMultiRange).toBeFalsy();
+      });
     });
   });
 
