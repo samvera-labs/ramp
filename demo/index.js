@@ -6,8 +6,9 @@ import config from './config';
 // Manifests bundled under public/manifests/{dev,prod} for both environments
 const DEMO_MANIFESTS = [
   { label: 'Lunchroom Manners (Presentation 3)', filename: 'lunchroom_manners.json' },
+  { label: 'Cross-Canvas Ranges in Structures (Presentation 3)', filename: 'cross-canvas-range.json' },
   { label: 'Lunchroom Manners (Presentation 4)', filename: 'lunchroom-manners-v4.json' },
-  { label: 'Volleyball for Boys', filename: 'volleyball-for-boys.json' },
+  { label: 'Volleyball for Boys (Presentation 3)', filename: 'volleyball-for-boys.json' },
   { label: 'Playlist (Presentation 3)', filename: 'playlist-manifest.json' },
 ];
 
