@@ -8,6 +8,7 @@ import invalidStructure from '@TestData/invalid-structure';
 import thumbnailNavStructure from '@TestData/transcript-multiple-canvas';
 import playlist from '@TestData/playlist';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
+import crossRangeManifest from '@TestData/multi-part-ranges';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -596,13 +597,9 @@ describe('StructuredNavigation component', () => {
   });
 
   describe('allows keyboard nav according to tree view a11y design pattern', () => {
-    const handleClickMock = jest.fn();
     let structuredNav, treeItems;
     const props = { showAllSectionsButton: true };
     beforeEach(() => {
-      jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
-        handleClick: handleClickMock
-      }));
       const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
         ...props,
         initialState: {},
@@ -683,8 +680,7 @@ describe('StructuredNavigation component', () => {
         const sectionButton = treeItems[1].children[0].children[0];
         // Press 'Enter' key
         fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
-        // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).toHaveBeenCalled();
+        expect(sectionButton).toHaveClass('ramp--structured-nav__section-title active');
       });
     });
 
@@ -757,8 +753,7 @@ describe('StructuredNavigation component', () => {
         expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
 
         fireEvent.keyDown(treeItems[4].children[1], { key: '', code: 'Space', keyCode: 32 });
-
-        expect(handleClickMock).toHaveBeenCalledTimes(1);
+        expect(treeItems[4]).toHaveClass('active');
       });
     });
 
@@ -792,21 +787,19 @@ describe('StructuredNavigation component', () => {
         const sectionButton = treeItems[2].children[0].children[0];
         // Press 'ArrowRight' key
         fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
-        // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).not.toHaveBeenCalled();
+        expect(sectionButton).not.toHaveClass('active');
       });
 
       test('Enter keydown event loads media into the player', () => {
         const sectionButton = treeItems[2].children[0].children[0];
         // Press 'Enter' key
         fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
-        // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).toHaveBeenCalled();
+        expect(sectionButton).toHaveClass('ramp--structured-nav__section-title active');
       });
     });
 
     describe('when focused on a collapsed section item', () => {
-      let sectionButton, collapseIcon;
+      let sectionButton, collapseIcon, secondSection;
       beforeEach(() => {
         // Set focus to structure nav container
         structuredNav = screen.getByTestId('structured-nav');
@@ -820,14 +813,21 @@ describe('StructuredNavigation component', () => {
         collapseIcon = treeItems[1].children[0].children[1];
         // Collapse the section
         fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
+        // Move focus to the next section
+        fireEvent.keyDown(sectionButton, { key: 'ArrowDown', keyCode: 40 });
+        // Load the next section into the player
+        secondSection = document.activeElement;
+        fireEvent.keyDown(secondSection, { key: 'Enter', keyCode: 13 });
+        // Move focus back to the first section
+        fireEvent.keyDown(secondSection, { key: 'ArrowUp', keyCode: 38 });
       });
 
       test('renders successfully', () => {
-        // First collapsible section has focus
-        expect(sectionButton).toHaveTextContent('Lunchroom Manners');
-        expect(sectionButton).toHaveFocus();
+        // Second section is active
+        expect(secondSection).toHaveTextContent('Lunchroom Manners 2');
+        expect(secondSection).toHaveClass('ramp--structured-nav__section-title active');
 
-        // Nested child structure is collapsed
+        // Nested child structure in first section is collapsed
         expect(collapseIcon.children[0]).toHaveClass('arrow down');
         expect(treeItems[1].children).toHaveLength(1);
       });
@@ -839,8 +839,111 @@ describe('StructuredNavigation component', () => {
         expect(sectionButton).toHaveFocus();
         expect(treeItems[1].children).toHaveLength(2);
         expect(collapseIcon.children[0]).toHaveClass('arrow up');
-        expect(handleClickMock).not.toHaveBeenCalled();
+        expect(sectionButton).not.toHaveClass('active');
       });
+    });
+  });
+
+  describe('with a multi-part structure', () => {
+    test('renders a link for each Canvas part in a multi item Range', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      const multiPartItem = screen.getAllByText(/Track spanning both sides/);
+      expect(multiPartItem).toHaveLength(2);
+
+      const firstPart = multiPartItem[0].parentElement;
+      expect(firstPart.tagName).toBe('A');
+      expect(firstPart.lastChild).toHaveClass('structure-item-cross-canvas');
+      expect(firstPart).toHaveTextContent('2a.');
+      expect(firstPart).toHaveAttribute(
+        'href', expect.stringContaining('canvas/1#t=550,600')
+      );
+
+      const secondPart = multiPartItem[1].parentElement;
+      expect(secondPart.tagName).toBe('A');
+      expect(secondPart.lastChild).toHaveClass('structure-item-cross-canvas');
+      expect(secondPart).toHaveTextContent('2b.');
+      expect(secondPart).toHaveAttribute(
+        'href', expect.stringContaining('canvas/2#t=0,100')
+      );
+    });
+
+    test('applies structure highlights for each part on click', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      const multiPartItem = screen.getAllByText(/Track spanning both sides/);
+      expect(multiPartItem).toHaveLength(2);
+
+      const firstPart = multiPartItem[0].parentElement;
+      const secondPart = multiPartItem[1].parentElement;
+
+      fireEvent.click(secondPart);
+
+      expect(secondPart.closest('li')).toHaveClass('ramp--structured-nav__tree-item active');
+      expect(firstPart.closest('li')).not.toHaveClass('active');
+    });
+
+    test('renders an ordinary link for single item Range', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      const structureItem = screen.getAllByText(/Track within Side A/);
+      expect(structureItem).toHaveLength(1);
+
+      const canvasPart = structureItem[0].parentElement;
+      expect(canvasPart.lastChild).not.toHaveClass('structure-item-cross-canvas');
+      expect(canvasPart.lastChild).toHaveClass('structured-nav__item-label');
+      expect(canvasPart).toHaveTextContent('1.Track within Side A (01:00)');
+      expect(canvasPart).toHaveAttribute(
+        'href', expect.stringContaining('canvas/1#t=0,60')
+      );
+    });
+
+    test('applies structure higlights for oridinary item link click', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+      const structureItem = screen.getAllByText(/Track within Side A/);
+      expect(structureItem).toHaveLength(1);
+
+      const canvasPart = structureItem[0].parentElement;
+      fireEvent.click(canvasPart);
+
+      expect(canvasPart.closest('li')).toHaveClass('ramp--structured-nav__tree-item active');
+
+      const multiPartItem = screen.getAllByText(/Track spanning both sides/);
+      expect(multiPartItem).toHaveLength(2);
+
+      expect(multiPartItem[0].closest('li')).not.toHaveClass('active');
     });
   });
 });
