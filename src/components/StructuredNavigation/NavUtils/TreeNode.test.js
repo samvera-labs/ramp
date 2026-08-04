@@ -205,7 +205,7 @@ describe('TreeNode component', () => {
     isTitle: false,
     isCanvas: true,
     canvasIndex: 1,
-    itemIndex: undefined,
+    itemIndex: 1,
     isClickable: false,
     isEmpty: false,
     isRoot: false,
@@ -269,6 +269,67 @@ describe('TreeNode component', () => {
     sectionCount: 1,
     sectionRef: sectionRef,
     structureContainerRef,
+    times: { start: 0, end: 0 },
+    setFocusedItem: setFocusedItemMock
+  };
+
+  /* Structure item for a multi-part cross Canvas structure tree */
+  const multiPartItem =
+  {
+    id: undefined,
+    duration: '02:00',
+    rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
+    isTitle: false,
+    isCanvas: true,
+    canvasIndex: 1,
+    itemIndex: 1,
+    isClickable: false,
+    isEmpty: false,
+    isRoot: false,
+    canvasDuration: 0,
+    label: 'Introduction',
+    items: [
+      {
+        canvasDuration: 572.034,
+        canvasIndex: 1,
+        duration: "00:40",
+        id: "https://example.com/manifest/lunchroom_manners/canvas/1#t=532,572",
+        isCanvas: false,
+        isClickable: true,
+        isEmpty: false,
+        isMultiRange: true,
+        isRoot: false,
+        isTitle: false,
+        itemIndex: 1,
+        itemIndexLabel: "1a",
+        items: [],
+        label: "Part I",
+        rangeId: "https://example.com/manifest/lunchroom_manners/range/1-1-1",
+        times: { start: 532, end: 572 },
+      },
+      {
+        canvasDuration: 660.034,
+        canvasIndex: 2,
+        duration: "01:40",
+        id: "https://example.com/manifest/lunchroom_manners/canvas/3#t=0,100",
+        isCanvas: false,
+        isClickable: true,
+        isEmpty: false,
+        isMultiRange: true,
+        isRoot: false,
+        isTitle: false,
+        itemIndex: 1,
+        itemIndexLabel: "1b",
+        items: [],
+        label: "Part II",
+        rangeId: "https://example.com/manifest/lunchroom_manners/range/1-1-1",
+        times: { start: 0, end: 100 },
+      }
+    ],
+    sectionCount: 1,
+    sectionRef: sectionRef,
+    structureContainerRef,
+    times: { start: 0, end: 0 },
     setFocusedItem: setFocusedItemMock,
   };
 
@@ -384,6 +445,8 @@ describe('TreeNode component', () => {
         });
         test('renders the section as a collapsible span', () => {
           expect(screen.queryAllByTestId('tree-group')).toHaveLength(1);
+          expect(screen.queryByTestId('treeitem-section-button')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('treeitem-section-span')).toBeInTheDocument();
           expect(screen.queryAllByTestId('tree-item').length).toEqual(3);
           expect(screen.queryAllByTestId('tree-item')[0]).toHaveAttribute('data-label', 'Introduction');
 
@@ -415,6 +478,7 @@ describe('TreeNode component', () => {
           expect(treeItems[0].children).toHaveLength(1);
         });
       });
+
       describe('with media-fragment info for a section', () => {
         beforeEach(() => {
           const props = {
@@ -431,6 +495,8 @@ describe('TreeNode component', () => {
         });
         test('renders the section as a collapsible button', () => {
           expect(screen.queryAllByTestId('tree-group')).toHaveLength(1);
+          expect(screen.queryByTestId('treeitem-section-button')).toBeInTheDocument();
+          expect(screen.queryByTestId('treeitem-section-span')).not.toBeInTheDocument();
           expect(screen.queryAllByTestId('tree-item').length).toEqual(3);
           expect(screen.queryAllByTestId('tree-item')[0]).toHaveAttribute('data-label', 'Lunchroom Manners');
 
@@ -456,6 +522,26 @@ describe('TreeNode component', () => {
           expect(treeItems[0].children[1].tagName).toEqual('UL');
 
           fireEvent.click(collapseIcon);
+
+          // Collapses on click and hides the nested child structure
+          expect(collapseIcon.children[0]).toHaveClass('arrow down');
+          expect(treeItems[0].children).toHaveLength(1);
+        });
+
+        test('shows/hides nested child structure on Click event on the section button', () => {
+          expect(screen.queryAllByTestId('tree-item').length).toEqual(3);
+          const treeItems = screen.getAllByTestId('tree-item');
+
+          const sectionButton = treeItems[0].children[0].children[0];
+          const collapseIcon = treeItems[0].children[0].children[1];
+
+          // Expanded by default and shows the nested child structure
+          expect(sectionButton).toHaveClass('ramp--structured-nav__section-title');
+          expect(treeItems[0].children).toHaveLength(2);
+          expect(treeItems[0].children[1].tagName).toEqual('UL');
+          expect(collapseIcon.children[0]).toHaveClass('arrow up');
+
+          fireEvent.click(sectionButton);
 
           // Collapses on click and hides the nested child structure
           expect(collapseIcon.children[0]).toHaveClass('arrow down');
@@ -522,6 +608,39 @@ describe('TreeNode component', () => {
       const structItem = screen.getByText('Part I (00:45)');
       expect(structItem.parentElement.getAttribute('href'))
         .toEqual('https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321');
+    });
+  });
+
+  describe('with a multi-part item', () => {
+    beforeEach(() => {
+      const props = {
+        ...multiPartItem
+      };
+      const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
+        ...props,
+        initialState: {},
+      });
+      const TreeNodeWithManifest = withManifestProvider(TreeNodeWithPlayer, {
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
+      });
+      render(<TreeNodeWithManifest />);
+    });
+    test('renders successfully', () => {
+      expect(screen.queryAllByTestId('tree-item')).toHaveLength(3);
+      expect(screen.getByText('Part I (00:40)')).toBeInTheDocument();
+      expect(screen.getByText('Part II (01:40)')).toBeInTheDocument();
+    });
+
+    test('renders the label and multi-part SVG icon', () => {
+      const firstPart = screen.getByText('Part I (00:40)').parentElement;
+      // Confirm the element is the anchor element
+      expect(firstPart.tagName).toEqual('A');
+      expect(firstPart).toHaveClass('ramp--structured-nav__item-link');
+      expect(firstPart).toHaveTextContent('1a.Part I (00:40)');
+
+      // Has the <span> for label and SVG icon
+      expect(firstPart.children).toHaveLength(2);
+      expect(firstPart.lastChild).toHaveClass('structure-item-cross-canvas');
     });
   });
 
