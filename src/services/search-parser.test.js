@@ -712,38 +712,41 @@ describe('search-parser', () => {
           tag: 'NON_TIMED_LINE',
           textDisplayed: 'I was one of the few guests who had actually been invited to Long Island.'
         },
+        { id: 3, text: '', tag: 'NON_TIMED_LINE', textDisplayed: '' },
         {
-          id: 3,
+          id: 4,
           text: 'People were not invited-they went there. They got into automobiles which bore them out to [Long Island],',
           tag: 'NON_TIMED_LINE',
           textDisplayed: '<strong>People</strong> were not invited-they went there. They got into automobiles which bore them out to [Long Island],'
         },
         {
-          id: 4,
+          id: 5,
           text: "and somehow they ended up at Gatsby's door.",
           tag: 'NON_TIMED_LINE',
           textDisplayed: "and somehow they ended up at Gatsby's door."
         },
         {
-          id: 5,
+          id: 6,
           text: 'Once there they were introduced by somebody who knew G-a-t-s-b-y,',
           tag: 'NON_TIMED_LINE',
           textDisplayed: 'Once there they were introduced by somebody who knew G-a-t-s-b-y,'
         },
+        { id: 7, text: '', tag: 'NON_TIMED_LINE', textDisplayed: '' },
         {
-          id: 6,
+          id: 8,
           text: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.',
           tag: 'NON_TIMED_LINE',
           textDisplayed: 'and after that they conducted themselves according to the rules of behaviour associated with an amusement park.'
         },
         {
-          id: 7,
+          id: 9,
           text: 'Sometimes they came and went without having met Gatsby at all,',
           tag: 'NON_TIMED_LINE',
           textDisplayed: 'Sometimes they came and went without having met Gatsby at all,'
         },
+        { id: 10, text: '', tag: 'NON_TIMED_LINE', textDisplayed: '' },
         {
-          id: 8,
+          id: 11,
           text: 'came for the party with a simplicity of heart that was its own ticket of admission.',
           tag: 'NON_TIMED_LINE',
           textDisplayed: 'came for the party with a simplicity of heart that was its own ticket of admission.'
@@ -789,7 +792,7 @@ describe('search-parser', () => {
           tag: 'NON_TIMED_LINE',
           begin: undefined,
           end: undefined,
-          id: 7,
+          id: 9,
           match: 'Sometimes they came and went without having met <span class="ramp--transcript_highlight">Gatsby</span> at all,',
           matchCount: 1,
           text: 'Sometimes they came and went without having met Gatsby at all,',
@@ -921,7 +924,7 @@ describe('search-parser', () => {
           tag: 'NON_TIMED_LINE',
           begin: undefined,
           end: undefined,
-          id: 3,
+          id: 4,
           match: '<strong>People</strong> were not invited-they went there. They got into automobiles which bore them out to [<span class="ramp--transcript_highlight">Long Island</span>],',
           matchCount: 1,
           text: '<strong>People</strong> were not invited-they went there. They got into automobiles which bore them out to [Long Island],',
@@ -1065,7 +1068,7 @@ describe('search-parser', () => {
           tag: 'NON_TIMED_LINE',
           begin: undefined,
           end: undefined,
-          id: 5,
+          id: 6,
           match: 'Once there they were introduced by somebody who knew <span class="ramp--transcript_highlight">G-a-t-s-b-y</span>,',
           matchCount: 1,
           text: 'Once there they were introduced by somebody who knew G-a-t-s-b-y,',

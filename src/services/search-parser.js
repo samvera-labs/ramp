@@ -177,7 +177,7 @@ const matchPartsInUntimedText = (transcripts, searchText, query, traversedIds) =
 
     // Find where this line appears in the search response, starting from currentOffset
     const startIdx = plainSearchText.indexOf(stripHtml(cueText), currentOffset);
-    if (startIdx === -1) {
+    if (startIdx === -1 || cueText === '') {
       continue;
     }
     const endIdx = startIdx + cueLength;
