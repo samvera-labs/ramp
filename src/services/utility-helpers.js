@@ -332,7 +332,7 @@ export function parseTimeStrings(fragment, duration = 0) {
     } else {
       [start, end] = fragment.split(',');
     }
-    if (end === undefined) {
+    if (end === undefined || end === '') {
       end = duration.toString();
     }
     return {

@@ -816,7 +816,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('01:06:11');
       expect(firstStructCanvas.canvasDuration).toEqual(3971.24);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 3971.24 });
 
       const firstTimespan = timespans[0];
       expect(firstTimespan).toEqual(firstStructCanvas);
@@ -842,7 +842,7 @@ describe('iiif-parser', () => {
       expect(secondStructCanvas.isClickable).toBeTruthy();
       expect(secondStructCanvas.duration).toEqual('55:07');
       expect(secondStructCanvas.canvasDuration).toEqual(3307.22);
-      expect(secondStructCanvas.times).toEqual({ start: 0, end: 0 });
+      expect(secondStructCanvas.times).toEqual({ start: 0, end: 3307.22 });
     });
 
     it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
@@ -865,7 +865,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:00');
       expect(firstStructCanvas.canvasDuration).toEqual(660);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 660 });
     });
 
     it('returns structure with root for a single canvas manifest', () => {
@@ -920,7 +920,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
       expect(firstStructCanvas.canvasDuration).toEqual(32);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 32 });
     });
 
     it('return empty structures and timespans when behavior is set to thumbnail-nav', () => {
@@ -931,6 +931,71 @@ describe('iiif-parser', () => {
       expect(timespans).toHaveLength(0);
       expect(markRoot).toBeFalsy();
       expect(hasCollapsibleStructure).toBeFalsy();
+    });
+
+    describe('when mediafragment has times in hh:mm:ss format', () => {
+      it('returns parsed times and duration for start and end times', () => {
+        const { structures, timespans } = iiifParser.getStructureRanges(
+          lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+        );
+        expect(structures).toHaveLength(1);
+        expect(timespans).toHaveLength(13);
+
+        const timespanWithStringMediaFrag = timespans[10];
+        expect(timespanWithStringMediaFrag.label).toEqual('Putting Things Away');
+        expect(timespanWithStringMediaFrag.items).toHaveLength(0);
+        expect(timespanWithStringMediaFrag.isCanvas).toBeFalsy();
+        expect(timespanWithStringMediaFrag.isEmpty).toBeFalsy();
+        expect(timespanWithStringMediaFrag.isTitle).toBeFalsy();
+        expect(timespanWithStringMediaFrag.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/2-3-2');
+        expect(timespanWithStringMediaFrag.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47');
+        expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
+        expect(timespanWithStringMediaFrag.duration).toEqual('00:16');
+        expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
+        expect(timespanWithStringMediaFrag.times).toEqual({ start: 511, end: 527 });
+      });
+
+      it('with only start time, returns parsed times and duration', () => {
+        const { structures, timespans } = iiifParser.getStructureRanges(
+          lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+        );
+        expect(structures).toHaveLength(1);
+        expect(timespans).toHaveLength(13);
+
+        const timespanWithStringMediaFrag = timespans[12];
+        expect(timespanWithStringMediaFrag.label).toEqual('Lunchroom Manners 2');
+        expect(timespanWithStringMediaFrag.items).toHaveLength(0);
+        expect(timespanWithStringMediaFrag.isCanvas).toBeTruthy();
+        expect(timespanWithStringMediaFrag.isEmpty).toBeFalsy();
+        expect(timespanWithStringMediaFrag.isTitle).toBeFalsy();
+        expect(timespanWithStringMediaFrag.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/1');
+        expect(timespanWithStringMediaFrag.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/2#t=00:00:00,');
+        expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
+        expect(timespanWithStringMediaFrag.duration).toEqual('11:00');
+        expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
+        expect(timespanWithStringMediaFrag.times).toEqual({ start: 0, end: 660 });
+      });
+    });
+
+    it('returns parsed times and duration when mediafragment is in hh:mm:ss.ms format', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(
+        lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+      );
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(13);
+
+      const timespanWithStringMediaFrag = timespans[10];
+      expect(timespanWithStringMediaFrag.label).toEqual('Putting Things Away');
+      expect(timespanWithStringMediaFrag.items).toHaveLength(0);
+      expect(timespanWithStringMediaFrag.isCanvas).toBeFalsy();
+      expect(timespanWithStringMediaFrag.isEmpty).toBeFalsy();
+      expect(timespanWithStringMediaFrag.isTitle).toBeFalsy();
+      expect(timespanWithStringMediaFrag.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/2-3-2');
+      expect(timespanWithStringMediaFrag.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47');
+      expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
+      expect(timespanWithStringMediaFrag.duration).toEqual('00:16');
+      expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
+      expect(timespanWithStringMediaFrag.times).toEqual({ start: 511, end: 527 });
     });
   });
 

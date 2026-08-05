@@ -438,7 +438,7 @@ export default {
                       label: { en: ['Putting Things Away'] },
                       items: [
                         {
-                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=511,527',
+                          id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47',
                           type: 'Canvas',
                         },
                       ],
@@ -461,7 +461,7 @@ export default {
           label: { en: ['Lunchroom Manners 2'] },
           items: [
             {
-              id: 'https://example.com/manifest/lunchroom_manners/canvas/2#t=0,660',
+              id: 'https://example.com/manifest/lunchroom_manners/canvas/2#t=00:00:00',
               type: 'Canvas',
             }
           ]
