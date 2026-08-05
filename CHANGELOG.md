@@ -1,5 +1,8 @@
 # @samvera/ramp
 
+## v5.1.0 tag (08/05/2026)
+* Fix transcript content search for untimed text by @Dananji in https://github.com/samvera-labs/ramp/pull/1003
+
 ## v5.1.0 tag (05/05/2026)
 * Fix quality-selector import and registration for ESM build by @Dananji in https://github.com/samvera-labs/ramp/pull/921
 * Create a standalone bundle for non-React apps by @Dananji in https://github.com/samvera-labs/ramp/pull/922
