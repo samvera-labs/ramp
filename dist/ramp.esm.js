@@ -62744,7 +62744,7 @@ const U6 = (i, e, t, n, r) => {
       text: d,
       textDisplayed: f
     } = i[l], h = f || d, g = h.length, p = r.indexOf(Yo(h), s);
-    if (p === -1)
+    if (p === -1 || h === "")
       continue;
     const m = p + g, b = a.filter((x) => x.start < m && x.end > p).map((x) => ({
       start: Math.max(0, x.start - p),
