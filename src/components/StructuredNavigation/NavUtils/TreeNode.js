@@ -2,7 +2,7 @@ import React, { createRef, Fragment, useEffect, useMemo, useRef, useState } from
 import cx from 'classnames';
 import PropTypes from 'prop-types';
 import { autoScroll, CANVAS_MESSAGE_TIMEOUT } from '@Services/utility-helpers';
-import { LockedSVGIcon } from '@Services/svg-icons';
+import { MultiRangeSVGIcon, LockedSVGIcon } from '@Services/svg-icons';
 import { useActiveStructure, useCollapseExpandAll } from '@Services/ramp-hooks';
 
 /**
@@ -21,8 +21,10 @@ import { useActiveStructure, useCollapseExpandAll } from '@Services/ramp-hooks';
  * @param {String} props.summary summary associated with the item (in playlist context)
  * @param {String} props.homepage homepage associated with the item (in playlist context)
  * @param {String} props.isRoot root level node for structure
+ * @param {Boolean} props.isMultiRange flag to indicate item is a multi-range timespan
  * @param {Array} props.items list of children for the item
  * @param {Number} props.itemIndex index of the item within the section/canvas
+ * @param {String} props.itemIndexLabel display label for the item's index
  * @param {String} props.rangeId unique id of the item
  * @param {Number} props.sectionCount total number of sections in structure
  * @param {Object} props.sectionRef React ref of the section element associated with the item
@@ -43,8 +45,10 @@ const TreeNode = ({
   summary,
   homepage,
   isRoot,
+  isMultiRange,
   items,
   itemIndex,
+  itemIndexLabel,
   rangeId,
   sectionCount,
   sectionRef,
@@ -58,8 +62,8 @@ const TreeNode = ({
   // Root structure items are always expanded
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
 
-  const { currentNavItem, handleClick, isActiveLi,
-    isActiveSection, isPlaylist, screenReaderTime } = useActiveStructure({
+  const { currentNavItem, handleClick, isActiveLi, isActiveSection,
+    isPlaylist, screenReaderTime } = useActiveStructure({
       itemId: id,
       itemIndex,
       liRef,
@@ -77,6 +81,12 @@ const TreeNode = ({
 
   // Determine if the item has children
   const hasChildren = useMemo(() => { return items?.length > 0; }, [items]);
+
+  // Derive the timespan link's href attribute value, preferring 'homepage' when it exists
+  const itemLinkHref = useMemo(() => homepage || id, [homepage, id]);
+
+  // Displayed index in the structure item's label
+  const displayIndex = itemIndexLabel ?? itemIndex;
 
   /*
     Auto-scroll active structure item with mediafragment into view only when user 
@@ -134,10 +144,13 @@ const TreeNode = ({
       return id != undefined
         ? `Load media for Canvas ${itemIndex},${label},${duration}`
         : isRoot ? `Table of contents for ${label},${duration}` : `Section for Canvas ${itemIndex}${label},${duration}`;
+    } else if (isMultiRange) {
+      return `Timespan with label ${displayIndex}${label} ${duration} starting at ${screenReaderTime} \
+        in Canvas ${canvasIndex}, part of a Range spanning multiple Canvases`;
     } else {
-      return `Structure item with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
+      return `Timespan with label ${itemIndex}${label} ${duration} starting at ${screenReaderTime} in Canvas ${canvasIndex}`;
     }
-  }, [screenReaderTime, isPlaylist, isSection]);
+  }, [screenReaderTime, isPlaylist, isSection, isMultiRange, displayIndex]);
 
   const toggleOpen = () => {
     // Update collapse/expand status in the component state
@@ -288,16 +301,17 @@ const TreeNode = ({
                     <a
                       role='button'
                       className='ramp--structured-nav__item-link'
-                      href={homepage && homepage != '' ? homepage : id}
+                      href={itemLinkHref}
                       aria-label={ariaLabel}
                       onClick={handleClick}
                       onKeyDown={handleLinkKeyDown}
                       tabIndex={-1}>
                       {isEmpty && <LockedSVGIcon />}
-                      {`${itemIndex}.`}
+                      {`${displayIndex}.`}
                       <span className='structured-nav__item-label' aria-label={label}>
                         {label} {duration.length > 0 ? ` (${duration})` : ''}
                       </span>
+                      {isMultiRange && <MultiRangeSVGIcon />}
                     </a>
                   ) : (
                     <span aria-label={label}>{label}</span>
@@ -364,8 +378,10 @@ TreeNode.propTypes = {
   summary: PropTypes.string,
   homepage: PropTypes.string,
   isRoot: PropTypes.bool.isRequired,
+  isMultiRange: PropTypes.bool,
   items: PropTypes.array.isRequired,
   itemIndex: PropTypes.number,
+  itemIndexLabel: PropTypes.string,
   rangeId: PropTypes.string.isRequired,
   sectionCount: PropTypes.number.isRequired,
   sectionRef: PropTypes.object.isRequired,
