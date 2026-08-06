@@ -80,12 +80,9 @@ html {
     color: #292929;
   }
 
-  &__combobox-option-url {
-    font-size: 0.75rem;
-    color: #7e7e7e;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  &__combobox-option-description {
+    font-size: 0.8rem;
+    color: #4d4d4d;
   }
 
   &__manifest-input-label {
