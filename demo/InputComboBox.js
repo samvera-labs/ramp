@@ -20,8 +20,8 @@ const InputComboBox = ({ value, options, onChange }) => {
     if (!query) {
       return options;
     }
-    return options.filter(({ label, url }) =>
-      label.toLowerCase().includes(query) || url.toLowerCase().includes(query));
+    return options.filter(({ label, description }) =>
+      label.toLowerCase().includes(query) || description.toLowerCase().includes(query));
   }, [value, options]);
 
   React.useEffect(() => {
@@ -102,7 +102,9 @@ const InputComboBox = ({ value, options, onChange }) => {
               className={`ramp-demo__combobox-option${index === activeIndex ? ' is-active' : ''}`}
               onMouseDown={(e) => { e.preventDefault(); selectOption(option); }}>
               <span className='ramp-demo__combobox-option-label'>{option.label}</span>
-              <span className='ramp-demo__combobox-option-url'>{option.url}</span>
+              {option.description && (
+                <span className='ramp-demo__combobox-option-description'>{option.description}</span>
+              )}
             </li>
           ))}
         </ul>
