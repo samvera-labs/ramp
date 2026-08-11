@@ -34,6 +34,12 @@ const DOMPURIFY_CONFIG = {
   ALLOWED_ATTR: ['href', 'src', 'alt'],
   ALLOWED_URI_REGEXP: /^(?:https?|mailto):/i,
 };
+/* MIME types dictionary for resolving waveform resource format by its extension
+when 'format' is not given in the Manifest. */
+const WAVEFORM_EXTENSION_FORMATS = {
+  dat: 'application/octet-stream', json: 'application/json',
+  png: 'image/png', jpeg: 'image/jpeg', jpg: 'image/jpeg',
+};
 
 /**
  * Sets the timer for displaying the placeholderCanvas text in the player
@@ -1102,22 +1108,25 @@ export const sanitizeHTML = (html) => {
 };
 
 /**
- * Get the data type of the given waveform resources by its 'format' property.
- * Fallback to checking the resource extension against the MIME type to derive
- * the data type if the 'format' is not available.
+ * Get the data type and a resolved MIME type of a given waveform resource by its
+ * 'format' property. Fallback to checking the resource extension against the MIME
+ * type to derive the data type and/or the format if 'format' is missing.
  * @function Utils#getWaveformType
  * @param {String} format MIME type of the waveform resource
  * @param {String} id resource URL
- * @returns {String} waveform type from 'data' | 'image' | null
+ * @returns {Object} { waveformType: 'data' | 'image' | null, format: String|null }
+ * resolved format falls back to the MIME type looked up from the resource's file extension
  */
 export const getWaveformType = (format, id) => {
-  if (format === 'application/octet-stream') return 'data';
-  if (format === 'image/png' || format === 'image/jpeg') return 'image';
+  if (format === 'application/octet-stream') return { waveformType: 'data', format };
+  if (format === 'image/png' || format === 'image/jpeg') return { waveformType: 'image', format };
 
-  // Fallback to using file extension to resolve the data type of the resource
+  // Fallback to using file extension to resolve the resource data type and format if it is missing
   const extension = format ? mimeTypes.extension(format) : null;
   const ext = extension || id?.split('.').pop()?.toLowerCase();
-  if (ext === 'dat' || ext === 'json') return 'data';
-  if (ext === 'png' || ext === 'jpeg' || ext === 'jpg') return 'image';
-  return null;
+  const resolvedFormat = format || WAVEFORM_EXTENSION_FORMATS[ext] || null;
+
+  if (ext === 'dat' || ext === 'json') return { waveformType: 'data', format: resolvedFormat };
+  if (ext === 'png' || ext === 'jpeg' || ext === 'jpg') return { waveformType: 'image', format: resolvedFormat };
+  return { waveformType: null, format: resolvedFormat };
 };

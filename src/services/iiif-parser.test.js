@@ -130,6 +130,51 @@ describe('iiif-parser', () => {
       expect(canvases[0].authService.probe.type).toBe('AuthProbeService2');
       expect(canvases[1].authService).toBeNull();
     });
+
+    describe('returns waveform information', () => {
+      test('returns null for waveform by default', () => {
+        const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
+        expect(canvases[0].waveform).toBeNull();
+      });
+
+      test('returns waveform from both "seeAlso" and "accompanyingCanvas" props', () => {
+        const manifestWithWaveforms = {
+          items: [
+            {
+              id: 'http://example.com/canvas/1', type: 'Canvas', duration: 60,
+              items: [{ items: [{ body: { id: 'http://example.com/1.mp3' } }] }],
+              seeAlso: [{ id: 'http://example.com/waveform-1.json', type: 'Dataset', format: 'application/json' }],
+            },
+            {
+              id: 'http://example.com/canvas/2', type: 'Canvas', duration: 60,
+              items: [{ items: [{ body: { id: 'http://example.com/2.mp3' } }] }],
+            },
+            {
+              id: 'http://example.com/canvas/3', type: 'Canvas', duration: 60,
+              items: [{ items: [{ body: { id: 'http://example.com/3.mp3' } }] }],
+              accompanyingCanvas: {
+                type: 'Canvas', label: { en: ['Waveform data as an image'] },
+                items: [{
+                  type: 'AnnotationPage',
+                  items: [{
+                    type: 'Annotation', motivation: 'painting',
+                    body: { id: 'http://example.com/waveform-3.png', type: 'Image', format: 'image/jpeg' },
+                  }],
+                }],
+              },
+            },
+          ],
+        };
+        const canvases = iiifParser.canvasesInManifest(manifestWithWaveforms);
+        expect(canvases[0].waveform).toEqual({
+          id: 'http://example.com/waveform-1.json', format: 'application/json', waveformType: 'data', source: 'seeAlso',
+        });
+        expect(canvases[1].waveform).toBeNull();
+        expect(canvases[2].waveform).toEqual({
+          id: 'http://example.com/waveform-3.png', format: 'image/jpeg', waveformType: 'image', source: 'accompanyingCanvas',
+        });
+      });
+    });
   });
 
   describe('getMediaInfo()', () => {
@@ -1080,6 +1125,151 @@ describe('iiif-parser', () => {
         expect(result.logoutService.label).toBe('');
       });
     });
+  });
 
+  describe('getWaveformResource()', () => {
+    const canvas = {
+      duration: 1094.977, height: 1080, width: 1920, service: [], thumbnail: [], type: "Canvas", items: [],
+      id: "http://example.com/manifest/canvas/1", label: { en: ['Canvas'] },
+      placeholderCanvas: { type: "Canvas", id: "http://example.com/manifest/canvas/1/placeholder", width: 1280, height: 720 },
+    };
+    test('returns null when Canvas is empty', () => {
+      expect(iiifParser.getWaveformResource({})).toBeNull();
+    });
+
+    test('returns null when Canvas doesn\'t have both "seeAlso" and "accompanyingCanvas"', () => {
+      expect(iiifParser.getWaveformResource(canvas)).toBeNull();
+    });
+
+    describe('when "seeAlso"', () => {
+      test('doesn\'t include a recognized waveform format returns null', () => {
+        expect(iiifParser.getWaveformResource({
+          ...canvas,
+          seeAlso: [{ id: 'http://example.com/structure.xml', type: 'Dataset', format: 'application/xml' }],
+        })).toBeNull();
+      });
+
+      test('has a .dat resource returns waveformType: "data" ', () => {
+        const seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset', format: 'application/octet-stream' }];
+        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        expect(waveform.waveformType).toBe('data');
+        expect(waveform.id).toBe('http://example.com/waveform.dat');
+        expect(waveform.source).toBe('seeAlso');
+        expect(waveform.format).toBe('application/octet-stream');
+      });
+
+      test('has a .json resource returns waveformType: "data"', () => {
+        const seeAlso = [{ id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' }];
+        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        expect(waveform.waveformType).toBe('data');
+        expect(waveform.source).toBe('seeAlso');
+        expect(waveform.id).toBe('http://example.com/waveform.json');
+        expect(waveform.format).toBe('application/json');
+      });
+
+      test('has a .png resource returns null', () => {
+        const seeAlso = [{ id: 'https://example.com/waveform.png', type: 'Image', format: 'image/png' }];
+        expect(iiifParser.getWaveformResource({ ...canvas, seeAlso })).toBeNull();
+      });
+
+      test('has both dataset and image resources binary dataset takes precendence', () => {
+        const seeAlso = [
+          { id: 'http://example.com/waveform.png', type: 'Image', format: 'image/png' },
+          { id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' },
+        ];
+        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        expect(waveform.waveformType).toBe('data');
+        expect(waveform.id).toBe('http://example.com/waveform.json');
+      });
+    });
+
+    describe('resolves type using resource id extension when format is absent for', () => {
+      test('a seeAlso resource', () => {
+        const seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset' }];
+        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        expect(waveform.waveformType).toBe('data');
+        expect(waveform.source).toBe('seeAlso');
+        expect(waveform.id).toBe('http://example.com/waveform.dat');
+        expect(waveform.format).toBe('application/octet-stream');
+      });
+
+      test('an accompanyingCanvas resource', () => {
+        const accompanyingCanvas = {
+          type: 'Canvas',
+          label: { en: ['Waveform'] },
+          items: [{
+            type: 'AnnotationPage',
+            items: [{
+              type: 'Annotation', motivation: 'painting',
+              body: { id: 'http://example.com/waveform.png', type: 'Image' },
+            }],
+          }],
+        };
+        const waveform = iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas });
+        expect(waveform.waveformType).toBe('image');
+        expect(waveform.source).toBe('accompanyingCanvas');
+        expect(waveform.id).toBe('http://example.com/waveform.png');
+        expect(waveform.format).toBe('image/png');
+      });
+    });
+
+    describe('when "accompanyingCanvas"', () => {
+      test('has a waveform image returns waveformType: "image"', () => {
+        const accompanyingCanvas = {
+          type: 'Canvas', label: { en: ['Waveform data as an image'] },
+          items: [{
+            type: 'AnnotationPage',
+            items: [{
+              type: 'Annotation', motivation: 'painting',
+              body: {
+                id: 'http://example.com/waveform.png',
+                type: 'Image', format: 'image/jpeg',
+              },
+            }],
+          }],
+        };
+        const waveform = iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas });
+        expect(waveform.waveformType).toBe('image');
+        expect(waveform.id).toBe('http://example.com/waveform.png');
+        expect(waveform.format).toBe('image/jpeg');
+        expect(waveform.source).toBe('accompanyingCanvas');
+      });
+
+      test('doesn\'t have text "waveform" in its label returns null', () => {
+        const accompanyingCanvas = {
+          type: 'Canvas',
+          label: { en: ['Poster frame'] },
+          items: [{
+            type: 'AnnotationPage',
+            items: [{
+              type: 'Annotation', motivation: 'painting',
+              body: { id: 'http://example.com/poster.png', type: 'Image', format: 'image/png' },
+            }],
+          }],
+        };
+        expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
+      });
+    });
+
+    test('"seeAlso" takes precendence over "accompanyingCanvas" when both are present', () => {
+      const waveformRes = {
+        seeAlso: [{ id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' }],
+        accompanyingCanvas: {
+          label: { en: ['Waveform as an image'] },
+          items: [{ items: [{ body: { id: 'http://example.com/waveform.png', type: 'Image', format: 'image/png' } }] }],
+        },
+      };
+      const waveform = iiifParser.getWaveformResource({ ...canvas, ...waveformRes });
+      expect(waveform.waveformType).toBe('data');
+      expect(waveform.source).toBe('seeAlso');
+    });
+
+    test('returns null when "accompanyingCanvas" is not an image with text "waveform" in label', () => {
+      const accompanyingCanvas = {
+        label: { en: ['WebVTT not a waveform'] },
+        items: [{ items: [{ body: { id: 'https://example.com/text.vtt', type: 'Text' } }] }]
+      };
+      expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
+    });
   });
 });

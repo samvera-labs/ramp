@@ -806,21 +806,24 @@ export function getWaveformResource(canvas) {
   const waveformDatasets = [].concat(canvas?.seeAlso ?? [])
     .map((resource) => ({
       resource,
-      waveformType: getWaveformType(resource?.format, resource?.id),
+      ...getWaveformType(resource?.format, resource?.id),
     }))
     .filter(({ waveformType }) => waveformType !== null);
 
   const waveformData = waveformDatasets.find(({ waveformType }) => waveformType === 'data');
   if (waveformData) {
     return {
-      id: waveformData.resource.id, format: waveformData.resource.format,
+      id: waveformData.resource.id, format: waveformData.format,
       waveformType: 'data', source: 'seeAlso',
     };
   }
 
-  // Fallback to accompanyingCanvas/accompanyingContainer resource
+  /* Fallback to accompanyingCanvas/accompanyingContainer resource. Only treat this as a
+  waveform image when its label says so because, the 'accompanyingCanvas' can carry
+  non-waveform specific image resources. */
   const waveformImage = getAccompanyingResource(canvas);
-  if (waveformImage?.type === 'Image' && waveformImage?.id) {
+  const labledAsWaveform = getLabelValue(waveformImage?.label).toLowerCase().includes('waveform');
+  if (waveformImage?.type === 'Image' && waveformImage?.id && labledAsWaveform) {
     return {
       id: waveformImage.id, format: waveformImage.format,
       waveformType: 'image', source: 'accompanyingCanvas'
@@ -845,7 +848,11 @@ export function getAccompanyingResource(annotation, version = '3') {
       if (items?.length > 0 && items[0].body != undefined
         && hasMotivation(items[0].motivation, 'painting')) {
         const body = items[0].body;
-        return { id: body.id, format: body.format ?? null, type: body?.type ?? null };
+        const { waveformType, format } = getWaveformType(body?.format, body.id);
+        return {
+          id: body.id, format, type: body?.type ?? null, waveformType,
+          label: accompanyingResource.label
+        };
       }
     } else {
       return null;

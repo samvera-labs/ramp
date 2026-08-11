@@ -50,7 +50,7 @@ export const useWaveform = ({ showWaveform, waveformRef }) => {
     const waveformResource = allCanvases[canvasIndex]?.waveform;
     if (!waveformResource) {
       player.waveform = null;
-      player.trigger('waveformUpdated');
+      player.trigger('waveformupdated');
       manifestDispatch({ type: 'setWaveform', waveform: { data: null, isLoading: false, error: null } });
       updateWaveformControl(false);
       return;
@@ -63,7 +63,7 @@ export const useWaveform = ({ showWaveform, waveformRef }) => {
     fetchWaveformData(waveformResource, controller.signal).then((result) => {
       if (controller.signal.aborted) return;
       player.waveform = result;
-      player.trigger('waveformUpdated');
+      player.trigger('waveformupdated');
       manifestDispatch({
         type: 'setWaveform',
         waveform: { data: result, isLoading: false, error: result ? null : 'Failed to load waveform' },
