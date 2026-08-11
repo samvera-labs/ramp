@@ -1100,3 +1100,24 @@ export const sanitizeHTML = (html) => {
   if (!html) return '';
   return DOMPurify.sanitize(html, { ...DOMPURIFY_CONFIG });
 };
+
+/**
+ * Get the data type of the given waveform resources by its 'format' property.
+ * Fallback to checking the resource extension against the MIME type to derive
+ * the data type if the 'format' is not available.
+ * @function Utils#getWaveformType
+ * @param {String} format MIME type of the waveform resource
+ * @param {String} id resource URL
+ * @returns {String} waveform type from 'data' | 'image' | null
+ */
+export const getWaveformType = (format, id) => {
+  if (format === 'application/octet-stream') return 'data';
+  if (format === 'image/png' || format === 'image/jpeg') return 'image';
+
+  // Fallback to using file extension to resolve the data type of the resource
+  const extension = format ? mimeTypes.extension(format) : null;
+  const ext = extension || id?.split('.').pop()?.toLowerCase();
+  if (ext === 'dat' || ext === 'json') return 'data';
+  if (ext === 'png' || ext === 'jpeg' || ext === 'jpg') return 'image';
+  return null;
+};

@@ -18,6 +18,7 @@ import {
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
+import { useWaveform } from '@Services/hooks/useWaveform';
 import { requestLogout } from '@Services/auth-service';
 import { showResumeModal } from './VideoJSResumeModal';
 import { showErrorModal } from './components/js/VideoJSErrorModal';
@@ -37,6 +38,7 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+import VideoJSWaveform from './components/js/VideoJSWaveform';
 import VideoJSADButton from './components/js/VideoJSADButton';
 import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
 
@@ -58,6 +60,7 @@ import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
  * @param {Boolean} props.enableTitleLink
  * @param {String} props.videoJSLangMap
  * @param {Object} props.options
+ * @param {Object} props.waveformConfig
  */
 function VideoJSPlayer({
   audioDescTracks,
@@ -71,6 +74,7 @@ function VideoJSPlayer({
   tracks,
   trackScrubberRef,
   videoJSLangMap,
+  waveformConfig = { waveformRef: null, showWaveform: false },
   withCredentials,
 }) {
   const playerState = usePlayerState();
@@ -91,6 +95,7 @@ function VideoJSPlayer({
     canvasSegments,
     auth,
   } = manifestState;
+  const { waveformRef, showWaveform } = waveformConfig;
   const { hasStructure, structItems } = structures;
   const { clickedUrl, isEnded, isPlaying, currentTime } = playerState;
 
@@ -104,6 +109,8 @@ function VideoJSPlayer({
     maxItems: resumeCache?.maxItems,
     ttlDays: resumeCache?.ttlDays,
   });
+
+  const { hasWaveform } = useWaveform({ showWaveform, waveformRef });
 
   const videoJSRef = useRef(null);
   const captionsOnRef = useRef();
@@ -1740,6 +1747,11 @@ function VideoJSPlayer({
           <p className="vjs-time track-duration" role="presentation"></p>
         </div>)
       }
+      {hasWaveform &&
+        (<div className="vjs-waveform-container hidden" ref={waveformRef} id="waveform_panel"
+          data-testid="videojs-waveform-panel">
+        </div>)
+      }
     </div >
   );
 };
@@ -1756,6 +1768,10 @@ VideoJSPlayer.propTypes = {
   tracks: PropTypes.array,
   trackScrubberRef: PropTypes.object,
   videoJSLangMap: PropTypes.string,
+  waveformConfig: PropTypes.shape({
+    showWaveform: PropTypes.bool,
+    waveformRef: PropTypes.object
+  }),
   withCredentials: PropTypes.bool,
 };
 

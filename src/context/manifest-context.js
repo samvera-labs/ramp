@@ -36,6 +36,7 @@ const defaultState = {
     annotationServiceId: '',
   },
   renderings: {},
+  waveform: { data: null, isLoading: false, error: null },
   canvasSegments: [],
   structures: {
     hasStructure: false, // current Canvas has structure timespans
@@ -103,6 +104,7 @@ function manifestReducer(state = defaultState, action) {
         annotations: hasAnnotations
           ? [...state.annotations]
           : [...state.annotations, parseAnnotationSets(state.manifest, action.canvasIndex)],
+        waveform: { data: null, isLoading: false, error: null },
       };
     }
     case 'switchItem': {
@@ -239,6 +241,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         renderings: { ...action.renderings }
+      };
+    }
+    case 'setWaveform': {
+      return {
+        ...state,
+        waveform: { ...action.waveform }
       };
     }
     case 'setIsCollapsed': {

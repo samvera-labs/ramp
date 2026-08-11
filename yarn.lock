@@ -6521,6 +6521,11 @@ warning@^4.0.0, warning@^4.0.3:
   dependencies:
     loose-envify "^1.0.0"
 
+waveform-data@^4.5.2:
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/waveform-data/-/waveform-data-4.5.2.tgz#6818620df01e5aeebab06f477250b30b77454f39"
+  integrity sha512-1wDQ2LmaCM76xXXkOamWui1dp7uS2UHVeNccuHDS/qnoOrczrXR6g7Q9m/UjlibHfukxBrceoRIVTKKY1tDLdA==
+
 webidl-conversions@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"

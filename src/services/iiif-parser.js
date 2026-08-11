@@ -5,13 +5,14 @@ import {
   GENERIC_ERROR_MESSAGE,
   getLabelValue,
   getMediaFragment,
+  getWaveformType,
   parseResourceAnnotations,
   setCanvasMessageTimeout,
   timeToHHmmss,
   identifyMachineGen,
   sanitizeHTML,
 } from './utility-helpers';
-import { getPlaceholderProp, hasMotivation } from './iiif-version-parser';
+import { getAccompanyingProp, getPlaceholderProp, hasMotivation } from './iiif-version-parser';
 
 // Do not build structures for the following 'Range' behaviors:
 // Reference: https://iiif.io/api/presentation/3.0/#behavior
@@ -41,6 +42,14 @@ export function canvasesInManifest(manifest) {
         if (canvas.homepage && canvas.homepage.length > 0) {
           homepage = canvas.homepage[0].id;
         }
+        let canvasJSON = {
+          canvasIndex: index,
+          canvasId: canvas.id,
+          canvasURL: canvas.id.split('#t=')[0],
+          searchService: getSearchService(canvas),
+          authService: getAuthService(canvas),
+          waveform: getWaveformResource(canvas)
+        };
         try {
           let isEmpty = true;
           const canvasItems = canvas.items[0]?.items;
@@ -61,31 +70,22 @@ export function canvasesInManifest(manifest) {
           }
           const canvasLabel = getLabelValue(canvas.label) || `Section ${index + 1}`;
           canvasesInfo.push({
-            canvasIndex: index,
-            canvasId: canvas.id,
-            canvasURL: canvas.id.split('#t=')[0],
+            ...canvasJSON,
             duration: canvasDuration,
             range: timeFragment === undefined ? { start: 0, end: canvasDuration } : timeFragment,
-            isEmpty: isEmpty,
-            summary: summary,
+            isEmpty, summary,
             homepage: homepage || '',
-            label: canvasLabel,
-            searchService: getSearchService(canvas),
-            authService: getAuthService(canvas)
+            label: canvasLabel
           });
         } catch (error) {
           canvasesInfo.push({
-            canvasIndex: index,
-            canvasId: canvas.id,
-            canvasURL: canvas.id.split('#t=')[0],
+            ...canvasJSON,
             duration: canvas.duration || 0,
             range: undefined, // set range to undefined, use this check to set duration in UI
             isEmpty: true,
             summary: summary,
             homepage: homepage || '',
-            label: getLabelValue(canvas.label) || `Section ${index + 1}`,
-            searchService: getSearchService(canvas),
-            authService: getAuthService(canvas)
+            label: getLabelValue(canvas.label) || `Section ${index + 1}`
           });
         }
       });
@@ -247,7 +247,7 @@ export function getCanvasId(uri) {
 }
 
 /**
- * Get placeholderCanvas value for images and text messages
+ * Get placeholderCanvas(3.0)/placeholderContainer(4.0) value for images and text messages
  * @function IIIFParser#getPlaceholderResource
  * @param {Object} annotation IIIF Annotation object
  * @param {Boolean} isPoster flag to indicate whether text/image
@@ -787,5 +787,70 @@ export function getAuthService(canvas) {
     }
   } catch {
     return null;
+  }
+}
+
+/**
+ * Read and parse waveform resource in a Canvas. Since waveform can be presented
+ * as both a dataset or an image it can be represented in the Canvas via both
+ * 'seeAlso' and 'accompanyingCanvas' properties.
+ * 1. 'seeAlso' - e.g. Avalon's JSON dataset, British Library's binary dataset
+ * 2. 'accompanyingCanvas' - e.g. Internet Archive's pre-rendered waveform PNG
+ * If both are available waveform datasets are given priority because it allows the panel
+ * to render player progress.
+ * @function IIIFParser#getWaveformResource
+ * @param {Object} canvas current Canvas to look for waveform data in
+ * @returns {Object}
+ */
+export function getWaveformResource(canvas) {
+  const waveformDatasets = [].concat(canvas?.seeAlso ?? [])
+    .map((resource) => ({
+      resource,
+      waveformType: getWaveformType(resource?.format, resource?.id),
+    }))
+    .filter(({ waveformType }) => waveformType !== null);
+
+  const waveformData = waveformDatasets.find(({ waveformType }) => waveformType === 'data');
+  if (waveformData) {
+    return {
+      id: waveformData.resource.id, format: waveformData.resource.format,
+      waveformType: 'data', source: 'seeAlso',
+    };
+  }
+
+  // Fallback to accompanyingCanvas/accompanyingContainer resource
+  const waveformImage = getAccompanyingResource(canvas);
+  if (waveformImage?.type === 'Image' && waveformImage?.id) {
+    return {
+      id: waveformImage.id, format: waveformImage.format,
+      waveformType: 'image', source: 'accompanyingCanvas'
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Get accompanyingCanvas(3.0)/accompanyingContainer(4.0) value for images
+ * @function IIIFParser#getAccompanyingResource
+ * @param {Object} annotation IIIF Annotation object
+ * @param {String} version Presentation API version of the Manifest
+ * @return {String}
+ */
+export function getAccompanyingResource(annotation, version = '3') {
+  try {
+    let accompanyingResource = annotation[getAccompanyingProp(version)];
+    if (accompanyingResource && accompanyingResource != undefined) {
+      let items = accompanyingResource.items[0].items;
+      if (items?.length > 0 && items[0].body != undefined
+        && hasMotivation(items[0].motivation, 'painting')) {
+        const body = items[0].body;
+        return { id: body.id, format: body.format ?? null, type: body?.type ?? null };
+      }
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw error;
   }
 }
