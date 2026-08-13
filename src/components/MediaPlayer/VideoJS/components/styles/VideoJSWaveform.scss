@@ -16,7 +16,6 @@
 
 .vjs-waveform-container {
   position: relative;
-  background: #696667;
   border: 1pt solid #353536;
   margin: 0;
   padding: 0;
@@ -47,9 +46,8 @@
     position: absolute;
     inset: 0;
     // This green tint is the rgba conversion of #80a590
-    background-image: linear-gradient(rgba(128, 165, 144, 0.55), rgba(128, 165, 144, 0.55)), var(--waveform-image-url);
+    background-image: linear-gradient(rgba(128, 165, 144, 0.55), rgba(128, 165, 144, 0.55));
     background-size: 100% 100%;
-    background-repeat: no-repeat;
     clip-path: inset(0 calc(100% - var(--range-progress, 0%)) 0 0);
     pointer-events: none;
   }

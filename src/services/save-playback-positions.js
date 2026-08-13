@@ -1,5 +1,6 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
 import { useLocalStorage } from '@Services/local-storage';
+import { ManifestStateContext } from '../context/manifest-context';
 
 /**
  * Read a playback position from the cache by canvasId. Returns null if not found.
@@ -64,10 +65,13 @@ function isExpired(savedAt, ttlDays) {
  * @param {Boolean} obj.enable whether to enable saving playback positions
  * @param {Number}  obj.maxItems LRU capacity (number of max entries) -> default: 200
  * @param {Number}  obj.ttlDays days before an entry expires -> default: 30
- * @returns {{ savePosition, getPosition, clearPosition }}
+ * @returns {{ clearPosition, getPosition, savedPosition, savePosition  }}
  */
 export const usePlaybackPositions = ({ enable, maxItems, ttlDays } = {}) => {
   const [cache, setCache] = useLocalStorage('playbackPositions', []);
+
+  const manifestState = useContext(ManifestStateContext);
+  const { allCanvases, customStart, manifest, playlist } = manifestState;
 
   /* When caching is disabled, clear the cache. This ensures that when users toggle
   off the resume feature, all saved positions are cleared and they won't be resumed
@@ -102,5 +106,26 @@ export const usePlaybackPositions = ({ enable, maxItems, ttlDays } = {}) => {
     setCache((current) => deleteCacheEntry(current, manifestURL));
   }, [enable, setCache]);
 
-  return { savePosition, getPosition, clearPosition };
+  /* Get the saved playback position for the current Manifest. Avoid reading saved position
+  from localStorage (using getPosition) if the current Manifest is a playlist Manifest or it
+  has a custom start position. */
+  const savedPosition = useMemo(() => {
+    if (customStart?.startTime > 0 || playlist?.isPlaylist) return;
+
+    const manifestURL = manifest?.id;
+    if (!manifestURL) return;
+
+    const saved = getPosition(manifestURL);
+    if (!saved || saved.time <= 0) return;
+
+    /* When a 'startCanvasId' is set for Ramp, ignore saved playback positions that are
+    on a different Canvas than the current Canvas. */
+    if (customStart?.startIndex > 0) {
+      const startCanvasURL = allCanvases[customStart.startIndex]?.canvasURL;
+      if (saved.canvasURL !== startCanvasURL) return;
+    }
+    return saved;
+  }, [allCanvases, customStart, getPosition, playlist?.isPlaylist, manifest]);
+
+  return { clearPosition, getPosition, savedPosition, savePosition };
 };

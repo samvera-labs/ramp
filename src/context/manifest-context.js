@@ -73,7 +73,7 @@ function manifestReducer(state = defaultState, action) {
     case 'updateManifest': {
       const manifest = action.manifest;
       const iiifVersion = getIIIFAPIVersion(manifest);
-      const canvases = canvasesInManifest(manifest);
+      const canvases = canvasesInManifest(manifest, iiifVersion);
       const manifestBehavior = parseAutoAdvance(manifest.behavior);
       const isPlaylist = getIsPlaylist(manifest.label);
       const annotationService = getAnnotationService(manifest.service);

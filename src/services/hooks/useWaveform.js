@@ -9,17 +9,18 @@ import { IS_MOBILE } from '@Services/browser';
  * Fetch/parse the current Canvas's waveform resource if it exists, and pass the results to the
  * player instance for the VideoJSWaveform component to render.
  * @param {Object} obj
+ * @param {Object} obj.savedPosition resumable saved playback position in the current Manifest
  * @param {Boolean} obj.showWaveform whether to show the waveform toggle button in the control bar
  * @param {Object} obj.waveformRef React ref to the VideoJSWaveform component
- * @returns { hasWaveform: Boolean } whether the current Canvas has a waveform representation
+ * @returns { hasWaveform }
  */
-export const useWaveform = ({ showWaveform, waveformRef }) => {
+export const useWaveform = ({ savedPosition, showWaveform, waveformRef }) => {
   const { player } = useContext(PlayerStateContext);
   const { canvasIndex, allCanvases } = useContext(ManifestStateContext);
   const manifestDispatch = useContext(ManifestDispatchContext);
 
   const hasWaveform = useMemo(() => {
-    return allCanvases[canvasIndex]?.waveform != null;
+    return allCanvases[canvasIndex]?.waveform != null && showWaveform;
   }, [allCanvases, canvasIndex]);
 
   async function fetchWaveformData(waveform, signal) {
@@ -88,10 +89,11 @@ export const useWaveform = ({ showWaveform, waveformRef }) => {
     if (!hasWaveformResult) {
       controlBar.removeChild('videoJSWaveform');
     } else if (!controlBar.getChild('videoJSWaveform')) {
+      const hasSavedPosition = savedPosition != null || savedPosition != undefined;
       const volumeIndex = IS_MOBILE
         ? controlBar.children().findIndex((c) => c.name_ == 'MuteToggle')
         : controlBar.children().findIndex((c) => c.name_ == 'VolumePanel');
-      controlBar.addChild('videoJSWaveform', { waveformRef }, volumeIndex + 1);
+      controlBar.addChild('videoJSWaveform', { waveformRef, hasSavedPosition }, volumeIndex + 1);
     }
   };
 

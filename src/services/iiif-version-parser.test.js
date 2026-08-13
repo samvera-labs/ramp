@@ -1,4 +1,7 @@
-import { getIIIFAPIVersion, getPlaceholderProp, hasMotivation, normalizeMotivation } from './iiif-version-parser';
+import {
+  getIIIFAPIVersion, getPlaceholderProp, getAccompanyingProp,
+  hasMotivation, normalizeMotivation
+} from './iiif-version-parser';
 
 describe('iiif-version-parser', () => {
   describe('getIIIFAPIVersion()', () => {
@@ -98,6 +101,20 @@ describe('iiif-version-parser', () => {
 
     test('returns an empty array when motivation is null', () => {
       expect(normalizeMotivation(null)).toEqual([]);
+    });
+  });
+
+  describe('getAccompanyingProp()', () => {
+    test('returns "AccompanyingCanvas" for version "3"', () => {
+      expect(getAccompanyingProp('3')).toEqual('accompanyingCanvas');
+    });
+
+    test('returns "accompanyingContainer" for version "4"', () => {
+      expect(getAccompanyingProp('4')).toEqual('accompanyingContainer');
+    });
+
+    test('defaults to "accompanyingCanvas" for an unrecognized version', () => {
+      expect(getAccompanyingProp('5')).toEqual('accompanyingCanvas');
     });
   });
 });

@@ -56,7 +56,6 @@ const MediaPlayer = ({
   VideoJS's custom components. e.g.: trackScrubberRef in VideoJSTrackScrubber */
   const trackScrubberRef = useRef();
   const timeToolRef = useRef();
-  const waveformRef = useRef();
 
   let videoJSLangMap = useRef('{}');
   const [languageLoaded, setLanguageLoaded] = useState(false);
@@ -218,7 +217,6 @@ const MediaPlayer = ({
             { canvasIndex, lastCanvasIndex, switchPlayer },
           videoJSTrackScrubber: (hasStructure || isPlaylist) &&
             { trackScrubberRef, timeToolRef, isPlaylist },
-          videoJSWaveform: enableWaveform && { waveformRef },
           videoJSADButton: (audioDescTracks.length > 0) && { audioDescTracks }
         },
         // Only pass along the sources with access in VideoJS options
@@ -253,7 +251,7 @@ const MediaPlayer = ({
           tracks={tracks}
           trackScrubberRef={trackScrubberRef}
           videoJSLangMap={videoJSLangMap.current}
-          waveformConfig={{ waveformRef, showWaveform }}
+          showWaveform={showWaveform}
           withCredentials={withCredentials}
         />
       </div>

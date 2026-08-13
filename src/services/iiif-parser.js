@@ -21,9 +21,11 @@ const NO_DISPLAY_STRUCTURE_BEHAVIORS = ['no-nav', 'thumbnail-nav'];
 /**
  * Get all the canvases in manifest with related information
  * @function IIIFParser#canvasesInManifest
+ * @param {Object} manifest
+ * @param {Number} version Presentation API version of the Manifest
  * @return {Array} array of canvas IDs in manifest
  **/
-export function canvasesInManifest(manifest) {
+export function canvasesInManifest(manifest, version = '3') {
   let canvasesInfo = [];
   try {
     if (!manifest?.items) {
@@ -48,7 +50,7 @@ export function canvasesInManifest(manifest) {
           canvasURL: canvas.id.split('#t=')[0],
           searchService: getSearchService(canvas),
           authService: getAuthService(canvas),
-          waveform: getWaveformResource(canvas)
+          waveform: getWaveformResource(canvas, version)
         };
         try {
           let isEmpty = true;
@@ -800,9 +802,10 @@ export function getAuthService(canvas) {
  * to render player progress.
  * @function IIIFParser#getWaveformResource
  * @param {Object} canvas current Canvas to look for waveform data in
+ * @param {Number} version Presentation API version of the Manifest
  * @returns {Object}
  */
-export function getWaveformResource(canvas) {
+export function getWaveformResource(canvas, version = '3') {
   const waveformDatasets = [].concat(canvas?.seeAlso ?? [])
     .map((resource) => ({
       resource,
@@ -821,7 +824,7 @@ export function getWaveformResource(canvas) {
   /* Fallback to accompanyingCanvas/accompanyingContainer resource. Only treat this as a
   waveform image when its label says so because, the 'accompanyingCanvas' can carry
   non-waveform specific image resources. */
-  const waveformImage = getAccompanyingResource(canvas);
+  const waveformImage = getAccompanyingResource(canvas, version);
   const labledAsWaveform = getLabelValue(waveformImage?.label).toLowerCase().includes('waveform');
   if (waveformImage?.type === 'Image' && waveformImage?.id && labledAsWaveform) {
     return {

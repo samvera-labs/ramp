@@ -8,6 +8,7 @@ import videoManifest from '@TestData/lunchroom-manners';
 import playlistManifest from '@TestData/playlist';
 import singleCanvasManifest from '@TestData/single-canvas';
 import authManifest from '@TestData/auth-manifest';
+import waveformManifest from '@TestData/waveform-example';
 
 // Mock 'requestLogout' from auth-service module
 jest.mock('@Services/auth-service', () => ({
@@ -647,6 +648,217 @@ describe('VideoJSPlayer component', () => {
           expect(aspectRatioSpy).toHaveBeenCalledWith('16:9');
           expect(player.hasClass('vjs-disabled')).toBe(true);
         });
+      });
+    });
+  });
+
+  describe('feature: waveform display', () => {
+    // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
+    const ResizeObserver = jest.fn().mockImplementation(() => ({
+      disconnect: jest.fn(),
+      observe: jest.fn(),
+      unobserve: jest.fn(),
+    }));
+    window.ResizeObserver = ResizeObserver;
+
+    const waveformRef = { current: document.createElement('div') };
+    const resumeModalRef = { current: document.createElement('div') };
+    const props = { resumeModalRef, waveformRef };
+
+    const mockWaveformFetch = () => {
+      jest.spyOn(global, 'fetch').mockImplementation(() => {
+        return Promise.resolve({
+          ok: true,
+          json: jest.fn().mockResolvedValueOnce({
+            version: 2, channels: 1, sample_rate: 44100, samples_per_pixel: 512,
+            bits: 8, length: 2, data: [0, 10, -5, 8],
+          }),
+        });
+      });
+    };
+
+    describe('doesn\'t add waveform toggle button or panel', () => {
+      test('when the Canvas has no waveform resource', async () => {
+        await renderPlayer({ manifest: videoManifest, canvasIndex: 0, ...props });
+
+        expect(screen.queryByTestId('videojs-waveform-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-waveform-panel')).not.toBeInTheDocument();
+      });
+
+      test('when "showWaveform" prop is turned off (default)', async () => {
+        await renderPlayer({ manifest: waveformManifest, canvasIndex: 0 });
+
+        expect(screen.queryByTestId('videojs-waveform-button')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-waveform-panel')).not.toBeInTheDocument();
+      });
+
+      test('when the waveform resource fetch fails', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch')
+          .mockRejectedValueOnce(new Error('Network error'));
+
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 0,
+          props: { ...props, showWaveform: true },
+        });
+
+        expect(fetchSpy).toHaveBeenCalledWith('http://example.com/waveform.json', expect.anything());
+        expect(console.error).toHaveBeenCalled();
+
+        // The panel is added to the DOM because the waveform resource is present in Canvas
+        expect(screen.queryByTestId('videojs-waveform-panel')).toBeInTheDocument();
+        // Waveform toggle button is not added to the control-bar
+        expect(screen.queryByTestId('videojs-waveform-button')).not.toBeInTheDocument();
+      });
+
+      test('when the waveform resource is not a waveform', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch');
+
+        /* The 4th Canvas in this Manifest has a .xml with format 'text/xml' attached in 'seeAlso',
+        which is not a vali waveform format. Therefore, it gets filtered out during parsing. */
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 3,
+          props: { ...props, showWaveform: true },
+        });
+
+        expect(fetchSpy).not.toHaveBeenCalled();
+
+        expect(screen.queryByTestId('videojs-waveform-panel')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-waveform-button')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('adds waveform toggle and panel', () => {
+      test('when a waveform resource is present', async () => {
+        jest.spyOn(global, 'fetch').mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            json: jest.fn().mockResolvedValueOnce({
+              version: 2, channels: 1, sample_rate: 44100, samples_per_pixel: 512,
+              bits: 8, length: 2, data: [0, 10, -5, 8],
+            }),
+          });
+        });
+
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 0,
+          props: { ...props, showWaveform: true }
+        });
+
+        expect(screen.queryByTestId('videojs-waveform-panel')).toBeInTheDocument();
+        expect(screen.queryByTestId('videojs-waveform-button')).toBeInTheDocument();
+      });
+
+      test('with a waveform visualization as pixels in a canvas for a waveform dataset', async () => {
+        jest.spyOn(global, 'fetch').mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            json: jest.fn().mockResolvedValueOnce({
+              version: 2, channels: 1, sample_rate: 44100, samples_per_pixel: 512,
+              bits: 8, length: 2, data: [0, 10, -5, 8],
+            }),
+          });
+        });
+
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 0, props: { ...props, showWaveform: true },
+        });
+
+        expect(screen.queryByTestId('videojs-waveform-panel')).toBeInTheDocument();
+        const panel = screen.getByTestId('videojs-waveform-panel');
+        expect(panel).toBeInTheDocument();
+        expect(panel.querySelector('canvas.vjs-waveform-canvas')).toBeInTheDocument();
+      });
+
+      test('with a waveform visualization a an image for a waveform image', async () => {
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 1,
+          props: { ...props, showWaveform: true },
+        });
+
+        expect(screen.queryByTestId('videojs-waveform-panel')).toBeInTheDocument();
+        const panel = screen.getByTestId('videojs-waveform-panel');
+        expect(panel.style.backgroundImage).toContain('http://example.com/waveform.jpg');
+        expect(panel.querySelector('canvas.vjs-waveform-canvas')).not.toBeInTheDocument();
+      });
+    });
+
+    test('toggles waveform panel visibility', async () => {
+      mockWaveformFetch();
+      await renderPlayer({
+        manifest: waveformManifest, canvasIndex: 0,
+        props: { ...props, showWaveform: true },
+      });
+
+      const panel = await screen.findByTestId('videojs-waveform-panel');
+      expect(panel).toHaveClass('hidden');
+
+      const toggleButton = screen.getByTestId('videojs-waveform-button');
+      fireEvent.click(toggleButton);
+      expect(panel).not.toHaveClass('hidden');
+
+      fireEvent.click(toggleButton);
+      expect(panel).toHaveClass('hidden');
+    });
+
+    describe('on page load', () => {
+      test('shows the panel for an audio Canvas without a saved playback position', async () => {
+        mockWaveformFetch();
+
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 2,
+          props: { ...props, showWaveform: true },
+        });
+
+        await screen.findByTestId('videojs-waveform-button');
+        const panel = screen.getByTestId('videojs-waveform-panel');
+        expect(panel).not.toHaveClass('hidden');
+      });
+
+      test('hides the panel for an audio Canvas with a saved playback position', async () => {
+        mockWaveformFetch();
+        localStorage.setItem(
+          'playbackPositions',
+          JSON.stringify([{
+            key: 'http://example.com/waveform-example/manifest.json',
+            value: {
+              canvasURL: 'http://example.com/waveform-example/canvas/1',
+              time: 30, savedAt: Date.now(),
+            },
+          }])
+        );
+
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 2,
+          props: { ...props, showWaveform: true, resumeCache: { enable: true } },
+        });
+
+        await screen.findByTestId('videojs-waveform-button');
+        const panel = screen.getByTestId('videojs-waveform-panel');
+        expect(panel).toHaveClass('hidden');
+      });
+
+      test('hides the panel for a video Canvas regardless of saved playback position', async () => {
+        mockWaveformFetch();
+        localStorage.setItem(
+          'playbackPositions',
+          JSON.stringify([{
+            key: 'http://example.com/single-canvas-manifest/manifest.json',
+            value: {
+              canvasURL: 'http://example.com/single-canvas-manifest/canvas/1',
+              time: 30,
+              savedAt: Date.now(),
+            },
+          }])
+        );
+
+        await renderPlayer({
+          manifest: waveformManifest, canvasIndex: 0,
+          props: { ...props, showWaveform: true, resumeCache: { enable: true } },
+        });
+
+        await screen.findByTestId('videojs-waveform-button');
+        const panel = screen.getByTestId('videojs-waveform-panel');
+        expect(panel).toHaveClass('hidden');
       });
     });
   });
