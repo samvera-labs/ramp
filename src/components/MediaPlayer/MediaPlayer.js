@@ -23,9 +23,10 @@ const PLAYER_ID = 'iiif-media-player';
  * @param {Boolean} props.withCredentials
  * @param {String} props.language
  * @param {Object} props.resumeCache
- * @param {Boolean} props.resumeCache.enable whether to enable caching of playback positions
- * @param {Number} props.resumeCache.ttlDays number of days before a cached entry expires, default: 30 days
- * @param {Number} props.resumeCache.maxItems maximum number of entries to be stored in the cache, default: 200 entries
+ * @param {Boolean} props.resumeCache.enable
+ * @param {Number} props.resumeCache.ttlDays
+ * @param {Number} props.resumeCache.maxItems
+ * @param {Boolean} props.showWaveform
  */
 const MediaPlayer = ({
   enableFileDownload = false,
@@ -35,19 +36,27 @@ const MediaPlayer = ({
   withCredentials = false,
   language = 'en',
   resumeCache = { enable: false, ttlDays: 30, maxItems: 200 },
+  showWaveform = false,
 }) => {
   const manifestState = useManifestState();
   const manifestDispatch = useManifestDispatch();
   const playerState = usePlayerState();
   const { showBoundary } = useErrorBoundary();
 
-  const { srcIndex, playlist, structures, auth, allCanvases } = manifestState;
+  const { srcIndex, playlist, structures, auth, allCanvases, waveform } = manifestState;
   const { isPlaylist } = playlist;
   const { hasStructure } = structures;
   const { currentTime } = playerState;
 
+  /* Enable VideoJSWaveform control when 'showWaveform' is turned ON 
+  and the current Canvas has a waveform */
+  const enableWaveform = waveform?.data != null && showWaveform;
+
+  /* React Refs for external UI DOM elements created in VideoJSPlayer that are referenced in
+  VideoJS's custom components. e.g.: trackScrubberRef in VideoJSTrackScrubber */
   const trackScrubberRef = useRef();
   const timeToolRef = useRef();
+
   let videoJSLangMap = useRef('{}');
   const [languageLoaded, setLanguageLoaded] = useState(false);
 
@@ -173,6 +182,7 @@ const MediaPlayer = ({
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
             (audioDescTracks.length > 0 && isVideo) ? 'videoJSADButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
+            enableWaveform ? 'videoJSWaveform' : '',
             'qualitySelector',
             enablePlaybackRate ? 'playbackRateMenuButton' : '',
             enablePIP ? 'pictureInPictureToggle' : '',
@@ -241,6 +251,7 @@ const MediaPlayer = ({
           tracks={tracks}
           trackScrubberRef={trackScrubberRef}
           videoJSLangMap={videoJSLangMap.current}
+          showWaveform={showWaveform}
           withCredentials={withCredentials}
         />
       </div>
@@ -291,6 +302,11 @@ MediaPlayer.propTypes = {
     ttlDays: PropTypes.number,
     maxItems: PropTypes.number,
   }),
+  /** Adds a toggle control to the player's control-bar to turn ON/OFF waveform display panel. When this is enabled, the MediaPlayer checks if the
+   * active Canvas has a waveform representation of its media attached via a 'seeAlso' or 'accompanyingCanvas' property before displaying the player
+   * control in the player's control-bar. When the toggle is ON, a panel is shown beneath the player similar to track-scrubber to display the waveform
+   * data (**NEXT_RELEASE**). */
+  showWaveform: PropTypes.bool,
 };
 
 export default MediaPlayer;

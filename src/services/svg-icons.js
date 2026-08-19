@@ -121,6 +121,20 @@ export const TrackScrubberZoomOutIcon = ({ scale }) => {
   );
 };
 
+/** SVG icon for waveform toggle button in player control bar */
+export const WaveformToggleIcon = () => {
+  return (
+    <svg xmlns="http://w3.org" viewBox="0 0 20 20" width="20" height="20" fill="currentColor">
+      <rect x="1" y="7" width="2" height="6" rx="1" />
+      <rect x="4" y="4" width="2" height="12" rx="1" />
+      <rect x="7" y="2" width="2" height="16" rx="1" />
+      <rect x="10" y="5" width="2" height="10" rx="1" />
+      <rect x="13" y="3" width="2" height="14" rx="1" />
+      <rect x="16" y="8" width="2" height="4" rx="1" />
+    </svg>
+  );
+};
+
 /** SVG icon for inaccessible items in StructuredNavigation component */
 export const LockedSVGIcon = () => {
   return (

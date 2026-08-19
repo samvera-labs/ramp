@@ -47,31 +47,12 @@ class VideoJSTrackScrubber extends Button {
     this.playerInterval;
 
     this.zoomedOutRef = createRef();
+    this.zoomedOutRef.current = true;
+
     this.currentTrackRef = createRef();
+    this.currentTrackRef.current = {};
 
-    // Attach interval on first load for time updates
-    this.player.on('ready', () => {
-      if (this.options.trackScrubberRef.current) {
-        this.playerInterval = setInterval(() => {
-          this.handleTimeUpdate();
-        }, 100);
-      }
-    });
-
-    /* 
-      When player is fully built and the trackScrubber element is initialized,
-      call method to mount React component.
-    */
-    this.player.on('loadstart', () => {
-      if (this.options.trackScrubberRef.current) {
-        this.updateComponent();
-        if (!this.playerInterval) {
-          this.playerInterval = setInterval(() => {
-            this.handleTimeUpdate();
-          }, 100);
-        }
-      }
-    });
+    this.attachListeners();
 
     // Hide track scrubber if it is displayed when player is going fullscreen
     this.player.on('fullscreenchange', () => {
@@ -111,46 +92,45 @@ class VideoJSTrackScrubber extends Button {
 
   attachListeners() {
     const { trackScrubberRef } = this.options;
-    if (trackScrubberRef.current) {
-      // Initialize the track scrubber's current time and duration
-      this.populateTrackScrubber();
-      this.updateTrackScrubberProgressBar();
+    if (!trackScrubberRef.current) return;
 
-      let pointerDragged = false;
-      // Attach mouse pointer events to track scrubber progress bar
-      let [_, progressBar, __] = trackScrubberRef.current.children;
-      progressBar.addEventListener('mouseenter', (e) => {
-        this.handleMouseMove(e);
-      });
-      /*
-        Using pointerup, pointermove, pointerdown events instead of
-        mouseup, mousemove, mousedown events to make it work with both
-        mouse pointer and touch events 
-      */
-      progressBar.addEventListener('pointerup', (e) => {
-        if (pointerDragged) {
-          this.handleSetProgress(e);
-        }
-      });
-      progressBar.addEventListener('pointermove', (e) => {
-        this.handleMouseMove(e);
-        pointerDragged = true;
-      });
-      progressBar.addEventListener('pointerdown', (e) => {
-        // Only handle left click event
-        if (e.which === 1) {
-          this.handleSetProgress(e);
-          pointerDragged = false;
-        }
-      });
+    // Initialize the track scrubber's current time and duration
+    this.populateTrackScrubber();
+    this.updateTrackScrubberProgressBar();
+
+    let pointerDragged = false;
+    // Attach mouse pointer events to track scrubber progress bar
+    let [_, progressBar, __] = trackScrubberRef.current.children;
+    progressBar.addEventListener('mouseenter', (e) => {
+      this.handleMouseMove(e);
+    });
+    /*
+      Using pointerup, pointermove, pointerdown events instead of
+      mouseup, mousemove, mousedown events to make it work with both
+      mouse pointer and touch events 
+    */
+    progressBar.addEventListener('pointerup', (e) => {
+      if (pointerDragged) {
+        this.handleSetProgress(e);
+      }
+    });
+    progressBar.addEventListener('pointermove', (e) => {
+      this.handleMouseMove(e);
+      pointerDragged = true;
+    });
+    progressBar.addEventListener('pointerdown', (e) => {
+      // Only handle left click event
+      if (e.which === 1) {
+        this.handleSetProgress(e);
+        pointerDragged = false;
+      }
+    });
+
+    if (!this.playerInterval) {
+      this.playerInterval = setInterval(() => {
+        this.handleTimeUpdate();
+      }, 100);
     }
-  }
-
-  updateComponent() {
-    // Reset refs to initial value
-    this.zoomedOutRef.current = true;
-    this.currentTrackRef.current = {};
-    this.attachListeners();
   }
 
   /**

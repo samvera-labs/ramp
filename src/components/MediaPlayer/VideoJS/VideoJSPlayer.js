@@ -18,6 +18,7 @@ import {
 } from '@Services/browser';
 import { useLocalStorage } from '@Services/local-storage';
 import { usePlaybackPositions } from '@Services/save-playback-positions';
+import { useWaveform } from '@Services/hooks/useWaveform';
 import { requestLogout } from '@Services/auth-service';
 import { showResumeModal } from './VideoJSResumeModal';
 import { showErrorModal } from './components/js/VideoJSErrorModal';
@@ -37,6 +38,7 @@ import VideoJSNextButton from './components/js/VideoJSNextButton';
 import VideoJSPreviousButton from './components/js/VideoJSPreviousButton';
 import VideoJSTitleLink from './components/js/VideoJSTitleLink';
 import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
+import VideoJSWaveform from './components/js/VideoJSWaveform';
 import VideoJSADButton from './components/js/VideoJSADButton';
 import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
 
@@ -45,19 +47,18 @@ import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
  * on successive player reloads on Canvas changes.
  * @param {Object} props
  * @param {Array} props.audioDescTracks
- * @param {Boolean} props.isVideo
- * @param {Boolean} props.isPlaylist
- * @param {Object} props.trackScrubberRef
- * @param {Object} props.scrubberTooltipRef
- * @param {Array} props.tracks
- * @param {String} props.placeholderText
- * @param {Array} props.renderingFiles
  * @param {Boolean} props.enableFileDownload
- * @param {Function} props.loadPrevOrNext
- * @param {Number} props.lastCanvasIndex
  * @param {Boolean} props.enableTitleLink
- * @param {String} props.videoJSLangMap
+ * @param {Boolean} props.isVideo
  * @param {Object} props.options
+ * @param {String} props.placeholderText
+ * @param {Object} props.resumeCache
+ * @param {Object} props.scrubberTooltipRef
+ * @param {Object} props.showWaveform
+ * @param {Array} props.tracks
+ * @param {Object} props.trackScrubberRef
+ * @param {String} props.videoJSLangMap
+ * @param {Boolean} props.withCredentials
  */
 function VideoJSPlayer({
   audioDescTracks,
@@ -68,6 +69,7 @@ function VideoJSPlayer({
   placeholderText,
   resumeCache,
   scrubberTooltipRef,
+  showWaveform,
   tracks,
   trackScrubberRef,
   videoJSLangMap,
@@ -99,7 +101,7 @@ function VideoJSPlayer({
   const [startCaptioned, setStartCaptioned] = useLocalStorage('startCaptioned', true);
   const [startQuality, setStartQuality] = useLocalStorage('startQuality', null);
 
-  const { savePosition, getPosition, clearPosition } = usePlaybackPositions({
+  const { clearPosition, savedPosition, savePosition } = usePlaybackPositions({
     enable: resumeCache?.enable,
     maxItems: resumeCache?.maxItems,
     ttlDays: resumeCache?.ttlDays,
@@ -109,6 +111,7 @@ function VideoJSPlayer({
   const captionsOnRef = useRef();
   const activeTextTrackRef = useRef();
   const isForcedTextTrackRef = useRef(false);
+  const waveformRef = useRef();
   // Ref to store track.change event handler with up-to-date sticky settings
   const trackChangeHandlerRef = useRef(null);
   const resumeModalRef = useRef(null);
@@ -120,6 +123,8 @@ function VideoJSPlayer({
   const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
     = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
   const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
+
+  const { hasWaveform } = useWaveform({ savedPosition, showWaveform, waveformRef });
 
   const canvasIsEmptyRef = useRef();
   canvasIsEmptyRef.current = useMemo(() => { return canvasIsEmpty; }, [canvasIsEmpty]);
@@ -1582,27 +1587,12 @@ function VideoJSPlayer({
    * @param {Object} player Video.js player instance
    */
   const resumePlaybackModal = () => {
-    /* Skip the resume playback modal when,
-    - there is a custom start indicated via 'startCanvasTime' prop
-    - the Manifest is a playlist
-    */
-    if (customStart?.startTime > 0 || isPlaylist) return;
+    // Skip if the current Canvas doesn't have a saved playback position
+    if (!savedPosition) return;
+
+    const { canvasURL: savedCanvasURL, time: savedTime } = savedPosition;
 
     const manifestURL = manifestURLRef.current;
-    if (!manifestURL) return;
-
-    const saved = getPosition(manifestURL);
-    if (!saved || saved.time <= 0) return;
-
-    const { canvasURL: savedCanvasURL, time: savedTime } = saved;
-
-    /* When a 'startCanvasId' is set, only show resume modal if the saved position
-    is on the 'startCanvasId' Canvas. Ignore saves on any other canvas. */
-    if (customStart?.startIndex > 0) {
-      const startCanvasURL = allCanvases[customStart.startIndex]?.canvasURL;
-      if (savedCanvasURL !== startCanvasURL) return;
-    }
-
     if (savedCanvasURL !== canvasURLRef.current) {
       // When saved position is on a different Canvas load the saved Canvas first
       const savedCanvasIndex = allCanvases.findIndex((c) => c.canvasURL === savedCanvasURL);
@@ -1740,6 +1730,11 @@ function VideoJSPlayer({
           <p className="vjs-time track-duration" role="presentation"></p>
         </div>)
       }
+      {hasWaveform &&
+        (<div className="vjs-waveform-container hidden" ref={waveformRef} id="waveform_panel"
+          data-testid="videojs-waveform-panel">
+        </div>)
+      }
     </div >
   );
 };
@@ -1756,6 +1751,7 @@ VideoJSPlayer.propTypes = {
   tracks: PropTypes.array,
   trackScrubberRef: PropTypes.object,
   videoJSLangMap: PropTypes.string,
+  showWaveform: PropTypes.bool,
   withCredentials: PropTypes.bool,
 };
 
