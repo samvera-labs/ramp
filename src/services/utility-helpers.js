@@ -1118,8 +1118,12 @@ export const sanitizeHTML = (html) => {
  * resolved format falls back to the MIME type looked up from the resource's file extension
  */
 export const getWaveformType = (format, id) => {
-  if (format === 'application/octet-stream') return { waveformType: 'data', format };
-  if (format === 'image/png' || format === 'image/jpeg') return { waveformType: 'image', format };
+  if (format === 'application/octet-stream' || format === 'application/json') {
+    return { waveformType: 'data', format };
+  };
+  if (format === 'image/png' || format === 'image/jpeg') {
+    return { waveformType: 'image', format };
+  };
 
   // Fallback to using file extension to resolve the resource data type and format if it is missing
   const extension = format ? mimeTypes.extension(format) : null;
