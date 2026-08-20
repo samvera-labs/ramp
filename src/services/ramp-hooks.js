@@ -535,20 +535,11 @@ export const useVideoJSPlayer = ({
         });
       }
 
-      let playlistMarkers = [];
-      if (markers?.length > 0) {
-        playlistMarkers = markers.map((m) => ({
-          time: parseFloat(m.time),
-          text: m.value,
-          class: 'ramp--track-marker--playlist'
-        }));
-      }
-
       playerRef.current.markers?.removeAll();
       playerRef.current.markers.add([
         ...(fragmentMarker ? [fragmentMarker] : []),
         ...searchMarkers,
-        ...playlistMarkers,
+        ...(markers ?? []),
       ]);
     }
   }, [
@@ -732,7 +723,6 @@ export const useVideoJSPlayer = ({
    * @returns {Object|null} active segment or null if not found
    */
   const getActiveSegment = (time) => {
-    let activeSegment = null;
     if (playlist.isPlaylist) {
       /* In playlist Manifests, the segments are mapped one-to-one with canvases. And when the component
       library is used in a playlist context without the 'StructuredNavigation' component, 'canvasSegments'
@@ -742,7 +732,7 @@ export const useVideoJSPlayer = ({
         const currentCanvas = allCanvases[canvasIndex];
         if (currentCanvas) {
           const { canvasId, canvasIndex, duration, label, range, summary } = currentCanvas;
-          activeSegment = {
+          return {
             canvasIndex: canvasIndex, duration: String(duration), homepage: '', id: canvasId,
             isCanvas: true, isClickable: false, isEmpty: false, isRoot: false, isTitle: false,
             itemIndex: canvasIndex + 1, items: [], label: label, rangeId: '', summary: summary,
@@ -750,8 +740,9 @@ export const useVideoJSPlayer = ({
           };
         }
       }
-      // For playlists timespans and canvasIdex are mapped one-to-one
-      activeSegment = canvasSegments[canvasIndex];
+      /* Otherwise, get the related structure item using canvasIndex because,
+        playlists timespans and canvasIdex are mapped one-to-one. */
+      return canvasSegments[canvasIndex];
     } else {
       const timeRounded = roundToPrecision(time);
       // Segments that contains the current time of the player
@@ -775,17 +766,16 @@ export const useVideoJSPlayer = ({
         if (segmentCanvasIndex == canvasIndex + 1) {
           // Canvases without structure has the Canvas information in Canvas-level item as a navigable link
           if (isCanvas) {
-            activeSegment = segment;
+            return segment;
           }
           const isInRange = checkSrcRange(times, canvasDuration);
           const isInSegment = timeRounded >= times.start && timeRounded < times.end;
           if (isInSegment && isInRange) {
-            activeSegment = segment;
+            return segment;
           }
         }
       }
     }
-    return activeSegment;
   };
 
   return {
