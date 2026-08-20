@@ -14,7 +14,7 @@ const defaultState = {
   manifest: null,
   iiifVersion: '3', // IIIF Presentation API version ('3' or '4')
   allCanvases: [],
-  canvasIndex: 0, // index for active canvas
+  canvasIndex: 0, // 0-based index for active canvas
   currentNavItem: null,
   canvasDuration: 0,
   canvasLink: null,

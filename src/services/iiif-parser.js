@@ -535,7 +535,9 @@ export function parseAutoAdvance(behavior) {
 
 /**
  * Parse 'structures' into an array of nested JSON objects with
- * required information for structured navigation UI rendering
+ * required information for structured navigation UI rendering.
+ * IMPORTANT: Ramp only displays Ranges with Canvas references to canvases in the current
+ * Manifest in the current implementation.
  * @param {Object} manifest
  * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
  * @param {Boolean} isPlaylist
@@ -582,8 +584,50 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isCanvas = rootNode == range.parentRange && canvasesInfo[cIndex - 1] != undefined;
       }
 
-      // Increment index for children timespans within a Canvas
-      if (!isCanvas && canvases.length > 0) subIndex++;
+      /* According to the IIIF Presentation 3.0 spec, if a Range includes parts (mediafragments)
+      of Canvas references then, each part needs to be rendered as an entry in the navigation display.
+      This function builds independent clickable items for each Canvas fragment in the Range. */
+      const parseCanvasPart = (mediaFragmentId, itemIndex, itemIndexLabel) => {
+        const canvasId = getCanvasId(mediaFragmentId);
+        let fragmentCanvas = canvasesInfo?.length > 0
+          ? canvasesInfo.filter((c) => c.canvasId === canvasId)[0]
+          : null;
+        if (fragmentCanvas == null) return null;
+
+        const [uri, mediafragment] = mediaFragmentId.split('#');
+        // Build mediafragment if it is not given in the Canvas id for the Range
+        const partId = mediafragment ? mediaFragmentId : `${uri}#t=0,${fragmentCanvas.duration}`;
+        const { start, end } = getMediaFragment(partId, fragmentCanvas.duration);
+
+        return {
+          label, summary, isRoot: false, homepage, canvasDuration: fragmentCanvas.duration,
+          id: partId, times: { start, end }, isTitle: false, rangeId: range.id,
+          isEmpty: fragmentCanvas.isEmpty, isCanvas: false, itemIndex, itemIndexLabel,
+          canvasIndex: (fragmentCanvas?.canvasIndex ?? -1) + 1,
+          items: [], duration: timeToHHmmss(end - start),
+          isClickable: true, isMultiRange: true,
+        };
+      };
+
+      /* When a Range has multiple items (Canvas parts), create one item per part to display
+      in the navigation display independetly. Sibling Canvas parts under the same Range has
+      the same item index suffixed by lower-case letters (e.g. 10a, 10b) */
+      if (!isCanvas && canvases.length > 1) {
+        const groupIndex = ++subIndex;
+        const partItems = canvases
+          .map((c, i) => {
+            // Build suffixes for i > 26 by stacking characters
+            let suffix = '';
+            while (i >= 0) {
+              suffix += String.fromCharCode(97 + (i % 26));
+              i = Math.floor(i / 26) - 1;
+            }
+            return parseCanvasPart(c, groupIndex, `${groupIndex}${suffix}`);
+          })
+          .filter((s) => s != null);
+        timespans.push(...partItems);
+        return partItems;
+      }
 
       // Set 'id' in the form of a mediafragment
       if (canvases.length > 0) {
@@ -636,6 +680,9 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
       let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
 
+      // Increment index for children timespans within a Canvas
+      if (!isCanvas && canvases.length > 0) subIndex++;
+
       let item = {
         label, summary, isRoot, homepage, canvasDuration, id, times,
         isTitle: canvases.length === 0 ? true : false,
@@ -644,7 +691,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isCanvas: isCanvas,
         itemIndex: isCanvas ? cIndex : subIndex,
         canvasIndex: cIndex,
-        items: range.getRanges()?.length > 0 ? range.getRanges().map(r => parseItem(r, rootNode)) : [],
+        items: range.getRanges()?.length > 0 ? range.getRanges().flatMap(r => parseItem(r, rootNode)) : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable,
       };

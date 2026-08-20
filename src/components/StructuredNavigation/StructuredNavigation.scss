@@ -73,6 +73,7 @@
     transition: 0.25s;
     text-decoration: none;
     display: inline-flex;
+    align-items: center;
     gap: 0.1em;
 
     &:hover,
@@ -191,6 +192,11 @@ ul.ramp--structured-nav__tree {
 
     .structure-item-locked {
       vertical-align: middle;
+    }
+
+    .structure-item-cross-canvas {
+      vertical-align: middle;
+      margin-left: 0.3em;
     }
 
     // Set line-height to create clickable space around link
