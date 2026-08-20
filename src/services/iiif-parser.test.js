@@ -998,6 +998,7 @@ describe('iiif-parser', () => {
       expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
       expect(timespanWithStringMediaFrag.times).toEqual({ start: 511, end: 527 });
     });
+
     describe('with multi-part Range', () => {
       let timespans;
 

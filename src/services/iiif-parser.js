@@ -615,7 +615,15 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       if (!isCanvas && canvases.length > 1) {
         const groupIndex = ++subIndex;
         const partItems = canvases
-          .map((c, i) => parseCanvasPart(c, groupIndex, `${groupIndex}${String.fromCharCode(97 + i)}`))
+          .map((c, i) => {
+            // Build suffixes for i > 26 by stacking characters
+            let suffix = '';
+            while (i >= 0) {
+              suffix += String.fromCharCode(97 + (i % 26));
+              i = Math.floor(i / 26) - 1;
+            }
+            return parseCanvasPart(c, groupIndex, `${groupIndex}${suffix}`);
+          })
           .filter((s) => s != null);
         timespans.push(...partItems);
         return partItems;

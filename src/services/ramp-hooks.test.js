@@ -1,5 +1,5 @@
 import React, { act, useEffect } from 'react';
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import * as hooks from "./ramp-hooks";
 import { manifestState, withManifestAndPlayerProvider, withPlayerProvider } from "./testing-helpers";
 import playlist from "@TestData/playlist";
@@ -490,7 +490,6 @@ describe('useAnnotationRow', () => {
     expect(typeof resultRef.current.checkCanvas).toBe('function');
   });
 });
-
 
 describe('useSyncPlayback', () => {
   // not a real ref because react throws warning if we use outside a component
@@ -1013,5 +1012,369 @@ mollit anim id est laborum.'
       render(<CustomComponent />);
       expect(resultRef.current.hasLongerTags).toBeFalsy();
     });
+  });
+});
+
+describe('useVideoJSPlayer', () => {
+  const videoJSRef = { current: null };
+  const playerInitSetup = jest.fn();
+  const updatePlayer = jest.fn();
+
+  const defaultSources = [
+    { src: 'https://example.com/high.mp4', type: 'video/mp4', label: '720p', selected: true },
+    { src: 'https://example.com/low.mp4', type: 'video/mp4', label: '360p', selected: false }
+  ];
+
+  const resultRef = { current: null };
+  const renderHook = (props = {}) => {
+    const hookProps = {
+      options: { sources: defaultSources },
+      playerInitSetup, updatePlayer,
+      videoJSRef, videoJSLangMap: '{}',
+      ...props,
+    };
+    const UIComponent = () => {
+      const results = hooks.useVideoJSPlayer(hookProps);
+      useEffect(() => {
+        resultRef.current = results;
+      }, [results]);
+      return (<div><video ref={videoJSRef} /></div>);
+    };
+    return UIComponent;
+  };
+
+  describe('initializes a VideoJS instance', () => {
+    beforeEach(() => {
+      const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+    });
+
+    test('with given sources and calls "playerInitSetup"', async () => {
+      await waitFor(() => {
+        expect(playerInitSetup).toHaveBeenCalledWith(resultRef.current.playerRef.current);
+      });
+      expect(videoJSRef.current).toHaveAttribute('src', 'https://example.com/high.mp4');
+    });
+
+    test('and attaches event listeners', async () => {
+      const addDocEventListenerSpy = jest.spyOn(document, 'addEventListener');
+      const addWindowEventListenerSpy = jest.spyOn(window, 'addEventListener');
+      const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      await waitFor(() => {
+        expect(playerInitSetup).toHaveBeenCalledWith(resultRef.current.playerRef.current);
+      });
+      expect(videoJSRef.current).not.toBeNull();
+      expect(addDocEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
+      expect(addWindowEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
+      expect(addWindowEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    });
+  });
+
+  describe('appends <track> elements for given', () => {
+    let appendChildSpy;
+    beforeEach(() => appendChildSpy = jest.spyOn(HTMLVideoElement.prototype, 'appendChild'));
+
+    test('text tracks', () => {
+      const UIComponent = renderHook({
+        tracks: [{ key: 'track1', src: 'https://example.com/en.vtt', kind: 'captions', label: 'English', srclang: 'en' },
+        { key: 'track2', src: 'https://example.com/it.vtt', kind: 'captions', label: 'Italian', srclang: 'it' }],
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+
+      expect(appendChildSpy).toHaveBeenCalledTimes(2);
+      expect(videoJSRef.current.children.length).toBe(2);
+      expect(videoJSRef.current.children[0].tagName).toBe('TRACK');
+      expect(videoJSRef.current.children[0]).toHaveAttribute('src', 'https://example.com/en.vtt');
+      expect(videoJSRef.current.children[0]).toHaveAttribute('label', 'English');
+      expect(videoJSRef.current.children[0]).toHaveAttribute('kind', 'captions');
+      expect(videoJSRef.current.children[1].tagName).toBe('TRACK');
+      expect(videoJSRef.current.children[1]).toHaveAttribute('src', 'https://example.com/it.vtt');
+      expect(videoJSRef.current.children[1]).toHaveAttribute('label', 'Italian');
+      expect(videoJSRef.current.children[1]).toHaveAttribute('kind', 'captions');
+    });
+
+    test('AD text track', () => {
+      const UIComponent = renderHook({
+        audioDescTracks: [{ key: 'adtrack1', src: 'https://example.com/ad.vtt', kind: 'descriptions', label: 'AD', srclang: 'en' }],
+      });
+      const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+
+      expect(appendChildSpy).toHaveBeenCalledTimes(1);
+      expect(videoJSRef.current.children.length).toBe(1);
+      expect(videoJSRef.current.children[0].tagName).toBe('TRACK');
+      expect(videoJSRef.current.children[0]).toHaveAttribute('src', 'https://example.com/ad.vtt');
+      expect(videoJSRef.current.children[0]).toHaveAttribute('label', 'AD');
+      expect(videoJSRef.current.children[0]).toHaveAttribute('kind', 'descriptions');
+    });
+  });
+
+  test('marks the source matching "startQuality" as selected', async () => {
+    // Initialize with startQuality="360p"
+    const UIComponent = renderHook({ startQuality: '360p' });
+    const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+      initialManifestState: { ...manifestState(lunchroomManners, 0) },
+      initialPlayerState: {},
+    });
+    render(<CustomComponent />);
+
+    expect(defaultSources.find((s) => s.label === '360p').selected).toBeTruthy();
+    expect(defaultSources.find((s) => s.label === '720p').selected).toBeFalsy();
+  });
+
+  test('hides the control-bar for an empty Canvas', async () => {
+    const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+      initialManifestState: { ...manifestState(lunchroomManners, 0), canvasIsEmpty: true },
+      initialPlayerState: {},
+    });
+    render(<CustomComponent />);
+
+    const player = resultRef.current.playerRef.current;
+
+    await waitFor(() => expect(updatePlayer).not.toHaveBeenCalled());
+
+    expect(player.controlBar.hasClass('vjs-hidden')).toBeTruthy();
+    expect(player.hasClass('vjs-disabled')).toBeFalsy();
+  });
+
+  test('disables VideoJS player in-between Canvas changes', () => {
+    const options = { sources: defaultSources };
+    const UIComponent = renderHook({ options });
+    const CustomComponent = withManifestAndPlayerProvider(UIComponent, {
+      initialManifestState: { ...manifestState(lunchroomManners, 0) },
+      initialPlayerState: {},
+    });
+    const { rerender } = render(<CustomComponent />);
+
+    expect(resultRef.current.playerRef.current).toBeTruthy();
+
+    // Change sources and re-render component
+    options.sources = [{ src: 'https://example.com/video2.mp4', type: 'video/mp4', label: '360p', selected: true }];
+    rerender(<CustomComponent />);
+
+    expect(updatePlayer).toHaveBeenCalledWith(resultRef.current.playerRef.current);
+    expect(resultRef.current.playerRef.current).toBeTruthy();
+    expect(resultRef.current.playerRef.current.hasClass('vjs-disabled')).toBeTruthy();
+  });
+
+  describe('getActiveSegment()', () => {
+    describe('for a regular Manifest structure', () => {
+      const canvasSegments = [
+        { id: 'https://example.com/canvas/1#t=5,10', canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 5, end: 10 }, },
+        { id: 'https://example.com/canvas/1#t=0,10', canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 0, end: 10 }, },
+        { id: 'https://example.com/canvas/1#t=10,20', canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 10, end: 20 }, },
+        { id: 'https://example.com/canvas/2', canvasIndex: 2, isCanvas: true, canvasDuration: 660, times: { start: 0, end: 660 }, },
+      ];
+
+      test('returns the matching segment for the current playhead time', () => {
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(lunchroomManners, 0), canvasSegments },
+          initialPlayerState: {},
+        });
+        render(<CustomComponent />);
+
+        expect(resultRef.current.playerRef.current).toBeTruthy();
+        const active = resultRef.current.getActiveSegment(12);
+        expect(active.id).toEqual('https://example.com/canvas/1#t=10,20');
+      });
+
+      test('returns the segment relevant to the "clickedUrl"', () => {
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(lunchroomManners, 0), canvasSegments },
+          initialPlayerState: { clickedUrl: 'https://example.com/canvas/1#t=0,10' },
+        });
+        render(<CustomComponent />);
+
+        expect(resultRef.current.playerRef.current).toBeTruthy();
+        const active = resultRef.current.getActiveSegment(6);
+        expect(active.id).toEqual('https://example.com/canvas/1#t=0,10');
+      });
+
+      test('returns the Canvas-level segment when it has no child timespans', () => {
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(lunchroomManners, 1), canvasSegments },
+          initialPlayerState: {},
+        });
+        render(<CustomComponent />);
+
+        expect(resultRef.current.playerRef.current).toBeTruthy();
+        const active = resultRef.current.getActiveSegment(12);
+        expect(active.id).toEqual('https://example.com/canvas/2');
+      });
+    });
+
+    describe('for a playlist Manifest', () => {
+      test('without canvas-segments, returns a derived segment from its Canvas data', () => {
+        // 3rd Canvas in the Manifest has a different label than its corresponding structure Range label
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(playlist, 2, true) },
+          initialPlayerState: {},
+        });
+        render(<CustomComponent />);
+
+        const segment = resultRef.current.getActiveSegment(0);
+        expect(segment.isCanvas).toBeTruthy();
+        expect(segment.label).toEqual('Volleyball for boys');
+      });
+
+      test('with canvas-segments, returns the segment from structures', () => {
+        const canvasSegments = [
+          {
+            id: 'http://example.com/playlists/1/canvas/1#t=0,', canvasIndex: 1, isCanvas: true,
+            canvasDuration: NaN, times: { start: 0, end: NaN }, isEmpty: true, label: 'Restricted Item - timespan'
+          },
+          {
+            id: 'http://example.com/playlists/1/canvas/2#t=0,', canvasIndex: 2, isCanvas: true,
+            canvasDuration: NaN, times: { start: 0, end: NaN }, isEmpty: true, label: 'Restricted Item 2 - timespan'
+          },
+          {
+            id: 'http://example.com/playlists/1/canvas/3#t=0,32.0', canvasIndex: 3, isCanvas: true,
+            canvasDuration: 572.034, times: { start: 0, end: 32 }, label: 'Playlist Item 1'
+          }
+        ];
+
+        // 3rd Canvas in the Manifest has a different label than its corresponding structure Range label
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(playlist, 2, true), canvasSegments },
+          initialPlayerState: {},
+        });
+        render(<CustomComponent />);
+
+        const segment = resultRef.current.getActiveSegment(0);
+        expect(segment.isCanvas).toBeTruthy();
+        expect(segment.label).toEqual('Playlist Item 1');
+      });
+    });
+  });
+
+  describe('videojs-player-markers', () => {
+    // Mock videojs-markers-plugin for the tests
+    const attachMarkersPlugin = (player) => {
+      const add = jest.fn();
+      const removeAll = jest.fn();
+      player.markers = jest.fn(() => {
+        player.markers = { add, removeAll };
+      });
+      return { add, removeAll };
+    };
+
+    test('doesn\'t update when the player is not ready', async () => {
+      const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+        initialManifestState: { ...manifestState(lunchroomManners, 0) },
+        initialPlayerState: {},
+      });
+      render(<CustomComponent />);
+      await waitFor(() => expect(resultRef.current.playerRef.current).toBeTruthy());
+
+      const player = resultRef.current.playerRef.current;
+      const { add } = attachMarkersPlugin(player);
+
+      expect(add).not.toHaveBeenCalled();
+    });
+
+    describe('when the player is ready', () => {
+      test('initializes and adds markers for a playlist Manifest', () => {
+        const playlistMarkers = [{
+          canvasIndex: 0,
+          canvasMarkers: [{ time: '10', value: 'Marker 1' }],
+        }];
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: {
+            ...manifestState(playlist, 0),
+            playlist: { isPlaylist: true, markers: playlistMarkers, isEditing: false },
+          },
+          initialPlayerState: { searchMarkers: [] },
+        });
+        render(<CustomComponent />);
+
+        const player = resultRef.current.playerRef.current;
+        const { add, removeAll } = attachMarkersPlugin(player);
+
+        // Mark the player ready
+        act(() => resultRef.current.setIsReady(true));
+
+        // Removes all markers before resetting
+        expect(removeAll).toHaveBeenCalled();
+        expect(add).toHaveBeenCalledWith([
+          { time: 10, text: 'Marker 1', class: 'ramp--track-marker--playlist' },
+        ]);
+      });
+
+      test('initializes and adds markers for structure in a regular Manifest', () => {
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(lunchroomManners, 0) },
+          initialPlayerState: { searchMarkers: [] },
+        });
+        render(<CustomComponent />);
+
+        const player = resultRef.current.playerRef.current;
+        const { add, removeAll } = attachMarkersPlugin(player);
+        const fragmentMarker = { time: 1, duration: 10, text: 'Fragment', class: 'ramp--track-marker--fragment' };
+
+        // Mark the player ready and add fragment-marker for structure
+        act(() => {
+          resultRef.current.setFragmentMarker(fragmentMarker);
+          resultRef.current.setIsReady(true);
+        });
+
+        // Removes all markers before resetting
+        expect(removeAll).toHaveBeenCalled();
+        expect(add).toHaveBeenCalledWith([fragmentMarker]);
+      });
+
+      test('initializes and adds markers for search hits', () => {
+        const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+          initialManifestState: { ...manifestState(lunchroomManners, 0) },
+          initialPlayerState: { searchMarkers: [{ time: 5, text: 'Search hit', class: 'ramp--track-marker--search' }] },
+        });
+        render(<CustomComponent />);
+
+        const player = resultRef.current.playerRef.current;
+        const { add, removeAll } = attachMarkersPlugin(player);
+
+        // Mark the player ready
+        act(() => resultRef.current.setIsReady(true));
+
+        // Removes all markers before resetting
+        expect(removeAll).toHaveBeenCalled();
+        expect(add).toHaveBeenCalledWith([
+          { time: 5, text: 'Search hit', class: 'ramp--track-marker--search' },
+        ]);
+      });
+    });
+  });
+
+  test('disposes the Video.js player and removes event listeners on unmount', () => {
+    const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+      initialManifestState: { ...manifestState(lunchroomManners, 0) },
+      initialPlayerState: {},
+    });
+    const component = render(<CustomComponent />);
+
+    const removeDocEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+    const removeWindowEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const player = resultRef.current.playerRef.current;
+    const disposeSpy = jest.spyOn(player, 'dispose');
+
+    component.unmount();
+
+    expect(disposeSpy).toHaveBeenCalled();
+    expect(removeDocEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function));
+    expect(removeWindowEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(removeWindowEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
   });
 });
