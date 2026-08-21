@@ -779,8 +779,8 @@ export function getAuthService(canvas) {
         : accessService?.service ? [accessService.service] : [];
       const tokenService = accessServices.find(s => s.type === 'AuthAccessTokenService2') ?? null;
       if (tokenService) {
-        tokenService.heading = getLabelValue(tokenService?.errorHeading) || 'Authentication failed';
-        tokenService.note = getLabelValue(tokenService?.errorNote) || 'Could not obtain an access token.';
+        tokenService.errorHeading = getLabelValue(tokenService?.errorHeading) || 'Authentication failed';
+        tokenService.errorNote = getLabelValue(tokenService?.errorNote) || 'Could not obtain an access token.';
       }
 
       const logoutService = accessServices.find(s => validAccessService(s, 'AuthLogoutService2')) ?? null;

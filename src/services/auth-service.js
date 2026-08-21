@@ -6,14 +6,31 @@
  * https://iiif.io/api/auth/2.0/#probe-service-request
  * @param {String} probeUrl URL of the AuthProbeService2
  * @param {String} token access token from AuthAccessTokenService2 if exists
- * @returns {Promise<Object>} { status: Number, heading: Object, note: Object, substitute: Array }
+ * @returns {Promise<Object>} { status: Number, heading: Object, note: Object, substitute: Array, authIsExternal: Boolean }
  */
 export async function probeResource(probeUrl, token = null) {
   const headers = new Headers({ 'Accept': 'application/json' });
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  const response = await fetch(probeUrl, { headers });
+  const requestOptions = { headers };
+  const response = await fetch(probeUrl, requestOptions);
+
+  /* Avalon reuses the media resource's HLS manifest endpoint as the probe service 'id',
+  rather than a dedicated service endpoint for 'AuthProbeService2'.
+  This endpoint action doesn't render an spec-compliant 'AuthProbeResult2' JSON body on GET. It behaves
+  as follows:
+  - with no token, it either streams the manifest (if the request is authorized without a token) or responds 401
+  - with a token it renders a JSON without a body for a success/failed auth request
+  But, a HEAD request is handled uniformly across the board, returning success/fail via status code alone.
+  This fallback to the HEAD request whenever GET doesn't give a usable status, helps to determine the auth
+  status of a given resource without triggering the auth prompt when Ramp is used within Avalon. */
+  if (response.status === 406) {
+    const headResponse = await fetch(probeUrl, { ...requestOptions, method: 'HEAD' });
+    // 'authIsExternal' signals that auth status was derived a fallback HEAD response
+    return { status: headResponse.status, authIsExternal: true };
+  }
+
   let body = {};
   try {
     body = await response.json();

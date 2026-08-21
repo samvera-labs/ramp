@@ -415,6 +415,41 @@ describe('VideoJSPlayer component', () => {
     });
   });
 
+  describe('feature: IIIF Auth 2.0 request authorization', () => {
+    // Simulate VHS calling all registered onRequest hooks with a request options object
+    const mockVHSTech = () => ({ vhs: { xhr: { onRequest: jest.fn() } } });
+
+    test('registers the vhs.onRequest hook and adds "Authorization" header when a token is present', async () => {
+      await renderPlayer({
+        manifest: singleCanvasManifest,
+        manifestOverrides: { auth: { token: 'valid-token', status: 'authorized' } },
+      });
+      const player = await triggerLoadedMetadata('videojs-video-element');
+
+      const tech = mockVHSTech();
+      jest.spyOn(player, 'tech').mockReturnValue(tech);
+      act(() => { player.trigger('xhr-hooks-ready'); });
+
+      expect(tech.vhs.xhr.onRequest).toHaveBeenCalledTimes(1);
+      const registeredHook = tech.vhs.xhr.onRequest.mock.calls[0][0];
+      const options = registeredHook({ uri: 'https://example.com/stream/auto.m3u8' });
+      expect(options.headers.Authorization).toBe('Bearer valid-token');
+    });
+
+    test('does not add the Authorization header when no token is present', async () => {
+      await renderPlayer({ manifest: singleCanvasManifest });
+      const player = await triggerLoadedMetadata('videojs-video-element');
+
+      const tech = mockVHSTech();
+      jest.spyOn(player, 'tech').mockReturnValue(tech);
+      act(() => { player.trigger('xhr-hooks-ready'); });
+
+      const registeredHook = tech.vhs.xhr.onRequest.mock.calls[0][0];
+      const options = registeredHook({ uri: 'https://example.com/stream/auto.m3u8' });
+      expect(options.headers?.Authorization).toBeUndefined();
+    });
+  });
+
   describe('feature: quality selection fallback', () => {
     const HIGH_SRC = 'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4';
     const MED_SRC = 'https://example.com/manifest/medium/lunchroom_manners_512kb.mp4';

@@ -148,6 +148,9 @@ function VideoJSPlayer({
   const clickedUrlRef = useRef();
   clickedUrlRef.current = useMemo(() => { return clickedUrl; }, [clickedUrl]);
 
+  const authRef = useRef();
+  authRef.current = useMemo(() => { return auth; }, [auth]);
+
   // Register the videojs-quality-selector plugin before initialization
   silvermine(videojs);
 
@@ -184,6 +187,21 @@ function VideoJSPlayer({
    * @param {Object} player current player instance from Video.js
    */
   const playerInitSetup = (player) => {
+    /* VideoJS's VHS emits an 'xhr-hooks-ready' event once its XHR hook registry is available
+    on the player's tech. Register a 'onRequest' hook so that, the Authorization header reflects
+    the current auth token for authenticated media resources. */
+    player.on('xhr-hooks-ready', () => {
+      const tech = player.tech(true);
+      tech?.vhs?.xhr?.onRequest((options) => {
+        const activeToken = authRef.current?.token;
+        if (!activeToken) return options;
+
+        options.headers = options.headers || {};
+        options.headers['Authorization'] = `Bearer ${activeToken}`;
+        return options;
+      });
+    });
+
     player.on('ready', function () {
       console.log('Player ready');
 

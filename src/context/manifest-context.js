@@ -46,7 +46,9 @@ const defaultState = {
   clickedAnnotation: null, // clicked annotation in the Canvas
   auth: {
     token: null, // auth token for the current Canvas
-    status: 'idle', // 'idle' | 'probing' | 'login-required' | 'authorized' | 'error' | 'cancelled'
+    /* 'idle' | 'probing' | 'login-required' | 'authorized' | 'authorized-external' | 'error' | 'cancelled'
+    'authorized-external' --> authentication is handled by an external host application, not Ramp. */
+    status: 'idle',
   },
 };
 
