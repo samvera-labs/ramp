@@ -20,7 +20,7 @@ import cx from 'classnames';
 const MetadataDisplay = ({
   displayOnlyRangeMetadata = false,
   displayOnlyCanvasMetadata = false,
-  displayAllMetadata = true,
+  displayAllMetadata = false,
   displayTitle = true,
   showHeading = true,
   itemHeading = 'Item Details',
@@ -40,7 +40,6 @@ const MetadataDisplay = ({
 
   const [manifestRights, setManifestRights] = useState();
   const [canvasRights, setCanvasRights] = useState();
-  const [hasMetadata, setHasMetadata] = useState(false);
 
   let canvasesMetadataRef = useRef();
   const setCanvasesMetadata = (m) => {
@@ -78,7 +77,6 @@ const MetadataDisplay = ({
           manifestMeta = manifestMeta.filter(md => md.label.toLowerCase() != 'title');
         }
         setManifestMetadata(manifestMeta);
-        setHasMetadata(manifestMeta?.length > 0);
       }
       if (parsedMetadata.rights?.length > 0) {
         setManifestRights(parsedMetadata.rights);
@@ -109,7 +107,6 @@ const MetadataDisplay = ({
         metadata = metadata.filter(md => md.label.toLowerCase() != 'title');
       }
       setCanvasMetadata(metadata);
-      setHasMetadata(metadata?.length > 0);
       if (rights != undefined && rights?.length > 0) {
         setCanvasRights(rights);
       }
@@ -174,6 +171,10 @@ const MetadataDisplay = ({
       </>);
     }
   }, [currentNavItem]);
+
+  const hasMetadata = manifestMetadata?.length > 0
+    || canvasMetadata?.length > 0
+    || (showRangeMetadata && !!currentNavItem?.label);
 
   return (
     <div
