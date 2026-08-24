@@ -164,7 +164,7 @@ const MetadataDisplay = ({
   }, [canvasMetadata]);
 
   const rangeMetadataBlock = useMemo(() => {
-    if (showRangeMetadata && currentNavItem?.label) {
+    if (showRangeMetadata && currentNavItem?.metadata?.length > 0) {
       return (<>
         <span>{currentNavItem.label}</span>
         {buildMetadata(currentNavItem.metadata)}
@@ -174,7 +174,7 @@ const MetadataDisplay = ({
 
   const hasMetadata = manifestMetadata?.length > 0
     || canvasMetadata?.length > 0
-    || (showRangeMetadata && !!currentNavItem?.label);
+    || (showRangeMetadata && currentNavItem?.metadata?.length > 0);
 
   return (
     <div

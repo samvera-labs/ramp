@@ -142,7 +142,7 @@ const Tabs = ({ tabValues, manifestUrl }) => {
         </ul>
       </div>
       <TabPanel id='detailsTab' tabId='details' tabIndex={0} activeTab={activeTab}>
-        <MetadataDisplay showHeading={false} />
+        <MetadataDisplay showHeading={false} displayOnlyRangeMetadata={true} />
       </TabPanel>
       <TabPanel id='transcriptsTab' tabId='transcripts' tabIndex={1} activeTab={activeTab}>
         <Transcript
