@@ -203,12 +203,15 @@ describe('AuthOverlay', () => {
       });
     });
 
-    test('updates authStatus=\'authorized\' in state when probe returns 200', async () => {
+    test('updates authStatus=\'authorized-external\' in state when probe returns 200', async () => {
+      /* A 200 on the initial probe without a token implies resource is already accessible without
+      needing Ramp to aquire a token. i.e. auth handled by an external mechanism. */
       authService.probeResource.mockResolvedValue({ status: 200 });
       render(<AuthOverlay {...props} authStatus='idle' />);
       await waitFor(() => {
-        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized');
+        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized-external');
       });
+      expect(onTokenReceivedMock).not.toHaveBeenCalled();
     });
 
     test('updates authStatus=\'authorized-external\' in state when probe HEAD request returns 200', async () => {

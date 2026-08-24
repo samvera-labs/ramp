@@ -50,14 +50,13 @@ function AuthOverlay({ authService, authStatus, isVideo, onTokenReceived, onAuth
     if (authStatus !== 'idle') return;
     onAuthStatus('probing');
     probeResource(probe.id, null)
-      .then(({ status, authIsExternal }) => {
-        if (status === 200) {
-          /* When 'probeResource' fallback HEAD request returns 200, authentication is handled by
-          an external host application, therefore update the auth status accordingly in state. */
-          onAuthStatus(authIsExternal ? 'authorized-external' : 'authorized');
-        } else {
-          onAuthStatus('login-required');
-        }
+      .then(({ status }) => {
+        /* When 'probeResource' returns 200 on this initial tokenless probe request, then the resource
+        is already accessible without Ramp having to acquire an auth token. i.e. some external
+        mechanism (e.g. a host application's session) has already authenticated the user. Therefore,
+        Ramp doesn't need to manage interactions related to authentication such as login/logout.
+        Setting the authStatus="authorized-external" blocks rendering the login/logout UI inside Ramp. */
+        onAuthStatus(status === 200 ? 'authorized-external' : 'login-required');
       })
       .catch(() => {
         onAuthStatus('login-required');
