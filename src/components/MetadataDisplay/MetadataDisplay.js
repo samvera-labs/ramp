@@ -167,7 +167,7 @@ const MetadataDisplay = ({
     if (showRangeMetadata && currentNavItem?.label) {
       return (<>
         <span>{currentNavItem.label}</span>
-        <dl><dt>Label</dt><dd>{currentNavItem.label}</dd></dl>
+        {buildMetadata(currentNavItem.metadata)}
       </>);
     }
   }, [currentNavItem]);

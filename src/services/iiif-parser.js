@@ -563,6 +563,13 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
     if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
       let label = getLabelValue(range.getLabel().getValue());
       let canvases = range.getCanvasIds();
+      let metadata = parseMetadata(
+        range.getMetadata().map(md => ({
+          label: md.getLabel(),
+          value: md.getValue(),
+        })),
+        'Range'
+      );
 
       let duration = manifestDuration; let canvasDuration = manifestDuration;
 
@@ -643,7 +650,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       }
 
       let item = {
-        label, summary, isRoot, homepage, canvasDuration, id, times,
+        label, summary, isRoot, homepage, canvasDuration, id, times, metadata,
         isTitle: canvases.length === 0 ? true : false,
         rangeId: range.id,
         isEmpty: isEmpty,
@@ -700,7 +707,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       return { structures, timespans, markRoot, hasCollapsibleStructure };
     }
   } catch (e) {
-    console.error('iiif-parser -> getStructureRanges() -> error parsing structures');
+    console.error('iiif-parser -> getStructureRanges() -> error parsing structures', e);
     throw new Error(GENERIC_ERROR_MESSAGE);
   }
 }
