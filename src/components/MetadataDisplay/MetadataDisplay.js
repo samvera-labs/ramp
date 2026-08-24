@@ -20,12 +20,11 @@ import cx from 'classnames';
 const MetadataDisplay = ({
   displayOnlyRangeMetadata = false,
   displayOnlyCanvasMetadata = false,
-  displayAllMetadata = false,
+  displayAllMetadata = true,
   displayTitle = true,
   showHeading = true,
   itemHeading = 'Item Details',
-  sectionHeading = 'Section Details',
-  rangeHeading = 'Range Details'
+  sectionHeading = 'Section Details'
 }) => {
   const { manifest, canvasIndex, currentNavItem } = useManifestState();
 
@@ -170,7 +169,7 @@ const MetadataDisplay = ({
   const rangeMetadataBlock = useMemo(() => {
     if (showRangeMetadata && currentNavItem?.label) {
       return (<>
-        {displayAllMetadata && <span>{rangeHeading}</span>}
+        {displayAllMetadata && <span>{currentNavItem.label}</span>}
         <dl><dt>Label</dt><dd>{currentNavItem.label}</dd></dl>
       </>);
     }
@@ -230,9 +229,7 @@ MetadataDisplay.propTypes = {
   /** Heading label for the Manifest-level metadata list. */
   itemHeading: PropTypes.string,
   /** Heading label for the Canvas-level metadata list. */
-  sectionHeading: PropTypes.string,
-  /** Heading label for the Range-level metadata list. */
-  rangeHeading: PropTypes.string
+  sectionHeading: PropTypes.string
 };
 
 export default MetadataDisplay;
