@@ -96,6 +96,8 @@ const TreeNode = ({
     if (liRef.current) {
       liRef.current.isClicked = false;
     }
+
+    console.log('new current nav Item: ', currentNavItem)
   }, [currentNavItem]);
 
   // Collapse/Expand section when all sections are collapsed/expanded respectively

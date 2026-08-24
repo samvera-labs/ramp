@@ -18,14 +18,16 @@ import cx from 'classnames';
  * @param {String} props.sectionHeading
  */
 const MetadataDisplay = ({
+  displayOnlyRangeMetadata = false,
   displayOnlyCanvasMetadata = false,
   displayAllMetadata = false,
   displayTitle = true,
   showHeading = true,
   itemHeading = 'Item Details',
   sectionHeading = 'Section Details',
+  rangeHeading = 'Range Details'
 }) => {
-  const { manifest, canvasIndex } = useManifestState();
+  const { manifest, canvasIndex, currentNavItem } = useManifestState();
 
   const [manifestMetadata, setManifestMetadata] = useState();
   // Metadata for all Canavases in state
@@ -35,6 +37,7 @@ const MetadataDisplay = ({
   // Boolean flags set according to user props to hide/show metadata
   const [showManifestMetadata, setShowManifestMetadata] = useState();
   const [showCanvasMetadata, setShowCanvasMetadata] = useState();
+  const [showRangeMetadata, setShowRangeMetadata] = useState();
 
   const [manifestRights, setManifestRights] = useState();
   const [canvasRights, setCanvasRights] = useState();
@@ -53,10 +56,14 @@ const MetadataDisplay = ({
   useEffect(() => {
     if (manifest) {
       // Display Canvas metadata only when specified in the props
-      const showCanvas = displayOnlyCanvasMetadata || displayAllMetadata;
+      const showCanvas = (displayOnlyCanvasMetadata || displayAllMetadata) && !displayOnlyRangeMetadata;
       setShowCanvasMetadata(showCanvas);
-      const showManifest = !displayOnlyCanvasMetadata || displayAllMetadata;
+      const showManifest = (!displayOnlyCanvasMetadata || displayAllMetadata) && !displayOnlyRangeMetadata;
       setShowManifestMetadata(showManifest);
+
+      // Display Range metadata only when specified in the props
+      const showRange = displayOnlyRangeMetadata || displayAllMetadata;
+      setShowRangeMetadata(showRange);
 
       // Parse metadata from Manifest
       const parsedMetadata = getMetadata(manifest, showCanvas);
@@ -160,6 +167,15 @@ const MetadataDisplay = ({
     }
   }, [canvasMetadata]);
 
+  const rangeMetadataBlock = useMemo(() => {
+    if (showRangeMetadata && currentNavItem?.label) {
+      return (<>
+        {displayAllMetadata && <span>{rangeHeading}</span>}
+        <dl><dt>Label</dt><dd>{currentNavItem.label}</dd></dl>
+      </>);
+    }
+  }, [currentNavItem]);
+
   return (
     <div
       data-testid='metadata-display'
@@ -180,6 +196,7 @@ const MetadataDisplay = ({
           )}>
             {manifestMetadataBlock}
             {canvasMetadataBlock}
+            {rangeMetadataBlock}
           </div>
         )
         : (
@@ -198,6 +215,8 @@ const MetadataDisplay = ({
 };
 
 MetadataDisplay.propTypes = {
+  /** Display only the active Range metadata without Manifest-level metadata. */
+  displayOnlyRangeMetadata: PropTypes.bool,
   /** Display only the active Canvas metadata without Manifest-level metadata. */
   displayOnlyCanvasMetadata: PropTypes.bool,
   /** Display metadata for both the active Canvas and the Manifest. */
@@ -212,6 +231,8 @@ MetadataDisplay.propTypes = {
   itemHeading: PropTypes.string,
   /** Heading label for the Canvas-level metadata list. */
   sectionHeading: PropTypes.string,
+  /** Heading label for the Range-level metadata list. */
+  rangeHeading: PropTypes.string
 };
 
 export default MetadataDisplay;
