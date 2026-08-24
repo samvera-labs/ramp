@@ -60,7 +60,7 @@ const MetadataDisplay = ({
       setShowManifestMetadata(showManifest);
 
       // Display Range metadata only when specified in the props
-      const showRange = displayOnlyRangeMetadata || displayAllMetadata;
+      const showRange = displayOnlyRangeMetadata || displayAllMetadata || !displayOnlyCanvasMetadata;
       setShowRangeMetadata(showRange);
 
       // Parse metadata from Manifest
@@ -166,7 +166,7 @@ const MetadataDisplay = ({
   const rangeMetadataBlock = useMemo(() => {
     if (showRangeMetadata && currentNavItem?.label) {
       return (<>
-        {displayAllMetadata && <span>{currentNavItem.label}</span>}
+        <span>{currentNavItem.label}</span>
         <dl><dt>Label</dt><dd>{currentNavItem.label}</dd></dl>
       </>);
     }
