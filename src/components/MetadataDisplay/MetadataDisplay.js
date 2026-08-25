@@ -10,6 +10,7 @@ import cx from 'classnames';
  * related to the current resource. The display of the scope of this information
  * can be customized using props as needed.
  * @param {Object} props
+ * @param {Object} props.displayOnlyRangeMetadata
  * @param {Boolean} props.displayOnlyCanvasMetadata
  * @param {Boolean} props.displayAllMetadata
  * @param {Boolean} props.displayTitle
