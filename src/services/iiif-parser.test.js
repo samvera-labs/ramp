@@ -1064,6 +1064,34 @@ describe('iiif-parser', () => {
       expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
       expect(timespanWithStringMediaFrag.times).toEqual({ start: 511, end: 527 });
     });
+
+    it('returns parsed metadata for a Range', () => {
+      const { structures } = iiifParser.getStructureRanges(
+        rangeMetadataManifest, iiifParser.canvasesInManifest(rangeMetadataManifest)
+      );
+      const washingHands = structures[0].items[0].items[0];
+      expect(washingHands.label).toEqual('Washing Hands');
+      expect(washingHands.metadata).toHaveLength(2);
+      expect(washingHands.metadata[0]).toEqual({
+        label: 'The first metadata label for range 1-1',
+        value: 'The first metadata value for range 1-1',
+      });
+      expect(washingHands.metadata[1]).toEqual({
+        label: 'The second metadata label for range 1-1',
+        value: 'The second metadata value for range 1-1',
+      });
+    });
+
+    it('returns an empty array for a Range without metadata', () => {
+      const { timespans } = iiifParser.getStructureRanges(
+        rangeMetadataManifest, iiifParser.canvasesInManifest(rangeMetadataManifest)
+      );
+      const rinsingWell = timespans.find(
+        (t) => t.rangeId === 'https://example.com/manifest/lunchroom_manners/range/1-1-3'
+      );
+      expect(rinsingWell).toBeDefined();
+      expect(rinsingWell.metadata).toEqual([]);
+    });
   });
 
   describe('getSearchService()', () => {
@@ -1357,36 +1385,6 @@ describe('iiif-parser', () => {
         items: [{ items: [{ body: { id: 'https://example.com/text.vtt', type: 'Text' } }] }]
       };
       expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
-    });
-  });
-
-  describe('when a Range has metadata', () => {
-    it('returns parsed metadata for a Range', () => {
-      const { structures } = iiifParser.getStructureRanges(
-        rangeMetadataManifest, iiifParser.canvasesInManifest(rangeMetadataManifest)
-      );
-      const washingHands = structures[0].items[0].items[0];
-      expect(washingHands.label).toEqual('Washing Hands');
-      expect(washingHands.metadata).toHaveLength(2);
-      expect(washingHands.metadata[0]).toEqual({
-        label: 'The first metadata label for range 1-1',
-        value: 'The first metadata value for range 1-1',
-      });
-      expect(washingHands.metadata[1]).toEqual({
-        label: 'The second metadata label for range 1-1',
-        value: 'The second metadata value for range 1-1',
-      });
-    });
-
-    it('returns an empty array for a Range without metadata', () => {
-      const { timespans } = iiifParser.getStructureRanges(
-        rangeMetadataManifest, iiifParser.canvasesInManifest(rangeMetadataManifest)
-      );
-      const rinsingWell = timespans.find(
-        (t) => t.rangeId === 'https://example.com/manifest/lunchroom_manners/range/1-1-3'
-      );
-      expect(rinsingWell).toBeDefined();
-      expect(rinsingWell.metadata).toEqual([]);
     });
   });
 });
