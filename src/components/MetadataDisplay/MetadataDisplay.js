@@ -170,7 +170,7 @@ const MetadataDisplay = ({
         {buildMetadata(currentNavItem.metadata)}
       </>);
     }
-  }, [currentNavItem]);
+  }, [currentNavItem, showRangeMetadata]);
 
   const hasMetadata = manifestMetadata?.length > 0
     || canvasMetadata?.length > 0
