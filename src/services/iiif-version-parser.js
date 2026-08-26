@@ -1,5 +1,6 @@
 const PRESENTATION_4_CONTEXT = 'http://iiif.io/api/presentation/4/context.json';
 const PLACEHOLDER_PROP = { '3': 'placeholderCanvas', '4': 'placeholderContainer' };
+const ACCOMPANYING_PROP = { '3': 'accompanyingCanvas', '4': 'accompanyingContainer' };
 
 /**
  * Determine the Presentation API version of a given Manifest from its
@@ -27,6 +28,19 @@ export function getIIIFAPIVersion(manifest) {
  */
 export function getPlaceholderProp(version) {
   return PLACEHOLDER_PROP[version] || PLACEHOLDER_PROP['3'];
+}
+
+/**
+ * Get the accompanying property name for a Canvas/Timeline or Annotation based on the
+ * IIIF Presentation API version of the given Manifest.
+ * - Presentation v3 -> 'accompanyingCanvas'
+ * - Presentation v4 -> 'accompanyingContainer'
+ * @function VersionParser#getAccompanyingProp
+ * @param {String} version Presentation API version, as returned by getIIIFAPIVersion
+ * @returns {String} 'accompanyingCanvas' | 'accompanyingContainer'
+ */
+export function getAccompanyingProp(version) {
+  return ACCOMPANYING_PROP[version] || ACCOMPANYING_PROP['3'];
 }
 
 /**

@@ -95,7 +95,8 @@
     "mime-types": "^3.0.2",
     "react-error-boundary": "^4.0.11",
     "video.js": "^8.23.7",
-    "videojs-markers-plugin": "^1.0.2"
+    "videojs-markers-plugin": "^1.0.2",
+    "waveform-data": "^4.5.2"
   },
   "peerDependencies": {
     "react": "^19.0.0",

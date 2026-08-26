@@ -67,7 +67,8 @@ const App = ({ manifestURL, DEMO_MANIFEST_OPTIONS }) => {
       <main className='ramp--player_container'>
         <IIIFPlayer manifestUrl={manifestUrl}>
           <div className='iiif-player-demo'>
-            <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} resumeCache={{ enable: true }} />
+            <MediaPlayer enableFileDownload={true} enablePlaybackRate={true} resumeCache={{ enable: true }}
+              showWaveform={true} />
             <div className='components-row'>
               <div className='nav'>
                 <AutoAdvanceToggle />
