@@ -57,6 +57,8 @@ const TreeNode = ({
   const { isCollapsed, updateSectionStatus } = useCollapseExpandAll();
   // Root structure items are always expanded
   const [sectionIsCollapsed, setSectionIsCollapsed] = useState(isRoot ? false : true);
+  // Controls visibility of the descriptive tooltip for out-of-range timespans
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const { currentNavItem, handleClick, isActiveLi,
     isActiveSection, isPlaylist, screenReaderTime } = useActiveStructure({
@@ -188,7 +190,9 @@ const TreeNode = ({
     }
     // If the section is expanded, move focus to the first child on ArrowRight keypress
     if (e.keyCode === 39 && !sectionIsCollapsed && liRef.current) {
-      const children = liRef.current.querySelectorAll('a.ramp--structured-nav__item-link');
+      const children = liRef.current.querySelectorAll(
+        'a.ramp--structured-nav__item-link, span.ramp--structured-nav__item-link.not-clickable'
+      );
       if (children?.length > 0) {
         children[0].focus();
         setFocusedItem(children[0]);
@@ -197,7 +201,7 @@ const TreeNode = ({
     }
   };
 
-  const handleLinkKeyDown = (e) => {
+  const handleTimespanKeyDown = (e) => {
     // ArrowRight keypress does nothing, prevent +5 second jump in playerHotKeys
     if (e.keyCode === 39) {
       e.stopPropagation();
@@ -291,7 +295,7 @@ const TreeNode = ({
                       href={homepage && homepage != '' ? homepage : id}
                       aria-label={ariaLabel}
                       onClick={handleClick}
-                      onKeyDown={handleLinkKeyDown}
+                      onKeyDown={handleTimespanKeyDown}
                       tabIndex={-1}>
                       {isEmpty && <LockedSVGIcon />}
                       {`${itemIndex}.`}
@@ -300,7 +304,38 @@ const TreeNode = ({
                       </span>
                     </a>
                   ) : (
-                    <span aria-label={label}>{label}</span>
+                    <span
+                      className='ramp--structured-nav__tooltip-wrapper'
+                      data-testid='out-of-range-timespan'
+                      /* Show/hide descriptive tooltip on pointer hover */
+                      onMouseOver={() => setIsTooltipVisible(true)}
+                      onMouseOut={() => setIsTooltipVisible(false)}
+                    >
+                      <span
+                        className='ramp--structured-nav__item-link not-clickable'
+                        tabIndex={-1}
+                        onKeyDown={handleTimespanKeyDown}
+                        /* Show/hide descriptive tooltip on keyboard focus */
+                        onFocus={() => setIsTooltipVisible(true)}
+                        onBlur={() => setIsTooltipVisible(false)}
+                        aria-describedby={`out-of-range-${rangeId}`}
+                      >
+                        {`${itemIndex}.`}
+                        <span className='structured-nav__item-label' aria-label={label}>
+                          {label} {duration.length > 0 ? ` (${duration})` : ''}
+                        </span>
+                      </span>
+                      <span
+                        role='tooltip'
+                        id={`out-of-range-${rangeId}`}
+                        className={cx(
+                          'ramp--structured-nav__tooltip',
+                          isTooltipVisible && 'visible'
+                        )}
+                      >
+                        This timespan is outside the available media duration and cannot be played.
+                      </span>
+                    </span>
                   )}
                 </Fragment>
               )

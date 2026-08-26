@@ -1,6 +1,7 @@
 import { parseManifest } from 'manifesto.js';
 import mimeTypes from 'mime-types';
 import {
+  checkSrcRange,
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
   getLabelValue,
@@ -623,8 +624,6 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isEmpty = canvasInfo.isEmpty;
         summary = canvasInfo.summary;
         homepage = canvasInfo.homepage;
-        // Mark all timespans as clickable, and provide desired behavior in TreeNode component
-        isClickable = true;
         if (canvasInfo.range != undefined) {
           const { start, end } = canvasInfo.range;
           canvasDuration = end - start;
@@ -635,6 +634,11 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       // Parse start and end times from media-fragment URI
       // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
       let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
+
+      // A timespan is only clickable when its start/end falls within the Canvas' duration
+      if (canvases.length > 0 && canvasesInfo?.length > 0) {
+        isClickable = checkSrcRange(times, { end: canvasDuration });
+      }
 
       let item = {
         label, summary, isRoot, homepage, canvasDuration, id, times,

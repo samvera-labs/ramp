@@ -8,6 +8,7 @@ import invalidStructure from '@TestData/invalid-structure';
 import thumbnailNavStructure from '@TestData/transcript-multiple-canvas';
 import playlist from '@TestData/playlist';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
+import outOfRangeManifest from '@TestData/out-of-range-structure';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -595,251 +596,357 @@ describe('StructuredNavigation component', () => {
     expect(treeItems[1]).toHaveClass('ramp--structured-nav__tree-item active');
   });
 
-  describe('allows keyboard nav according to tree view a11y design pattern', () => {
-    const handleClickMock = jest.fn();
-    let structuredNav, treeItems;
-    const props = { showAllSectionsButton: true };
-    beforeEach(() => {
-      jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
-        handleClick: handleClickMock
-      }));
+  describe('provides keyboard nav according to tree view a11y design pattern', () => {
+    describe('for nested structures', () => {
+      const handleClickMock = jest.fn();
+      let structuredNav, treeItems;
+      const props = { showAllSectionsButton: true };
+      beforeEach(() => {
+        jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+          handleClick: handleClickMock
+        }));
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          ...props,
+          initialState: {},
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(manifest) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+        treeItems = screen.getAllByTestId('tree-item');
+      });
+
+      test('rendered as sections', () => {
+        expect(screen.queryAllByTestId('tree-item').length).toEqual(21);
+        expect(treeItems[0].children[1].children.length).toBe(2);
+
+        expect(treeItems[0].children[1].children[0]).toHaveTextContent('Lunchroom Manners');
+        expect(treeItems[0].children[1].children[1]).toHaveTextContent('Lunchroom Manners 2');
+
+        const firstSection = treeItems[0].children[1].children[0];
+        expect(firstSection.children).toHaveLength(2);
+
+        const secondSection = treeItems[0].children[1].children[1];
+        expect(secondSection.children).toHaveLength(1);
+      });
+
+      describe('when focused on an expanded section item', () => {
+        beforeEach(() => {
+          // Set focus to structure nav container
+          structuredNav = screen.getByTestId('structured-nav');
+          structuredNav.focus();
+          // Move focus to the first section in structure by pressing ArrowDown twice
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          treeItems = screen.getAllByTestId('tree-item');
+        });
+
+        test('first section with collapsible structure has focus', () => {
+          const sectionButton = treeItems[1].children[0].children[0];
+          const collapseIcon = treeItems[1].children[0].children[1];
+
+          // First collapsible section has focus
+          expect(sectionButton).toHaveTextContent('Lunchroom Manners');
+          expect(sectionButton).toHaveFocus();
+
+          // Nested child structure is expanded
+          expect(collapseIcon.children[0]).toHaveClass('arrow up');
+          expect(treeItems[1].children).toHaveLength(2);
+          expect(treeItems[1].children[1].tagName).toEqual('UL');
+        });
+
+        test('ArrowLeft keydown event collapses the nested structure', () => {
+          const sectionButton = treeItems[1].children[0].children[0];
+          const collapseIcon = treeItems[1].children[0].children[1];
+
+          fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
+
+          // Collapses on click and hides the nested child structure
+          expect(collapseIcon.children[0]).toHaveClass('arrow down');
+          expect(treeItems[1].children).toHaveLength(1);
+        });
+
+        test('ArrowRight keydown event moves focus to first child', () => {
+          const sectionButton = treeItems[1].children[0].children[0];
+
+          fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
+
+          // Focus is moved from section button to its first child
+          expect(sectionButton).not.toHaveFocus();
+          expect(treeItems[1].querySelectorAll('a')[0]).toHaveFocus();
+          expect(treeItems[1].children[1]).toHaveTextContent('Using Soap');
+        });
+
+        test('Enter keydown event loads media into the player', () => {
+          const sectionButton = treeItems[1].children[0].children[0];
+          // Press 'Enter' key
+          fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
+          // Calls handleClick in useActiveStructure custom hook
+          expect(handleClickMock).toHaveBeenCalled();
+        });
+      });
+
+      describe('when focused on a timespan item', () => {
+        const mockStopPropagation = jest.spyOn(Event.prototype, 'stopPropagation');
+        beforeEach(() => {
+          // Set focus to structure nav container
+          structuredNav = screen.getByTestId('structured-nav');
+          structuredNav.focus();
+          // Move focus to the first section in structure by pressing ArrowDown thrice
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          treeItems = screen.getAllByTestId('tree-item');
+        });
+
+        test('first child in first section has focus', () => {
+          // First child is the 4th in the list because of 'Washing Hands' div
+          const firstChildTracker = treeItems[3].children[0];
+          const firstChildLink = treeItems[3].children[1];
+          expect(firstChildTracker).toHaveClass('tracker');
+          expect(firstChildLink).toHaveTextContent('Using Soap');
+          expect(firstChildLink).toHaveFocus();
+        });
+
+        test('ArrowRight keydown event does nothing', () => {
+          const firstChild = treeItems[3].children[1];
+          // Press 'ArrowRight' key
+          fireEvent.keyDown(firstChild, { key: 'ArrowRight', keyCode: 39 });
+          expect(mockStopPropagation).toHaveBeenCalledTimes(1);
+        });
+
+        test('ArrowLeft keydown moves focus to section item', () => {
+          const firstChild = treeItems[3].children[1];
+
+          // Press 'ArrowDown' key moves focus to the next timespan: Rinsing Well
+          fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
+          expect(treeItems[4].children[1]).toHaveFocus();
+          expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
+
+          // Press 'ArrowLeft' key moves focus to the parent section: Lunchroom Manners
+          fireEvent.keyDown(treeItems[4].children[1], { key: 'ArrowLeft', keyCode: 37 });
+
+          expect(treeItems[4].children[1]).not.toHaveFocus();
+          expect(treeItems[1].children[0].children[0]).toHaveFocus();
+          expect(treeItems[1].children[0].children[0]).toHaveTextContent('Lunchroom Manners');
+        });
+
+        test('ArrowDown keydown event moves focus to next timespan', () => {
+          const firstChild = treeItems[3].children[1];
+          expect(firstChild).toHaveFocus();
+          // Press 'ArrowDown' key moves focus to the next timespan: Rinsing Well
+          fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
+
+          // Focus is moved from the first child to next
+          expect(firstChild).not.toHaveFocus();
+          expect(treeItems[4].children[1]).toHaveFocus();
+          expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
+        });
+
+        test('Space keydown event activates the timespan', () => {
+          const firstChild = treeItems[3].children[1];
+          expect(firstChild).toHaveFocus();
+          // Press 'ArrowDown' key
+          fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
+
+          // Focus is moved from the first child to next
+          expect(firstChild).not.toHaveFocus();
+          expect(treeItems[4].children[1]).toHaveFocus();
+          expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
+
+          fireEvent.keyDown(treeItems[4].children[1], { key: '', code: 'Space', keyCode: 32 });
+
+          expect(handleClickMock).toHaveBeenCalledTimes(1);
+        });
+      });
+
+      describe('when focused on a non-collapsible section item', () => {
+        beforeEach(() => {
+          // Collapse all sections
+          const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
+          fireEvent.click(collapseExpandAll);
+
+          // Set focus to structure nav container
+          structuredNav = screen.getByTestId('structured-nav');
+          structuredNav.focus();
+
+          // Move focus to the first section in structure by pressing ArrowDown thrice
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          treeItems = screen.getAllByTestId('tree-item');
+        });
+
+        test('second section without collapsible structure has focus', () => {
+          const sectionButton = treeItems[2].children[0].children[0];
+          expect(sectionButton).toHaveTextContent('Lunchroom Manners 2');
+          expect(sectionButton).toHaveFocus();
+
+          // Does not have nested children
+          expect(treeItems[2].children[0].children).toHaveLength(1);
+        });
+
+        test('ArrowRight keydown event does not do anything', () => {
+          const sectionButton = treeItems[2].children[0].children[0];
+          // Press 'ArrowRight' key
+          fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
+          // Calls handleClick in useActiveStructure custom hook
+          expect(handleClickMock).not.toHaveBeenCalled();
+        });
+
+        test('Enter keydown event loads media into the player', () => {
+          const sectionButton = treeItems[2].children[0].children[0];
+          // Press 'Enter' key
+          fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
+          // Calls handleClick in useActiveStructure custom hook
+          expect(handleClickMock).toHaveBeenCalled();
+        });
+      });
+
+      describe('when focused on a collapsed section item', () => {
+        let sectionButton, collapseIcon;
+        beforeEach(() => {
+          // Set focus to structure nav container
+          structuredNav = screen.getByTestId('structured-nav');
+          structuredNav.focus();
+          // Move focus to the first section in structure by pressing ArrowDown twice
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+
+          treeItems = screen.getAllByTestId('tree-item');
+          sectionButton = treeItems[1].children[0].children[0];
+          collapseIcon = treeItems[1].children[0].children[1];
+          // Collapse the section
+          fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
+        });
+
+        test('renders successfully', () => {
+          // First collapsible section has focus
+          expect(sectionButton).toHaveTextContent('Lunchroom Manners');
+          expect(sectionButton).toHaveFocus();
+
+          // Nested child structure is collapsed
+          expect(collapseIcon.children[0]).toHaveClass('arrow down');
+          expect(treeItems[1].children).toHaveLength(1);
+        });
+
+        test('first ArrowRight keydown event expands the section without activation', () => {
+          fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
+
+          // Keeps the focus on section button and expands the section
+          expect(sectionButton).toHaveFocus();
+          expect(treeItems[1].children).toHaveLength(2);
+          expect(collapseIcon.children[0]).toHaveClass('arrow up');
+          expect(handleClickMock).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    test('moves focus to the last item on "ArrowUp" keypress after initial component focus', () => {
       const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-        ...props,
+        showAllSectionsButton: true,
         initialState: {},
       });
       const NavWithManifest = withManifestProvider(NavWithPlayer, {
-        initialState: { ...manifestState(manifest) },
+        initialState: { ...manifestState(singleCanvasManifest) },
       });
       render(
         <ErrorBoundary>
           <NavWithManifest />
         </ErrorBoundary>
       );
-      treeItems = screen.getAllByTestId('tree-item');
+      const structuredNav = screen.getByTestId('structured-nav');
+      structuredNav.focus();
+
+      fireEvent.keyDown(structuredNav, { key: 'ArrowUp', keyCode: 38 });
+
+      expect(screen.queryByText(/Atto Secondo/)).toBeInTheDocument();
+      const lastTimespan = screen.getByText(/Atto Secondo/).parentElement;
+      expect(lastTimespan).toHaveFocus();
+    });
+  });
+
+  describe('renders out-of-range timespan', () => {
+    let structuredNav;
+    beforeEach(() => {
+      const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+        showAllSectionsButton: true,
+        initialState: {},
+      });
+      const NavWithManifest = withManifestProvider(NavWithPlayer, {
+        initialState: { ...manifestState(outOfRangeManifest) },
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithManifest />
+        </ErrorBoundary>
+      );
+      structuredNav = screen.getByTestId('structured-nav');
+      structuredNav.focus();
     });
 
-    test('renders successfully', () => {
-      expect(screen.queryAllByTestId('tree-item').length).toEqual(21);
-      expect(treeItems[0].children[1].children.length).toBe(2);
+    test('as plain text with a tooltip', () => {
+      expect(screen.queryByTestId('out-of-range-timespan')).toBeInTheDocument();
+      expect(screen.queryByText(/Out of Range Timespan/)).toBeInTheDocument();
 
-      expect(treeItems[0].children[1].children[0]).toHaveTextContent('Lunchroom Manners');
-      expect(treeItems[0].children[1].children[1]).toHaveTextContent('Lunchroom Manners 2');
+      const timespanWrapper = screen.getByTestId('out-of-range-timespan');
+      expect(timespanWrapper.children).toHaveLength(2);
 
-      const firstSection = treeItems[0].children[1].children[0];
-      expect(firstSection.children).toHaveLength(2);
+      // <span> elements with the text and tooltip
+      const timespan = timespanWrapper.children[0];
+      const tooltip = timespanWrapper.children[1];
 
-      const secondSection = treeItems[0].children[1].children[1];
-      expect(secondSection.children).toHaveLength(1);
+      // First child is a <span> with the class 'not-clickable'
+      expect(timespan.tagName).toEqual('SPAN');
+      expect(timespan).toHaveClass('ramp--structured-nav__item-link not-clickable');
+      // First child has a <span> child element with the label
+      expect(timespan.children[0].tagName).toEqual('SPAN');
+      expect(timespan.children[0]).toHaveClass('structured-nav__item-label');
+      // Second child is a descriptive tooltip <span> element hidden by default
+      expect(tooltip.tagName).toEqual('SPAN');
+      expect(tooltip).toHaveClass('ramp--structured-nav__tooltip');
+      expect(tooltip).not.toHaveClass('visible');
     });
 
-    describe('when focused on an expanded section item', () => {
+    describe('and displays the description tooltip on', () => {
+      let timespanWrapper, timespan, tooltip;
       beforeEach(() => {
-        // Set focus to structure nav container
-        structuredNav = screen.getByTestId('structured-nav');
-        structuredNav.focus();
-        // Move focus to the first section in structure by pressing ArrowDown twice
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        treeItems = screen.getAllByTestId('tree-item');
+        timespanWrapper = screen.getByTestId('out-of-range-timespan');
+        // <span> elements with the text and tooltip
+        timespan = timespanWrapper.children[0];
+        tooltip = timespanWrapper.children[1];
       });
 
-      test('first section with collapsible structure has focus', () => {
-        const sectionButton = treeItems[1].children[0].children[0];
-        const collapseIcon = treeItems[1].children[0].children[1];
+      test('keyboard focus on timespan', () => {
+        expect(structuredNav).toHaveFocus();
+        expect(timespan).toHaveTextContent(/Out of Range Timespan/);
+        expect(tooltip).not.toHaveClass('visible');
 
-        // First collapsible section has focus
-        expect(sectionButton).toHaveTextContent('Lunchroom Manners');
-        expect(sectionButton).toHaveFocus();
-
-        // Nested child structure is expanded
-        expect(collapseIcon.children[0]).toHaveClass('arrow up');
-        expect(treeItems[1].children).toHaveLength(2);
-        expect(treeItems[1].children[1].tagName).toEqual('UL');
-      });
-
-      test('ArrowLeft keydown event collapses the nested structure', () => {
-        const sectionButton = treeItems[1].children[0].children[0];
-        const collapseIcon = treeItems[1].children[0].children[1];
-
-        fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
-
-        // Collapses on click and hides the nested child structure
-        expect(collapseIcon.children[0]).toHaveClass('arrow down');
-        expect(treeItems[1].children).toHaveLength(1);
-      });
-
-      test('ArrowRight keydown event moves focus to first child', () => {
-        const sectionButton = treeItems[1].children[0].children[0];
-
-        fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
-
-        // Focus is moved from section button to its first child
-        expect(sectionButton).not.toHaveFocus();
-        expect(treeItems[1].querySelectorAll('a')[0]).toHaveFocus();
-        expect(treeItems[1].children[1]).toHaveTextContent('Using Soap');
-      });
-
-      test('Enter keydown event loads media into the player', () => {
-        const sectionButton = treeItems[1].children[0].children[0];
-        // Press 'Enter' key
-        fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
-        // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).toHaveBeenCalled();
-      });
-    });
-
-    describe('when focused on a timespan item', () => {
-      const mockStopPropagation = jest.spyOn(Event.prototype, 'stopPropagation');
-      beforeEach(() => {
-        // Set focus to structure nav container
-        structuredNav = screen.getByTestId('structured-nav');
-        structuredNav.focus();
-        // Move focus to the first section in structure by pressing ArrowDown thrice
+        // Moves focus to the out-of-range timespan by pressing ArrowDown 3 times
         fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
         fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
         fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        treeItems = screen.getAllByTestId('tree-item');
+
+        expect(timespan).toHaveFocus();
+        expect(timespan.tagName).toEqual('SPAN');
+        expect(timespan).toHaveClass('not-clickable');
+
+        expect(tooltip).toHaveClass('visible');
       });
 
-      test('first child in first section has focus', () => {
-        // First child is the 4th in the list because of 'Washing Hands' div
-        const firstChildTracker = treeItems[3].children[0];
-        const firstChildLink = treeItems[3].children[1];
-        expect(firstChildTracker).toHaveClass('tracker');
-        expect(firstChildLink).toHaveTextContent('Using Soap');
-        expect(firstChildLink).toHaveFocus();
-      });
+      test('pointer hover over timepspan wrapper', () => {
+        expect(structuredNav).toHaveFocus();
+        expect(timespan).toHaveTextContent(/Out of Range Timespan/);
+        expect(tooltip).not.toHaveClass('visible');
 
-      test('ArrowRight keydown event does nothing', () => {
-        const firstChild = treeItems[3].children[1];
-        // Press 'ArrowRight' key
-        fireEvent.keyDown(firstChild, { key: 'ArrowRight', keyCode: 39 });
-        expect(mockStopPropagation).toHaveBeenCalledTimes(1);
-      });
+        fireEvent.mouseOver(timespanWrapper);
 
-      test('ArrowLeft keydown moves focus to section item', () => {
-        const firstChild = treeItems[3].children[1];
-
-        // Press 'ArrowDown' key moves focus to the next timespan: Rinsing Well
-        fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
-        expect(treeItems[4].children[1]).toHaveFocus();
-        expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
-
-        // Press 'ArrowLeft' key moves focus to the parent section: Lunchroom Manners
-        fireEvent.keyDown(treeItems[4].children[1], { key: 'ArrowLeft', keyCode: 37 });
-
-        expect(treeItems[4].children[1]).not.toHaveFocus();
-        expect(treeItems[1].children[0].children[0]).toHaveFocus();
-        expect(treeItems[1].children[0].children[0]).toHaveTextContent('Lunchroom Manners');
-      });
-
-      test('ArrowDown keydown event moves focus to next timespan', () => {
-        const firstChild = treeItems[3].children[1];
-        expect(firstChild).toHaveFocus();
-        // Press 'ArrowDown' key moves focus to the next timespan: Rinsing Well
-        fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
-
-        // Focus is moved from the first child to next
-        expect(firstChild).not.toHaveFocus();
-        expect(treeItems[4].children[1]).toHaveFocus();
-        expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
-      });
-
-      test('Space keydown event activates the timespan', () => {
-        const firstChild = treeItems[3].children[1];
-        expect(firstChild).toHaveFocus();
-        // Press 'ArrowDown' key
-        fireEvent.keyDown(firstChild, { key: 'ArrowDown', keyCode: 40 });
-
-        // Focus is moved from the first child to next
-        expect(firstChild).not.toHaveFocus();
-        expect(treeItems[4].children[1]).toHaveFocus();
-        expect(treeItems[4].children[1]).toHaveTextContent('Rinsing Well');
-
-        fireEvent.keyDown(treeItems[4].children[1], { key: '', code: 'Space', keyCode: 32 });
-
-        expect(handleClickMock).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('when focused on a non-collapsible section item', () => {
-      beforeEach(() => {
-        // Collapse all sections
-        const collapseExpandAll = screen.getByTestId('collapse-expand-all-btn');
-        fireEvent.click(collapseExpandAll);
-
-        // Set focus to structure nav container
-        structuredNav = screen.getByTestId('structured-nav');
-        structuredNav.focus();
-
-        // Move focus to the first section in structure by pressing ArrowDown thrice
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        treeItems = screen.getAllByTestId('tree-item');
-      });
-
-      test('second section without collapsible structure has focus', () => {
-        const sectionButton = treeItems[2].children[0].children[0];
-        expect(sectionButton).toHaveTextContent('Lunchroom Manners 2');
-        expect(sectionButton).toHaveFocus();
-
-        // Does not have nested children
-        expect(treeItems[2].children[0].children).toHaveLength(1);
-      });
-
-      test('ArrowRight keydown event does not do anything', () => {
-        const sectionButton = treeItems[2].children[0].children[0];
-        // Press 'ArrowRight' key
-        fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
-        // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).not.toHaveBeenCalled();
-      });
-
-      test('Enter keydown event loads media into the player', () => {
-        const sectionButton = treeItems[2].children[0].children[0];
-        // Press 'Enter' key
-        fireEvent.keyDown(sectionButton, { key: 'Enter', keyCode: 13 });
-        // Calls handleClick in useActiveStructure custom hook
-        expect(handleClickMock).toHaveBeenCalled();
-      });
-    });
-
-    describe('when focused on a collapsed section item', () => {
-      let sectionButton, collapseIcon;
-      beforeEach(() => {
-        // Set focus to structure nav container
-        structuredNav = screen.getByTestId('structured-nav');
-        structuredNav.focus();
-        // Move focus to the first section in structure by pressing ArrowDown twice
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
-
-        treeItems = screen.getAllByTestId('tree-item');
-        sectionButton = treeItems[1].children[0].children[0];
-        collapseIcon = treeItems[1].children[0].children[1];
-        // Collapse the section
-        fireEvent.keyDown(sectionButton, { key: 'ArrowLeft', keyCode: 37 });
-      });
-
-      test('renders successfully', () => {
-        // First collapsible section has focus
-        expect(sectionButton).toHaveTextContent('Lunchroom Manners');
-        expect(sectionButton).toHaveFocus();
-
-        // Nested child structure is collapsed
-        expect(collapseIcon.children[0]).toHaveClass('arrow down');
-        expect(treeItems[1].children).toHaveLength(1);
-      });
-
-      test('first ArrowRight keydown event expands the section without activation', () => {
-        fireEvent.keyDown(sectionButton, { key: 'ArrowRight', keyCode: 39 });
-
-        // Keeps the focus on section button and expands the section
-        expect(sectionButton).toHaveFocus();
-        expect(treeItems[1].children).toHaveLength(2);
-        expect(collapseIcon.children[0]).toHaveClass('arrow up');
-        expect(handleClickMock).not.toHaveBeenCalled();
+        expect(timespan).not.toHaveFocus();
+        expect(tooltip).toHaveClass('visible');
       });
     });
   });

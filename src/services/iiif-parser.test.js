@@ -11,6 +11,7 @@ import multiCanvasV4Manifest from '@TestData/multi-canvas-v4';
 import audiannotateTest from '@TestData/audiannotate-test';
 import adManifest from '@TestData/ad-annotation';
 import authManifest from '@TestData/auth-manifest';
+import outOfRangeManifest from '@TestData/out-of-range-structure';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 
@@ -921,6 +922,26 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.duration).toEqual('00:32');
       expect(firstStructCanvas.canvasDuration).toEqual(32);
       expect(firstStructCanvas.times).toEqual({ start: 0, end: 32 });
+    });
+
+    it('marks a timespan as not clickable when its times are out-of-range of Canvas duration', () => {
+      const { structures, timespans } = iiifParser.getStructureRanges(
+        outOfRangeManifest, iiifParser.canvasesInManifest(outOfRangeManifest)
+      );
+      expect(structures).toHaveLength(1);
+      expect(timespans).toHaveLength(2);
+
+      const inRangeTimespan = timespans[0];
+      expect(inRangeTimespan.label).toEqual('In Range Timespan');
+      expect(inRangeTimespan.times).toEqual({ start: 0, end: 150 });
+      expect(inRangeTimespan.canvasDuration).toEqual(660);
+      expect(inRangeTimespan.isClickable).toBeTruthy();
+
+      const outOfRangeTimespan = timespans[1];
+      expect(outOfRangeTimespan.label).toEqual('Out of Range Timespan');
+      expect(outOfRangeTimespan.times).toEqual({ start: 670, end: 700 });
+      expect(outOfRangeTimespan.canvasDuration).toEqual(660);
+      expect(outOfRangeTimespan.isClickable).toBeFalsy();
     });
 
     it('return empty structures and timespans when behavior is set to thumbnail-nav', () => {
