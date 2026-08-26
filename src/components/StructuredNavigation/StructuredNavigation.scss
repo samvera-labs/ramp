@@ -200,6 +200,40 @@ ul.ramp--structured-nav__tree {
       .structured-nav__item-label {
         margin-left: 0.2em;
       }
+
+      // Out-of-range timespans rendered as plain text
+      &.not-clickable {
+        color: vars.$primaryDark;
+        cursor: not-allowed;
+      }
+    }
+
+    .ramp--structured-nav__tooltip-wrapper {
+      position: relative;
+      display: inline-block;
+
+      // Show visible outline on keyboard focus for out-of-range timespan
+      .ramp--structured-nav__item.not-clickable:focus {
+        outline: 1px solid vars.$primaryDark;
+        outline-offset: 2px;
+      }
+
+      .ramp--structured-nav__tooltip {
+        display: none;
+        position: absolute;
+        left: 0;
+        bottom: 100%;
+        margin-bottom: 0.3em;
+        padding: 0.4em 0.6em;
+        border-radius: 0.25rem;
+        background-color: vars.$primaryDarker;
+        color: #fff;
+        font-size: vars.$fontSizeMedium;
+
+        &.visible {
+          display: block;
+        }
+      }
     }
 
     ul {

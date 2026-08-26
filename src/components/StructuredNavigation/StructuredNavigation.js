@@ -211,9 +211,10 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   };
 
   const handleKeyDown = (e) => {
-    // Get all linked structure items in the component
+    // Get all timespan (both links/plain text) structure items in the component
     const structureItems = structureContainerRef.current.querySelectorAll(
-      'button.ramp--structured-nav__section-title, a.ramp--structured-nav__item-link'
+      'button.ramp--structured-nav__section-title, a.ramp--structured-nav__item-link, \
+      span.ramp--structured-nav__item-link.not-clickable'
     );
     if (structureItems?.length > 0) {
       // Re-calculate the nextIndex when focused item is changed from within TreeNode
@@ -233,7 +234,10 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         nextIndex = (focusedItemIndexRef.current + 1) % structureItems.length;
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
-        nextIndex = (focusedItemIndexRef.current - 1 + structureItems.length) % structureItems.length;
+        // When nothing has been focused yet, pressing 'up' arrow moves focus to the last struct item
+        nextIndex = focusedItemIndexRef.current < 0
+          ? structureItems.length - 1
+          : (focusedItemIndexRef.current - 1 + structureItems.length) % structureItems.length;
         e.preventDefault();
       } else if (e.key === 'Tab') {
         if (e.shiftKey) {

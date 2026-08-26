@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import TreeNode from './TreeNode';
 import {
   withManifestProvider,
@@ -199,7 +199,7 @@ describe('TreeNode component', () => {
     setFocusedItem: setFocusedItemMock,
   };
   const canvasItemWithMediaFragment = {
-    id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,572.32',
+    id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=0.0,572.32',
     duration: '09:32',
     rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
     isTitle: false,
@@ -213,7 +213,7 @@ describe('TreeNode component', () => {
     label: 'Lunchroom Manners',
     items: [
       {
-        id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321',
+        id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=0.0,45.321',
         duration: '00:45',
         rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-1',
         isTitle: false,
@@ -229,7 +229,7 @@ describe('TreeNode component', () => {
         times: { start: 0, end: 45.321 },
       },
       {
-        id: 'https://example.com/manifest/lunchroome_manners/canvas/1#t=60,120.321',
+        id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=60,120.321',
         duration: '01:00',
         rangeId: 'https://example.com/manifest/lunchroom_manners/range/1-2',
         isTitle: false,
@@ -249,6 +249,26 @@ describe('TreeNode component', () => {
     sectionRef: sectionRef,
     structureContainerRef,
     times: { start: 0, end: 0 },
+    setFocusedItem: setFocusedItemMock,
+  };
+  const outOfRangeItem = {
+    id: 'https://example.com/manifest/lunchroom_manners/canvas/1#t=650,700',
+    duration: '00:50',
+    rangeId: 'https://example.com/manifest/lunchroom_manners/range/1',
+    isTitle: false,
+    isCanvas: false,
+    canvasIndex: 1,
+    itemIndex: 3,
+    isClickable: false,
+    isEmpty: false,
+    isRoot: false,
+    label: 'Out of Range Timespan',
+    items: [],
+    canvasDuration: 572.034,
+    times: { start: 650, end: 700 },
+    sectionCount: 1,
+    sectionRef: sectionRef,
+    structureContainerRef,
     setFocusedItem: setFocusedItemMock,
   };
 
@@ -502,6 +522,52 @@ describe('TreeNode component', () => {
       const structItem = screen.getByText('Part I (00:45)');
       expect(structItem.parentElement.getAttribute('href'))
         .toEqual('https://example.com/manifest/lunchroome_manners/canvas/1#t=0.0,45.321');
+    });
+  });
+
+  describe('with an out-of-range timespan', () => {
+    beforeEach(() => {
+      const props = { ...outOfRangeItem };
+      const TreeNodeWithPlayer = withPlayerProvider(TreeNode, {
+        ...props,
+        initialState: {},
+      });
+      const TreeNodeWithManifest = withManifestProvider(TreeNodeWithPlayer, {
+        initialState: { ...initialManifestState, playlist: { isPlaylist: false } },
+      });
+      render(<TreeNodeWithManifest />);
+    });
+
+    test('renders as plain text', () => {
+      expect(screen.queryByText(/Out of Range Timespan \(00:50/)).toBeInTheDocument();
+      expect(screen.getByText(/Out of Range Timespan \(00:50/).tagName).toBe('SPAN');
+      expect(screen.getByText(/Out of Range Timespan \(00:50/)).toHaveClass('structured-nav__item-label');
+    });
+
+    test('renders an accessible tooltip description elements', () => {
+      const timespanParent = screen.getByText(/Out of Range Timespan \(00:50/).parentElement;
+
+      expect(timespanParent.tagName).toBe('SPAN');
+      expect(timespanParent).toHaveClass('ramp--structured-nav__item-link not-clickable');
+      expect(timespanParent).not.toHaveAttribute('href');
+
+      // Has tabIndex set to enable keyboard navigation using roving tabindex
+      expect(timespanParent).toHaveAttribute('tabIndex', '-1');
+
+      // Has an accessible description pointing to a tooltip element
+      expect(timespanParent).toHaveAttribute(
+        'aria-describedby', 'out-of-range-https://example.com/manifest/lunchroom_manners/range/1'
+      );
+
+      const descTooltip = document.getElementById(timespanParent.getAttribute('aria-describedby'));
+      expect(descTooltip).toBeInTheDocument();
+      expect(descTooltip).toHaveAttribute('role', 'tooltip');
+      expect(descTooltip.tagName).toBe('SPAN');
+      expect(descTooltip).toHaveClass('ramp--structured-nav__tooltip');
+      expect(descTooltip).not.toHaveClass('visible');
+      expect(descTooltip).toHaveTextContent(
+        'This timespan is outside the available media duration and cannot be played.'
+      );
     });
   });
 });
