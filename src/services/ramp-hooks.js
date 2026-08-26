@@ -62,6 +62,7 @@ export const useMarkers = () => {
 export const useMediaPlayer = () => {
   const manifestState = useContext(ManifestStateContext);
   const playerState = useContext(PlayerStateContext);
+  const playerDispatch = useContext(PlayerDispatchContext);
 
   const { player } = playerState;
   const { allCanvases, canvasIndex, canvasIsEmpty } = manifestState;
@@ -114,7 +115,7 @@ export const useMediaPlayer = () => {
   }, [manifestState]);
 
   /**
-   * Reset the player to Video player's aspect ratio (16:9) on logout from IIIF Auth.
+   * Reset the player state and UI on logout from IIIF Auth.
    * This restores the player container to a 16:9 aspect ratio before the 'AuthOverlay'
    * re-renders after auth state transition from 'authorized' -> 'idle'.
    * At the same time; it resets the player so that, the previously authorized
@@ -135,6 +136,15 @@ export const useMediaPlayer = () => {
       player.addClass('vjs-disabled');
       player.src('');
       player.tech().el().load();
+      /* Clear source-fallback tracking so that, when a user logs out and in again on the same
+      Canvas they don't get blocked by a source that was marked failed in the split-seconds of
+      auth status change. Without this reset, a re-authorized resource would inherit stale failures
+      and skip perfectly working sources unnecessarily. */
+      player.failedSources = [];
+      player.failedSourceIndices = [];
+      player.isFallingBack = false;
+      // Pause playback on reset
+      playerDispatch({ isPlaying: false, type: 'setPlayingStatus' });
     }
   }, [playerRef.current]);
 
@@ -662,7 +672,7 @@ export const useVideoJSPlayer = ({
     //if found set selected attribute on matching source then remove from currently marked one
     const originalQuality = sources?.find((source) => source.selected == true);
     const selectedQuality = sources?.find((source) => source.label == startQuality);
-    if (selectedQuality && originalQuality) {
+    if (selectedQuality && originalQuality && selectedQuality !== originalQuality) {
       selectedQuality.selected = true;
       originalQuality.selected = false;
     }

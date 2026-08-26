@@ -118,6 +118,22 @@ describe('AuthOverlay', () => {
         expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
       });
     });
+
+    describe('authenticated badge when authStatus="authorized-external" for', () => {
+      test('a video player with a logoutService', () => {
+        render(<AuthOverlay {...props} authStatus='authorized-external' isVideo={true}
+          authService={{ ...defaultAuthService, logoutService: { id: 'http://example.com/auth/logout' } }} />);
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
+
+      test('an audio-only player', () => {
+        render(<AuthOverlay {...props} authStatus='authorized-external' isVideo={false}
+          authService={{ ...defaultAuthService, logoutService: { id: 'http://example.com/auth/logout' } }} />);
+        expect(screen.queryByTestId('auth-badge')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('auth-overlay')).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe('renders the login', () => {
@@ -193,12 +209,24 @@ describe('AuthOverlay', () => {
       });
     });
 
-    test('updates authStatus=\'authorized\' in state when probe returns 200', async () => {
+    test('updates authStatus=\'authorized-external\' in state when probe returns 200', async () => {
+      /* A 200 on the initial probe without a token implies resource is already accessible without
+      needing Ramp to aquire a token. i.e. auth handled by an external mechanism. */
       authService.probeResource.mockResolvedValue({ status: 200 });
       render(<AuthOverlay {...props} authStatus='idle' />);
       await waitFor(() => {
-        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized');
+        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized-external');
       });
+      expect(onTokenReceivedMock).not.toHaveBeenCalled();
+    });
+
+    test('updates authStatus=\'authorized-external\' in state when probe HEAD request returns 200', async () => {
+      authService.probeResource.mockResolvedValue({ status: 200, authIsExternal: true });
+      render(<AuthOverlay {...props} authStatus='idle' />);
+      await waitFor(() => {
+        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized-external');
+      });
+      expect(onTokenReceivedMock).not.toHaveBeenCalled();
     });
   });
 
@@ -224,6 +252,19 @@ describe('AuthOverlay', () => {
         expect(onTokenReceivedMock).toHaveBeenCalledWith('valid-token');
         expect(onAuthStatusMock).toHaveBeenCalledWith('authorized');
       });
+    });
+
+    test('updates state and skips the token when it falls back to a HEAD request', async () => {
+      authService.requestTokenViaIframe.mockResolvedValue({ accessToken: 'valid-token' });
+      authService.probeResource.mockResolvedValue({ status: 200, authIsExternal: true });
+
+      render(<AuthOverlay {...updatedProps} />);
+      fireEvent.click(screen.getByTestId('auth-login-btn'));
+
+      await waitFor(() => {
+        expect(onAuthStatusMock).toHaveBeenCalledWith('authorized-external');
+      });
+      expect(onTokenReceivedMock).not.toHaveBeenCalled();
     });
 
     test('displays an error when probe 401', async () => {

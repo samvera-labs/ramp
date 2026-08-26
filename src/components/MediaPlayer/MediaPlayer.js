@@ -209,8 +209,9 @@ const MediaPlayer = ({
             { trackScrubberRef, timeToolRef, isPlaylist },
           videoJSADButton: (audioDescTracks.length > 0) && { audioDescTracks }
         },
-        // Only pass along the sources with access in VideoJS options
-        sources: (authService && auth?.status !== 'authorized')
+        /* Only pass along the sources with access in VideoJS options. Allow both 'authorized' and
+          'authorized-external' auth statuses to pass through. */
+        sources: (authService && !['authorized', 'authorized-external'].includes(auth?.status))
           ? []
           : (isMultiSourced ? [sources[srcIndex]] : sources),
         errorDisplay: {

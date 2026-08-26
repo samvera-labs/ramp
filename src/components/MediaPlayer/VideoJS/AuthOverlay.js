@@ -55,11 +55,12 @@ function AuthOverlay({ authService, authStatus, isVideo, onBadgeFocus, onTokenRe
     onAuthStatus('probing');
     probeResource(probe.id, null)
       .then(({ status }) => {
-        if (status === 200) {
-          onAuthStatus('authorized');
-        } else {
-          onAuthStatus('login-required');
-        }
+        /* When 'probeResource' returns 200 on this initial tokenless probe request, then the resource
+        is already accessible without Ramp having to acquire an auth token. i.e. some external
+        mechanism (e.g. a host application's session) has already authenticated the user. Therefore,
+        Ramp doesn't need to manage interactions related to authentication such as login/logout.
+        Setting the authStatus="authorized-external" blocks rendering the login/logout UI inside Ramp. */
+        onAuthStatus(status === 200 ? 'authorized-external' : 'login-required');
       })
       .catch(() => {
         onAuthStatus('login-required');
@@ -117,11 +118,14 @@ function AuthOverlay({ authService, authStatus, isVideo, onBadgeFocus, onTokenRe
     requestTokenViaIframe(tokenService.id, origin)
       .then(async ({ accessToken }) => {
         // Re-probe the resource with token
-        const { status, heading, note } = await probeResource(probe.id, accessToken);
+        const { status, heading, note, authIsExternal } = await probeResource(probe.id, accessToken);
         if (status === 200) {
           setErrorMessage(null);
-          onTokenReceived(accessToken);
-          onAuthStatus('authorized');
+          // Only store the token when the authentication is handled by Ramp not and an external host application
+          if (!authIsExternal) {
+            onTokenReceived(accessToken);
+          }
+          onAuthStatus(authIsExternal ? 'authorized-external' : 'authorized');
         } else {
           const errHeading = getLabelValue(heading) || probe.errorHeading;
           const errNote = getLabelValue(note) || probe.errorNote;
@@ -193,8 +197,11 @@ function AuthOverlay({ authService, authStatus, isVideo, onBadgeFocus, onTokenRe
     onAuthStatus('cancelled');
   };
 
-  // Do not show the auth overlay when auth status doesn't indicate that login is required
-  if (authStatus === 'idle' || authStatus === 'probing' || authStatus === 'cancelled') {
+  /* Do not show the auth overlay when auth status doesn't indicate that login is required ('idle'/
+  'probing'/'cancelled'). OR 'authorized-external', which means authentication is handled by an external
+  application. */
+  if (authStatus === 'idle' || authStatus === 'probing' || authStatus === 'cancelled'
+    || authStatus === 'authorized-external') {
     return null;
   }
 
