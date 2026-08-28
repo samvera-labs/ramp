@@ -206,15 +206,6 @@ function VideoJSPlayer({
       });
     });
 
-    /* VHS can re-report an individual source's duration via a 'durationchange' event
-    after the initial play/seek events. This silently over-writes the Canvas duration
-    set by Ramp. This is especially required for multi-source Canvases. */
-    player.on('durationchange', () => {
-      if (canvasDurationRef.current && player.duration() !== canvasDurationRef.current) {
-        player.duration(canvasDurationRef.current);
-      }
-    });
-
     player.on('ready', function () {
       console.log('Player ready');
 
