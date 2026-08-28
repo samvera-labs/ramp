@@ -622,7 +622,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
             // Build suffixes for i > 26 by stacking characters
             let suffix = '';
             while (i >= 0) {
-              suffix += String.fromCharCode(97 + (i % 26));
+              suffix = String.fromCharCode(97 + (i % 26)) + suffix;
               i = Math.floor(i / 26) - 1;
             }
             return parseCanvasPart(c, groupIndex, `${groupIndex}${suffix}`);
