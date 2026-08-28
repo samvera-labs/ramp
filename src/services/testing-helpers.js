@@ -50,5 +50,21 @@ export function manifestState(manifest, canvasIndex = 0, isPlaylist = false) {
     renderings: getRenderingFiles(manifest),
     annotations: [],
     auth: { token: null, status: 'idle' },
+    srcIndex: 0,
   };
+};
+
+// Build a minimal valid 'audiowaveform' binary buffer dataset
+export const buildWaveformBinary = (samples) => {
+  const headerSize = 24;
+  const buffer = new ArrayBuffer(headerSize + samples.length);
+  const view = new DataView(buffer);
+  view.setInt32(0, 2, true);
+  view.setUint32(4, 1, true);
+  view.setInt32(8, 44100, true);
+  view.setInt32(12, 512, true);
+  view.setUint32(16, samples.length / 2, true);
+  view.setInt32(20, 1, true);
+  new Int8Array(buffer, headerSize).set(samples);
+  return buffer;
 };

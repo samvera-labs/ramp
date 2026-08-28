@@ -12,8 +12,10 @@ import audiannotateTest from '@TestData/audiannotate-test';
 import adManifest from '@TestData/ad-annotation';
 import authManifest from '@TestData/auth-manifest';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
+import waveformManifestRaw from '@TestData/waveform-example';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
+import cloneDeep from 'lodash/cloneDeep';
 
 describe('iiif-parser', () => {
   describe('canvasesInManifest()', () => {
@@ -133,9 +135,9 @@ describe('iiif-parser', () => {
     });
 
     describe('returns waveform information', () => {
-      test('returns null for waveform by default', () => {
+      test('returns an empty array for waveform by default', () => {
         const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
-        expect(canvases[0].waveform).toBeNull();
+        expect(canvases[0].waveform).toEqual([]);
       });
 
       test('returns waveform from both "seeAlso" and "accompanyingCanvas" props', () => {
@@ -167,13 +169,13 @@ describe('iiif-parser', () => {
           ],
         };
         const canvases = iiifParser.canvasesInManifest(manifestWithWaveforms);
-        expect(canvases[0].waveform).toEqual({
-          id: 'http://example.com/waveform-1.json', format: 'application/json', waveformType: 'data', source: 'seeAlso',
-        });
-        expect(canvases[1].waveform).toBeNull();
-        expect(canvases[2].waveform).toEqual({
-          id: 'http://example.com/waveform-3.png', format: 'image/jpeg', waveformType: 'image', source: 'accompanyingCanvas',
-        });
+        expect(canvases[0].waveform).toEqual([
+          { id: 'http://example.com/waveform-1.json', format: 'application/json', waveformType: 'data', source: 'seeAlso' },
+        ]);
+        expect(canvases[1].waveform).toEqual([]);
+        expect(canvases[2].waveform).toEqual([
+          { id: 'http://example.com/waveform-3.png', format: 'image/jpeg', waveformType: 'image', source: 'accompanyingCanvas' },
+        ]);
       });
     });
   });
@@ -1214,30 +1216,27 @@ describe('iiif-parser', () => {
   });
 
   describe('getWaveformResource()', () => {
-    const canvas = {
-      duration: 1094.977, height: 1080, width: 1920, service: [], thumbnail: [], type: "Canvas", items: [],
-      id: "http://example.com/manifest/canvas/1", label: { en: ['Canvas'] },
-      placeholderCanvas: { type: "Canvas", id: "http://example.com/manifest/canvas/1/placeholder", width: 1280, height: 720 },
-    };
-    test('returns null when Canvas is empty', () => {
-      expect(iiifParser.getWaveformResource({})).toBeNull();
+    let waveformManifest;
+    beforeEach(() => {
+      // Reset the waveform data before each test
+      waveformManifest = cloneDeep(waveformManifestRaw);
     });
 
-    test('returns null when Canvas doesn\'t have both "seeAlso" and "accompanyingCanvas"', () => {
-      expect(iiifParser.getWaveformResource(canvas)).toBeNull();
+    test('returns an empty array when Canvas is empty', () => {
+      expect(iiifParser.getWaveformResource({})).toEqual([]);
+    });
+
+    test('returns an empty array when Canvas doesn\'t have both "seeAlso" and "accompanyingCanvas"', () => {
+      expect(iiifParser.getWaveformResource(lunchroomManifest.items[0])).toEqual([]);
     });
 
     describe('when "seeAlso"', () => {
-      test('doesn\'t include a recognized waveform format returns null', () => {
-        expect(iiifParser.getWaveformResource({
-          ...canvas,
-          seeAlso: [{ id: 'http://example.com/structure.xml', type: 'Dataset', format: 'application/xml' }],
-        })).toBeNull();
+      test('doesn\'t include a recognized waveform format returns an empty array', () => {
+        expect(iiifParser.getWaveformResource(waveformManifest.items[3])).toEqual([]);
       });
 
       test('has a .dat resource returns waveformType: "data" ', () => {
-        const seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset', format: 'application/octet-stream' }];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const [waveform] = iiifParser.getWaveformResource(waveformManifest.items[2]);
         expect(waveform.waveformType).toBe('data');
         expect(waveform.id).toBe('http://example.com/waveform.dat');
         expect(waveform.source).toBe('seeAlso');
@@ -1245,25 +1244,19 @@ describe('iiif-parser', () => {
       });
 
       test('has a .json resource returns waveformType: "data"', () => {
-        const seeAlso = [{ id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' }];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const [waveform] = iiifParser.getWaveformResource(waveformManifest.items[0]);
         expect(waveform.waveformType).toBe('data');
         expect(waveform.source).toBe('seeAlso');
         expect(waveform.id).toBe('http://example.com/waveform.json');
         expect(waveform.format).toBe('application/json');
       });
 
-      test('has a .png resource returns null', () => {
-        const seeAlso = [{ id: 'https://example.com/waveform.png', type: 'Image', format: 'image/png' }];
-        expect(iiifParser.getWaveformResource({ ...canvas, seeAlso })).toBeNull();
+      test('has a .png resource returns an empty array', () => {
+        expect(iiifParser.getWaveformResource(waveformManifest.items[5])).toEqual([]);
       });
 
       test('has both dataset and image resources binary dataset takes precendence', () => {
-        const seeAlso = [
-          { id: 'http://example.com/waveform.png', type: 'Image', format: 'image/png' },
-          { id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' },
-        ];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const [waveform] = iiifParser.getWaveformResource(waveformManifest.items[6]);
         expect(waveform.waveformType).toBe('data');
         expect(waveform.id).toBe('http://example.com/waveform.json');
       });
@@ -1271,8 +1264,9 @@ describe('iiif-parser', () => {
 
     describe('resolves type using resource id extension when format is absent for', () => {
       test('a seeAlso resource', () => {
-        const seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset' }];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const canvas = waveformManifest.items[0];
+        canvas.seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset' }];
+        const [waveform] = iiifParser.getWaveformResource(canvas);
         expect(waveform.waveformType).toBe('data');
         expect(waveform.source).toBe('seeAlso');
         expect(waveform.id).toBe('http://example.com/waveform.dat');
@@ -1280,18 +1274,11 @@ describe('iiif-parser', () => {
       });
 
       test('an accompanyingCanvas resource', () => {
-        const accompanyingCanvas = {
-          type: 'Canvas',
-          label: { en: ['Waveform'] },
-          items: [{
-            type: 'AnnotationPage',
-            items: [{
-              type: 'Annotation', motivation: 'painting',
-              body: { id: 'http://example.com/waveform.png', type: 'Image' },
-            }],
-          }],
+        const canvas = waveformManifest.items[1];
+        canvas.accompanyingCanvas.items[0].items[0].body = {
+          id: 'http://example.com/waveform.png', type: 'Image', height: 200, width: 800
         };
-        const waveform = iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas });
+        const [waveform] = iiifParser.getWaveformResource(canvas);
         expect(waveform.waveformType).toBe('image');
         expect(waveform.source).toBe('accompanyingCanvas');
         expect(waveform.id).toBe('http://example.com/waveform.png');
@@ -1301,61 +1288,53 @@ describe('iiif-parser', () => {
 
     describe('when "accompanyingCanvas"', () => {
       test('has a waveform image returns waveformType: "image"', () => {
-        const accompanyingCanvas = {
-          type: 'Canvas', label: { en: ['Waveform data as an image'] },
-          items: [{
-            type: 'AnnotationPage',
-            items: [{
-              type: 'Annotation', motivation: 'painting',
-              body: {
-                id: 'http://example.com/waveform.png',
-                type: 'Image', format: 'image/jpeg',
-              },
-            }],
-          }],
-        };
-        const waveform = iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas });
+        const [waveform] = iiifParser.getWaveformResource(waveformManifest.items[1]);
         expect(waveform.waveformType).toBe('image');
-        expect(waveform.id).toBe('http://example.com/waveform.png');
+        expect(waveform.id).toBe('http://example.com/waveform.jpg');
         expect(waveform.format).toBe('image/jpeg');
         expect(waveform.source).toBe('accompanyingCanvas');
       });
 
-      test('doesn\'t have text "waveform" in its label returns null', () => {
-        const accompanyingCanvas = {
-          type: 'Canvas',
-          label: { en: ['Poster frame'] },
-          items: [{
-            type: 'AnnotationPage',
-            items: [{
-              type: 'Annotation', motivation: 'painting',
-              body: { id: 'http://example.com/poster.png', type: 'Image', format: 'image/png' },
-            }],
-          }],
-        };
-        expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
+      test('doesn\'t have text "waveform" in its label returns an empty array', () => {
+        const canvas = waveformManifest.items[1];
+        canvas.accompanyingCanvas.label = { en: ["Poster Image"] };
+        expect(iiifParser.getWaveformResource(canvas)).toEqual([]);
       });
     });
 
     test('"seeAlso" takes precendence over "accompanyingCanvas" when both are present', () => {
-      const waveformRes = {
-        seeAlso: [{ id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' }],
-        accompanyingCanvas: {
-          label: { en: ['Waveform as an image'] },
-          items: [{ items: [{ body: { id: 'http://example.com/waveform.png', type: 'Image', format: 'image/png' } }] }],
-        },
-      };
-      const waveform = iiifParser.getWaveformResource({ ...canvas, ...waveformRes });
+      const [waveform] = iiifParser.getWaveformResource(waveformManifest.items[4]);
       expect(waveform.waveformType).toBe('data');
       expect(waveform.source).toBe('seeAlso');
     });
 
-    test('returns null when "accompanyingCanvas" is not an image with text "waveform" in label', () => {
-      const accompanyingCanvas = {
+    test('returns an empty array when "accompanyingCanvas" is not an image with text "waveform" in label', () => {
+      const canvas = waveformManifest.items[1];
+      canvas.accompanyingCanvas = {
+        id: "http://example.com/waveform-example/canvas/2/accompanying",
         label: { en: ['WebVTT not a waveform'] },
         items: [{ items: [{ body: { id: 'https://example.com/text.vtt', type: 'Text' } }] }]
       };
-      expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
+      expect(iiifParser.getWaveformResource(canvas)).toEqual([]);
+    });
+
+    describe('for a multi-source Canvas', () => {
+      test('returns an array of waveform resources for each Annotation in-order from their "seeAlso" properties', () => {
+        const waveform = iiifParser.getWaveformResource(waveformManifest.items[7]);
+        expect(Array.isArray(waveform)).toBe(true);
+        expect(waveform).toHaveLength(2);
+        expect(waveform[0]).toEqual(expect.objectContaining({
+          id: 'https://example.com/waveform-side-1.json', waveformType: 'data', source: 'seeAlso', format: 'application/json'
+        }));
+        expect(waveform[1]).toEqual(expect.objectContaining({
+          id: 'https://example.com/waveform-side-2.dat', waveformType: 'data', source: 'seeAlso', format: 'application/octet-stream'
+        }));
+      });
+
+      test('omits invalid "seeAlso" waveform format in a source', () => {
+        const waveform = iiifParser.getWaveformResource(waveformManifest.items[7]);
+        expect(waveform).toHaveLength(2);
+      });
     });
   });
 });
