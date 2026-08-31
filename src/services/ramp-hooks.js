@@ -17,8 +17,7 @@ import {
 import {
   CANVAS_MESSAGE_TIMEOUT, checkSrcRange, HOTKEY_ACTION_OUTPUT, playerHotKeys,
   screenReaderFriendlyTime, identifyMachineGen,
-  truncateText,
-  autoScroll
+  truncateText, autoScroll, roundToPrecision
 } from '@Services/utility-helpers';
 import { IS_IPAD } from '@Services/browser';
 import { getMediaInfo } from '@Services/iiif-parser';
@@ -363,6 +362,7 @@ export const useSetupPlayer = ({
  * @param {String} obj.videoJSLangMap VideoJS language for set language
  * @returns {
  * activeId: string,
+ * getActiveSegment: func,
  * fragmentMarker: obj,
  * isReadyRef: obj,
  * playerRef: obj,
@@ -385,8 +385,9 @@ export const useVideoJSPlayer = ({
   const manifestState = useContext(ManifestStateContext);
   const playerState = useContext(PlayerStateContext);
   const playerDispatch = useContext(PlayerDispatchContext);
-  const { canvasDuration, canvasIndex, canvasIsEmpty, currentNavItem, playlist } = manifestState;
-  const { currentTime, isClicked, player, searchMarkers } = playerState;
+  const { allCanvases, canvasDuration, canvasIndex, canvasIsEmpty,
+    currentNavItem, canvasSegments, playlist } = manifestState;
+  const { clickedUrl, currentTime, isClicked, player, searchMarkers } = playerState;
 
   const [activeId, setActiveId] = useState('');
   const [fragmentMarker, setFragmentMarker] = useState(null);
@@ -534,20 +535,11 @@ export const useVideoJSPlayer = ({
         });
       }
 
-      let playlistMarkers = [];
-      if (markers?.length > 0) {
-        playlistMarkers = markers.map((m) => ({
-          time: parseFloat(m.time),
-          text: m.value,
-          class: 'ramp--track-marker--playlist'
-        }));
-      }
-
       playerRef.current.markers?.removeAll();
       playerRef.current.markers.add([
         ...(fragmentMarker ? [fragmentMarker] : []),
         ...searchMarkers,
-        ...playlistMarkers,
+        ...(markers ?? []),
       ]);
     }
   }, [
@@ -724,8 +716,71 @@ export const useVideoJSPlayer = ({
     }
   };
 
+  /**
+   * Get the timespan that encapsulates the current time of the playhead from the timespans in the
+   * current Canvas.
+   * @param {Number} time playhead's current time
+   * @returns {Object|null} active segment or null if not found
+   */
+  const getActiveSegment = (time) => {
+    if (playlist.isPlaylist) {
+      /* In playlist Manifests, the segments are mapped one-to-one with canvases. And when the component
+      library is used in a playlist context without the 'StructuredNavigation' component, 'canvasSegments'
+      is empty. So, build a temporary active segment from the information available from 'allCanvases'.
+      Edge-case scenario, because Avalon playlists use 'StructuredNavigation' component in playlists. */
+      if (canvasSegments?.length === 0) {
+        const currentCanvas = allCanvases[canvasIndex];
+        if (currentCanvas) {
+          const { canvasId, canvasIndex, duration, label, range, summary } = currentCanvas;
+          return {
+            canvasIndex: canvasIndex, duration: String(duration), homepage: '', id: canvasId,
+            isCanvas: true, isClickable: false, isEmpty: false, isRoot: false, isTitle: false,
+            itemIndex: canvasIndex + 1, items: [], label: label, rangeId: '', summary: summary,
+            times: range ? { start: range.start, end: range.end } : { start: 0, end: duration }
+          };
+        }
+      }
+      /* Otherwise, get the related structure item using canvasIndex because,
+        playlists timespans and canvasIdex are mapped one-to-one. */
+      return canvasSegments[canvasIndex];
+    } else {
+      const timeRounded = roundToPrecision(time);
+      // Segments that contains the current time of the player
+      let possibleActiveSegments = canvasSegments.filter((c) => {
+        const inCanvas = checkSrcRange(c.times, c.canvasDuration);
+        if (inCanvas && timeRounded >= c.times.start && timeRounded < c.times.end) {
+          return c;
+        }
+      });
+      /**
+       * If the last clicked timespan is a possibly active segment, then remove others.
+       * This prioritizes and visualizes user interactions with StructuredNavigation.
+       */
+      if (clickedUrl) {
+        const clickedSegment = possibleActiveSegments.filter((s) => s.id === clickedUrl);
+        possibleActiveSegments = clickedSegment?.length > 0 ? clickedSegment : possibleActiveSegments;
+      }
+      // Find the relevant media segment from given possibilities
+      for (let segment of possibleActiveSegments) {
+        const { isCanvas, canvasDuration, canvasIndex: segmentCanvasIndex, times } = segment;
+        if (segmentCanvasIndex == canvasIndex + 1) {
+          // Canvases without structure has the Canvas information in Canvas-level item as a navigable link
+          if (isCanvas) {
+            return segment;
+          }
+          const isInRange = checkSrcRange(times, canvasDuration);
+          const isInSegment = timeRounded >= times.start && timeRounded < times.end;
+          if (isInSegment && isInRange) {
+            return segment;
+          }
+        }
+      }
+    }
+  };
+
   return {
     activeId,
+    getActiveSegment,
     fragmentMarker,
     isReadyRef,
     playerRef,
@@ -849,7 +904,7 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
  * @param {Number} obj.canvasDuration
  * @param {Function} obj.setSectionIsCollapsed
  * @param {Object} obj.times start and end times of the structure timespan
- * @returns { 
+ * @returns {
  * canvasIndex,
  * currentNavItem,
  * handleClick,
@@ -917,10 +972,8 @@ export const useActiveStructure = ({
     e.stopPropagation();
 
     const inRange = checkSrcRange(times, { end: canvasDuration });
-    /* 
-      Only continue the click action if not both start and end times of 
-      the timespan are not outside Canvas' duration
-    */
+    /* Only continue the click action if both start and end times of 
+      the timespan are within the Canvas's duration */
     if (inRange) {
       playerDispatch({ clickedUrl: itemId, type: 'navClick' });
       listRef.current.isClicked = true;
