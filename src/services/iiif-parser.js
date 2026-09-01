@@ -4,6 +4,7 @@ import {
   checkSrcRange,
   GENERIC_EMPTY_MANIFEST_MESSAGE,
   GENERIC_ERROR_MESSAGE,
+  getAnnotations,
   getLabelValue,
   getMediaFragment,
   getWaveformType,
@@ -851,23 +852,20 @@ export function getAuthService(canvas) {
 }
 
 /**
- * Read and parse waveform resource in a Canvas. Since waveform can be presented
- * as both a dataset or an image it can be represented in the Canvas via both
- * 'seeAlso' and 'accompanyingCanvas' properties.
- * 1. 'seeAlso' - e.g. Avalon's JSON dataset, British Library's binary dataset
- * 2. 'accompanyingCanvas' - e.g. Internet Archive's pre-rendered waveform PNG
- * If both are available waveform datasets are given priority because it allows the panel
- * to render player progress.
- * @function IIIFParser#getWaveformResource
- * @param {Object} canvas current Canvas to look for waveform data in
- * @param {Number} version Presentation API version of the Manifest
+ * Read and parse a 'seeAlso' waveform dataset off of a given IIIF resource.
+ * The given IIIF resource can be either a Canvas or a 'painting' Annotation
+ * in a Canvas.
+ * This function treats a value as a waveform if it has only machine-readable
+ * datasets. Images are disregarded.
+ * @function IIIFParser#getSeeAlsoWaveform
+ * @param {Object} resource Canvas or Annotation carrying a 'seeAlso' property
  * @returns {Object}
  */
-export function getWaveformResource(canvas, version = '3') {
-  const waveformDatasets = [].concat(canvas?.seeAlso ?? [])
-    .map((resource) => ({
-      resource,
-      ...getWaveformType(resource?.format, resource?.id),
+function getSeeAlsoWaveform(resource) {
+  const waveformDatasets = [].concat(resource?.seeAlso ?? [])
+    .map((r) => ({
+      resource: r,
+      ...getWaveformType(r?.format, r?.id),
     }))
     .filter(({ waveformType }) => waveformType !== null);
 
@@ -878,6 +876,41 @@ export function getWaveformResource(canvas, version = '3') {
       waveformType: 'data', source: 'seeAlso',
     };
   }
+  return null;
+}
+
+/**
+ * Read and parse waveform resource(s) in a Canvas. Since waveform can be presented
+ * as both a dataset or an image it can be represented in the Canvas via both
+ * 'seeAlso' and 'accompanyingCanvas' properties.
+ * 1. 'seeAlso' - e.g. Avalon's JSON dataset, British Library's binary dataset
+ * 2. 'accompanyingCanvas'/'accompanyingContainer' - e.g. Internet Archive's pre-rendered waveform PNG
+ * Waveform resource is parsed in the following priority order;
+ * - read 'seeAlso' values at each Annotation in the given Canvas (most granular) if available
+ * - read 'seeAlso' values from Canvas if available (binary datasets)
+ * - fallback to check 'accompanyingCanvas'/'accompanyingContainer' property (images) in Canvas
+ * With this approach, if both datasets and images are available as a waveform; datasets
+ * are given priority, because it facilitate a pixel rendering of data.
+ * @function IIIFParser#getWaveformResource
+ * @param {Object} canvas current Canvas to look for waveform data in
+ * @param {Number} version Presentation API version of the Manifest
+ * @returns {Array}
+ */
+export function getWaveformResource(canvas, version = '3') {
+  // Read 'seeAlso' values at each Annotation in the Canvas
+  if (canvas?.items?.[0]?.items?.length > 1) {
+    const paintingAnnotations = getAnnotations(canvas, '', version)
+      .filter((a) => hasMotivation(a?.motivation, 'painting'));
+    if (paintingAnnotations.length > 1) {
+      return paintingAnnotations
+        .map((annotation) => getSeeAlsoWaveform(annotation))
+        .filter((waveform) => waveform !== null);
+    }
+  }
+
+  // Read 'seeAlso' values in the Canvas
+  const waveformData = getSeeAlsoWaveform(canvas);
+  if (waveformData) return [waveformData];
 
   /* Fallback to accompanyingCanvas/accompanyingContainer resource. Only treat this as a
   waveform image when its label says so because, the 'accompanyingCanvas' can carry
@@ -885,13 +918,13 @@ export function getWaveformResource(canvas, version = '3') {
   const waveformImage = getAccompanyingResource(canvas, version);
   const labledAsWaveform = getLabelValue(waveformImage?.label).toLowerCase().includes('waveform');
   if (waveformImage?.type === 'Image' && waveformImage?.id && labledAsWaveform) {
-    return {
+    return [{
       id: waveformImage.id, format: waveformImage.format,
       waveformType: 'image', source: 'accompanyingCanvas'
-    };
+    }];
   }
 
-  return null;
+  return [];
 }
 
 /**

@@ -84,7 +84,6 @@ function VideoJSPlayer({
     allCanvases,
     canvasDuration,
     canvasLink,
-    customStart,
     hasMultiItems,
     manifest,
     targets,
@@ -120,11 +119,11 @@ function VideoJSPlayer({
   const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
 
-  const { isPlaylist, renderingFiles, srcIndex, switchPlayer }
+  const { isPlaylist, nextItemClicked, renderingFiles, srcIndex, switchPlayer }
     = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
   const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
 
-  const { hasWaveform } = useWaveform({ savedPosition, showWaveform, waveformRef });
+  const { hasWaveform } = useWaveform({ nextItemClicked, savedPosition, showWaveform, waveformRef });
 
   const canvasIsEmptyRef = useRef();
   canvasIsEmptyRef.current = useMemo(() => { return canvasIsEmpty; }, [canvasIsEmpty]);
@@ -870,7 +869,7 @@ function VideoJSPlayer({
         // Add track-scrubber button after duration display if it is not available
         controlBar.addChild(
           'videoJSTrackScrubber',
-          { trackScrubberRef, timeToolRef: scrubberTooltipRef },
+          { trackScrubberRef, timeToolRef: scrubberTooltipRef, nextItemClicked },
           volumeIndex + 1
         );
       }

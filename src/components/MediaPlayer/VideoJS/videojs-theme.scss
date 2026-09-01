@@ -98,11 +98,13 @@
 
 /* Remove padding around time-divider (/) */
 .vjs-theme-ramp .vjs-time-divider {
+  min-width: 0;
   padding: 0;
+  display: block;
 }
 
 .vjs-theme-ramp .vjs-duration {
-  padding-left: 0;
+  display: block !important;
 }
 
 /* Volume controls */

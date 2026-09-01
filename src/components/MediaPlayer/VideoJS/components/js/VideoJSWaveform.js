@@ -25,8 +25,8 @@ const Button = videojs.getComponent('Button');
  * @param {Object} props
  * @param {Object} props.player VideoJS player instance
  * @param {Object} props.options
- * @param {Boolean} props.options.hasSavedPosition the current Manifest has a saved
- * playback position in localStorage
+ * @param {Boolean} props.options.hasSavedPosition has a saved playback position in localStorage
+ * @param {Function} props.nextItemClicked callback function to switch sources from waveform panel
  * @param {Object} props.options.waveformRef React ref to the waveform panel element
  */
 class VideoJSWaveform extends Button {
@@ -280,19 +280,41 @@ class VideoJSWaveform extends Button {
   }
 
   /**
+   * Get the Canvas-relative duration and altStart for the currently active
+   * source in a Canvas.
+   * @returns {Object} { duration, altStart }
+   */
+  getAltStart() {
+    const { player } = this;
+    if (!player) return;
+
+    const { playableDuration, srcIndex, targets } = player;
+
+    const duration = playableDuration ?? player.duration();
+    if (targets?.length > 1) {
+      const { altStart } = targets[srcIndex] ?? {};
+      return { duration, altStart: altStart ?? 0 };
+    }
+
+    return { duration, altStart: 0 };
+  }
+
+  /**
    * Event handler for VideoJS player instance's 'timeupdate' event, which
    * updates the played progress in the waveform canvas from player state.
    */
   handleTimeUpdate() {
     const { player, hiddenRef } = this;
+    if (!player) return;
+
     // Hide waveform toggle for inaccessible item if it is open
     if (player.canvasIsEmpty && !hiddenRef.current) { this.setHidden(true); }
     if (player.isDisposed() || player.ended()) return;
 
-    const duration = player.playableDuration ?? player.duration();
+    const { duration, altStart } = this.getAltStart();
     if (!duration) return;
 
-    let playerCurrentTime = player.currentTime();
+    const playerCurrentTime = altStart + player.currentTime();
     const played = Math.min(100, Math.max(0, 100 * (playerCurrentTime / duration)));
     document.documentElement.style.setProperty('--range-progress', `calc(${played}%)`);
   }
@@ -301,18 +323,33 @@ class VideoJSWaveform extends Button {
    * Event handler for pointerdown/pointerup events on the waveform panel.
    * This updates the player's current time when user clicks on a point
    * within the panel.
+   * In a multi-source Canvas, the pointer event can correspond to a different
+   * source than the currently loaded one. In that case, the function resolves
+   * the pointer event to identify the corresponding source and instruct the main
+   * VideoJS instance to switch sources via 'nextItemClicked' callback function.
    * @param {Event} e pointer event for user interaction
    */
   handleSetProgress(e) {
-    const { player } = this;
-    const duration = player.playableDuration ?? player.duration();
-    if (!duration) return;
+    const { player, options } = this;
+    const { duration, altStart } = this.getAltStart();
+    if (!duration || !player) return;
 
     const offsetx = e.offsetX;
     if (offsetx == undefined || !e.target.clientWidth) return;
 
-    const time = (offsetx / e.target.clientWidth) * duration;
-    player.currentTime(time);
+    const canvasTime = (offsetx / e.target.clientWidth) * duration;
+
+    const { srcIndex, targets } = player;
+    if (targets?.length > 1) {
+      const clickedSrc = targets.find(
+        (t) => canvasTime >= t.altStart && canvasTime <= t.altStart + t.duration
+      );
+      if (clickedSrc && clickedSrc.sIndex !== srcIndex) {
+        const { altStart, sIndex } = clickedSrc;
+        options.nextItemClicked?.(sIndex, canvasTime - altStart);
+      }
+    }
+    player.currentTime(canvasTime - altStart);
   }
 }
 
