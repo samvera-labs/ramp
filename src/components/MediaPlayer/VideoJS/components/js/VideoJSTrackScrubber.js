@@ -302,7 +302,7 @@ class VideoJSTrackScrubber extends Button {
 
     /* Add the currentTrack's time (start time) to the track offset, as this is the Canvas
     relative time for the trackoffset derived from the pointer event. */
-    const offsetTime = trackoffset + currentTrackRef.current?.time ?? 0;
+    const offsetTime = trackoffset + (currentTrackRef.current?.time ?? 0);
 
     // Find the source corresponding to the pointer click event
     const clickedTarget = targets?.length > 1
