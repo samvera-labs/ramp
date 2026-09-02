@@ -11,6 +11,7 @@
   "engines": {
     "node": "^20.19 || ^22.12 || >=24"
   },
+  "packageManager": "yarn@1.22.22",
   "scripts": {
     "build": "npm run clean && NODE_ENV=production npm run bundle",
     "bundle": "vite build && PREACT=true vite build",

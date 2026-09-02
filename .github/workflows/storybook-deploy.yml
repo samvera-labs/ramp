@@ -29,6 +29,9 @@ jobs:
         with:
           node-version: '24'
           cache: 'yarn'
+      # Pins Yarn to the "packageManager" version in package.json
+      - name: Enable Corepack
+        run: corepack enable
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Build Storybook
