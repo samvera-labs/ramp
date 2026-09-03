@@ -1,6 +1,6 @@
 {
   "name": "@samvera/ramp",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Ramp (React Avalon Media Player), React component library for rendering a media player for a IIIF 3.0 spec Manifest",
   "main": "dist/ramp.cjs.js",
   "module": "dist/ramp.esm.js",
@@ -24,7 +24,8 @@
     "test:debug": "node --inspect $(npm bin)/jest --runInBand",
     "demo": "vite --config vite.demo.config.js",
     "demo:build": "npm run demo:clean && NODE_ENV=production vite build --config vite.demo.config.js",
-    "demo:clean": "rimraf demo/dist"
+    "demo:clean": "rimraf demo/dist",
+    "version": "bash scripts/update-changelog.sh"
   },
   "contributors": [
     "Dananji Withana <dwithana@iu.edu>",

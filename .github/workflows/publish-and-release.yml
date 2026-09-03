@@ -1,4 +1,4 @@
-name: Publish Package
+name: Publish and Release library
 
 on:
   push:
@@ -12,7 +12,8 @@ jobs:
   build-and-publish:
     name: Build and Publish
     runs-on: ubuntu-latest
-
+    # Use GitHub environments for deployment protection
+    environment: release
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
