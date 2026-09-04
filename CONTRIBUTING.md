@@ -98,11 +98,11 @@ Merging to `main` automatically triggers two deployments:
 - **[Demo site](https://ramp.avalonmediasystem.org/)** — hosted on Netlify, showing a real-world component layout. Accepts any publicly available IIIF Presentation 3.0 Manifest URL as input.
 - **[GitHub Pages docs](https://samvera-labs.github.io/ramp/)** — the Storybook documentation site, rebuilt from `yarn storybook:build`.
 
+No manual steps are required for either deployment.
+
 ## Releasing
 
 See [RELEASING.md](RELEASING.md) for the process of cutting and publishing a new NPM release.
-
-No manual steps are required for either deployment.
 
 ## Branch and PR conventions
 

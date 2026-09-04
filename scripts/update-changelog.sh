@@ -1,4 +1,4 @@
-# Reference: https://gist.github.com/motss/d9d6c58ca7b064982dcdbb5e663f047f#file-get-merged-prs-from-last-release-tag-then-format-for-changelog-using-github-cli-sh-L29
+# Adapted from: https://gist.github.com/motss/d9d6c58ca7b064982dcdbb5e663f047f
 
 #!/bin/sh
 
@@ -11,12 +11,10 @@ PREV_TAG="$(git describe --tags --abbrev=0 2>/dev/null || echo "")"
 # Get the current date in MM/DD/YYYY format
 DATE="$(date +%m/%d/%Y)"
 
-# Get the timestamp of the last release tag using limit=1. 
-# By default, these are listed in descending order bu GitHub.
-
-# Read a tag name as the first argument to override any special releases made between the last full release
-# and the current release, which is used as the cutoff for getting the timestamp of the last published full release.
-# e.g. when a special release was was created with cherry-picked PRs instead of a full release.
+# Read a tag name as the first argument (possible last full release tag)to skip over any special releases made between
+# the last full release and the current release. And then use its published datetime as the cutoff timestamp for reading
+# the merged PRs because, there can be unreleased changes since the given tag which were not included in the special
+# release. e.g. when a special release was was created with cherry-picked PRs instead of a full release.
 # Example use: bash ./scripts/update-changelog.sh v5.1.0
 SINCE_TAG="$1"
 if [ -n "$SINCE_TAG" ]; then
@@ -26,6 +24,8 @@ if [ -n "$SINCE_TAG" ]; then
     --jq ".publishedAt | fromdateiso8601"
   )
 else
+  # Get the timestamp of the last release tag using limit=1. 
+  # By default, these are listed in descending order bu GitHub.
   TIMESTAMP=$(
   gh release list \
     --limit 1 \
