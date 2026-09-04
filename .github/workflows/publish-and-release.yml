@@ -39,6 +39,7 @@ jobs:
           test -f dist/ramp.umd.js
           test -f dist/ramp.standalone.umd.js
           test -f dist/ramp.css
+          test -n "$(ls -A dist/lang/*.js 2>/dev/null)"
       - name: Stage library for publish
         run: npm stage publish --provenance --access public
 

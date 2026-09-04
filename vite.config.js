@@ -70,15 +70,7 @@ export default defineConfig({
     rollupOptions: {
       // No external dependencies, bundles all aliasing react -> preact
       external: [],
-      output: {
-        globals: {},
-        // Put dynamically-imported VideoJS language chunks into a dist/lang directory
-        chunkFileNames: (chunkInfo) => {
-          return chunkInfo.facadeModuleId?.includes('video.js/dist/lang/')
-            ? 'lang/[name]-[hash].js'
-            : 'assets/[name]-[hash].js';
-        },
-      },
+      output: { globals: {} },
     },
   } : {
     outDir: 'dist',
@@ -110,6 +102,12 @@ export default defineConfig({
           'dompurify': 'DOMPurify',
           'mammoth': 'mammoth',
           'classnames': 'cx'
+        },
+        // Put dynamically-imported VideoJS language chunks into a dist/lang directory
+        chunkFileNames: (chunkInfo) => {
+          return chunkInfo.facadeModuleId?.includes('video.js/dist/lang/')
+            ? 'lang/[name]-[hash].js'
+            : 'assets/[name]-[hash].js';
         },
       },
     },
