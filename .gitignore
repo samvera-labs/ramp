@@ -1,6 +1,7 @@
 /node_modules
 /build
 /coverage
+/dist
 .vscode
 yarn-error.log
 .DS_Store

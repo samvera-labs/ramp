@@ -1,0 +1,55 @@
+name: Publish and Release library
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  id-token: write # Required for npm trusted publishing (OIDC)
+  contents: write # Required to create the release and attach dist/ files
+
+jobs:
+  build-and-publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    # Use GitHub environments for deployment protection
+    environment: release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false # Never use caching in release builds
+      - name: Ensure npm CLI supports "npm stage publish" and trusted publishing
+        run: npm install -g npm@latest # Staged publishing needs npm >=11.15.0
+      # Pins Yarn to the "packageManager" version in package.json
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install dependencies (locked)
+        run: yarn install --frozen-lockfile
+      - name: Build library
+        run: yarn build
+      - name: Verify build output
+        run: |
+          test -f dist/ramp.cjs.js
+          test -f dist/ramp.esm.js
+          test -f dist/ramp.umd.js
+          test -f dist/ramp.standalone.umd.js
+          test -f dist/ramp.css
+          test -n "$(ls -A dist/lang/*.js 2>/dev/null)"
+      - name: Stage library for publish
+        run: npm stage publish --provenance --access public
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            dist/*.js
+            dist/*.css
+            package.json
+            README.md
