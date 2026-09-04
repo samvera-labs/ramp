@@ -24,8 +24,7 @@ if [ -n "$SINCE_TAG" ]; then
     --jq ".publishedAt | fromdateiso8601"
   )
 else
-  # Get the timestamp of the last release tag using limit=1. 
-  # By default, these are listed in descending order bu GitHub.
+  # Get the timestamp of the last release tag using limit=1. By default, these are listed in descending order by GitHub.
   TIMESTAMP=$(
   gh release list \
     --limit 1 \

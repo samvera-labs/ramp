@@ -35,7 +35,7 @@ This document describes how to cut a release of `@samvera/ramp` component librar
 
    Pushing this tag triggers the [publish and release](.github/workflows/publish-and-release.yml) GitHub action, which builds and stages the library to be published in NPM and creates a Release in GitHub.
 
-   Using `--fozen-lockfile` with `yarn install`, installs the dependencies from the commited `yarn.lock` file on the Node version pinned in [.nvmrc](.nvmrc) file.
+   Using `--frozen-lockfile` with `yarn install`, installs the dependencies from the commited `yarn.lock` file on the Node version pinned in [.nvmrc](.nvmrc) file.
 
    Once the staging succeeds, it creates a GitHub Release for the new tag with the release notes from the merged PRs, and attach the build files, `package.json`, and a snapshot of the current `README.md`.
 

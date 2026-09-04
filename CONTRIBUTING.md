@@ -81,15 +81,13 @@ To test a branch's built output before it is published to NPM:
 
 1. Create a feature branch off `main` and make your changes.
 2. Run `yarn build` to generate the distribution files in `/dist/`.
-3. Commit and push the `/dist/` files to your branch on GitHub.
+3. Run `yarn pack` to create a local tarball (e.g. `samvera-ramp-<version in package.json>.tgz`) in the project root.
 4. In the consuming application:
    ```
    yarn remove @samvera/ramp
    yarn cache clean
-   yarn add https://github.com/samvera-labs/ramp#<your_branch_name>
+   yarn add /absolute/path/to/ramp/samvera-ramp-v3.0.0.tgz
    ```
-
-Once testing is complete, **delete the test branch from GitHub** and do not merge the built `/dist/` files into `main`.
 
 ## Deployment
 

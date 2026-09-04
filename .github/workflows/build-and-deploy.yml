@@ -18,7 +18,7 @@ jobs:
           ref: main
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: '.nvmrc'
           cache: 'yarn'
       # Pins Yarn to the "packageManager" version in package.json
       - name: Enable Corepack
