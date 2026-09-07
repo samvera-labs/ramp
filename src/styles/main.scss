@@ -84,17 +84,10 @@
 /* time-control elements */
 .video-js .vjs-time-control,
 .video-js .vjs-time-control .vjs-duration {
+  box-sizing: content-box;
   min-width: 0.5rem;
   padding: 0 0.25rem;
-  width: auto !important;
-}
-
-.vjs-time-divider {
-  display: block;
-}
-
-.vjs-duration {
-  display: block !important;
+  width: fit-content !important;
 }
 
 .vjs-playback-rate-value {

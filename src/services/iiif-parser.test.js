@@ -1,6 +1,7 @@
 import manifest from '@TestData/transcript-annotation';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
+import crossRangeManifest from '@TestData/multi-part-ranges';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
@@ -13,8 +14,10 @@ import adManifest from '@TestData/ad-annotation';
 import authManifest from '@TestData/auth-manifest';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
 import rangeMetadataManifest from '@TestData/range-metadata';
+import waveformManifestRaw from '@TestData/waveform-example';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
+import cloneDeep from 'lodash/cloneDeep';
 
 describe('iiif-parser', () => {
   describe('canvasesInManifest()', () => {
@@ -26,23 +29,31 @@ describe('iiif-parser', () => {
     it('returns information related to each canvas', () => {
       const canvases = iiifParser.canvasesInManifest(manifest);
       expect(canvases).toHaveLength(2);
-      expect(canvases[0].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/1');
+      expect(canvases[0].canvasId).toEqual(
+        'https://example.com/sample/transcript-annotation/canvas/1',
+      );
       expect(canvases[0].duration).toEqual(572.034);
       expect(canvases[0].range).toEqual({ start: 0, end: 572.034 });
       expect(canvases[0].isEmpty).toBeFalsy();
       expect(canvases[0].summary).toBeUndefined();
       expect(canvases[0].homepage).toEqual('');
-      expect(canvases[0].searchService).toEqual('http://example.com/sample/transcript-annotation/canvas/1/search');
+      expect(canvases[0].searchService).toEqual(
+        'http://example.com/sample/transcript-annotation/canvas/1/search',
+      );
     });
 
     it('returns each canvas is empty or not', () => {
       const canvases = iiifParser.canvasesInManifest(manifest);
       expect(canvases).toHaveLength(2);
       expect(canvases[0]).toHaveProperty('canvasId');
-      expect(canvases[0].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/1');
+      expect(canvases[0].canvasId).toEqual(
+        'https://example.com/sample/transcript-annotation/canvas/1',
+      );
       expect(canvases[0]).toHaveProperty('isEmpty');
       expect(canvases[0].isEmpty).toBeFalsy();
-      expect(canvases[1].canvasId).toEqual('https://example.com/sample/transcript-annotation/canvas/2');
+      expect(canvases[1].canvasId).toEqual(
+        'https://example.com/sample/transcript-annotation/canvas/2',
+      );
       expect(canvases[1].isEmpty).toBeTruthy();
     });
 
@@ -67,8 +78,9 @@ describe('iiif-parser', () => {
         },
         metadata: [],
       };
-      expect(() => { iiifParser.canvasesInManifest(manifestWoItems); })
-        .toThrowError('Error encountered. Please check your Manifest.');
+      expect(() => {
+        iiifParser.canvasesInManifest(manifestWoItems);
+      }).toThrowError('Error encountered. Please check your Manifest.');
       // Re-set console.error to original function
       console.error = originalError;
     });
@@ -79,7 +91,9 @@ describe('iiif-parser', () => {
         expect(canvases).toHaveLength(6);
         // Empty Canvas => for inaccessible items
         expect(canvases[0]).toHaveProperty('summary');
-        expect(canvases[0].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
+        expect(canvases[0].summary).toEqual(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
+        );
         // Canvas with items
         expect(canvases[2]).toHaveProperty('summary');
         expect(canvases[2].summary).toEqual('Clip from Volleyball for boys');
@@ -93,34 +107,52 @@ describe('iiif-parser', () => {
         expect(canvases).toHaveLength(6);
         // Empty Canvas => for inaccessible items
         expect(canvases[0]).toHaveProperty('homepage');
-        expect(canvases[0].homepage).toEqual('https://example.com/playlists/1?position=1');
+        expect(canvases[0].homepage).toEqual(
+          'https://example.com/playlists/1?position=1',
+        );
         // Canvas with items
         expect(canvases[2]).toHaveProperty('homepage');
-        expect(canvases[2].homepage).toEqual('https://example.com/playlists/1?position=3');
+        expect(canvases[2].homepage).toEqual(
+          'https://example.com/playlists/1?position=3',
+        );
         // Returns undefined when summary is not present in the Canvas
         expect(canvases[3]).toHaveProperty('homepage');
-        expect(canvases[3].homepage).toEqual('https://example.com/playlists/1?position=4');
+        expect(canvases[3].homepage).toEqual(
+          'https://example.com/playlists/1?position=4',
+        );
       });
 
       it('returns information related to each Canvas', () => {
         const canvases = iiifParser.canvasesInManifest(playlistManifest);
         expect(canvases).toHaveLength(6);
         // For an inaccessible item
-        expect(canvases[0].canvasId).toEqual('http://example.com/playlists/1/canvas/1');
+        expect(canvases[0].canvasId).toEqual(
+          'http://example.com/playlists/1/canvas/1',
+        );
         expect(canvases[0].duration).toBeNaN();
         expect(canvases[0].range).toEqual({ start: 0, end: NaN });
         expect(canvases[0].isEmpty).toBeTruthy();
-        expect(canvases[0].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua');
-        expect(canvases[0].homepage).toEqual('https://example.com/playlists/1?position=1');
+        expect(canvases[0].summary).toEqual(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
+        );
+        expect(canvases[0].homepage).toEqual(
+          'https://example.com/playlists/1?position=1',
+        );
         expect(canvases[0].searchService).toBeNull();
         // For a clipped item
-        expect(canvases[4].canvasId).toEqual('http://example.com/playlists/1/canvas/5');
+        expect(canvases[4].canvasId).toEqual(
+          'http://example.com/playlists/1/canvas/5',
+        );
         expect(canvases[4].duration).toEqual(662.037);
         expect(canvases[4].range).toEqual({ start: 35, end: 40 });
         expect(canvases[4].isEmpty).toBeFalsy();
-        expect(canvases[4].summary).toEqual('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod \
-          tempor incididunt ut labore et dolore magna aliqua');
-        expect(canvases[4].homepage).toEqual('https://example.com/playlists/1?position=5');
+        expect(canvases[4].summary).toEqual(
+          'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod \
+          tempor incididunt ut labore et dolore magna aliqua',
+        );
+        expect(canvases[4].homepage).toEqual(
+          'https://example.com/playlists/1?position=5',
+        );
         expect(canvases[4].searchService).toBeNull();
       });
     });
@@ -134,47 +166,85 @@ describe('iiif-parser', () => {
     });
 
     describe('returns waveform information', () => {
-      test('returns null for waveform by default', () => {
+      test('returns an empty array for waveform by default', () => {
         const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
-        expect(canvases[0].waveform).toBeNull();
+        expect(canvases[0].waveform).toEqual([]);
       });
 
       test('returns waveform from both "seeAlso" and "accompanyingCanvas" props', () => {
         const manifestWithWaveforms = {
           items: [
             {
-              id: 'http://example.com/canvas/1', type: 'Canvas', duration: 60,
-              items: [{ items: [{ body: { id: 'http://example.com/1.mp3' } }] }],
-              seeAlso: [{ id: 'http://example.com/waveform-1.json', type: 'Dataset', format: 'application/json' }],
+              id: 'http://example.com/canvas/1',
+              type: 'Canvas',
+              duration: 60,
+              items: [
+                { items: [{ body: { id: 'http://example.com/1.mp3' } }] },
+              ],
+              seeAlso: [
+                {
+                  id: 'http://example.com/waveform-1.json',
+                  type: 'Dataset',
+                  format: 'application/json',
+                },
+              ],
             },
             {
-              id: 'http://example.com/canvas/2', type: 'Canvas', duration: 60,
-              items: [{ items: [{ body: { id: 'http://example.com/2.mp3' } }] }],
+              id: 'http://example.com/canvas/2',
+              type: 'Canvas',
+              duration: 60,
+              items: [
+                { items: [{ body: { id: 'http://example.com/2.mp3' } }] },
+              ],
             },
             {
-              id: 'http://example.com/canvas/3', type: 'Canvas', duration: 60,
-              items: [{ items: [{ body: { id: 'http://example.com/3.mp3' } }] }],
+              id: 'http://example.com/canvas/3',
+              type: 'Canvas',
+              duration: 60,
+              items: [
+                { items: [{ body: { id: 'http://example.com/3.mp3' } }] },
+              ],
               accompanyingCanvas: {
-                type: 'Canvas', label: { en: ['Waveform data as an image'] },
-                items: [{
-                  type: 'AnnotationPage',
-                  items: [{
-                    type: 'Annotation', motivation: 'painting',
-                    body: { id: 'http://example.com/waveform-3.png', type: 'Image', format: 'image/jpeg' },
-                  }],
-                }],
+                type: 'Canvas',
+                label: { en: ['Waveform data as an image'] },
+                items: [
+                  {
+                    type: 'AnnotationPage',
+                    items: [
+                      {
+                        type: 'Annotation',
+                        motivation: 'painting',
+                        body: {
+                          id: 'http://example.com/waveform-3.png',
+                          type: 'Image',
+                          format: 'image/jpeg',
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
             },
           ],
         };
         const canvases = iiifParser.canvasesInManifest(manifestWithWaveforms);
-        expect(canvases[0].waveform).toEqual({
-          id: 'http://example.com/waveform-1.json', format: 'application/json', waveformType: 'data', source: 'seeAlso',
-        });
-        expect(canvases[1].waveform).toBeNull();
-        expect(canvases[2].waveform).toEqual({
-          id: 'http://example.com/waveform-3.png', format: 'image/jpeg', waveformType: 'image', source: 'accompanyingCanvas',
-        });
+        expect(canvases[0].waveform).toEqual([
+          {
+            id: 'http://example.com/waveform-1.json',
+            format: 'application/json',
+            waveformType: 'data',
+            source: 'seeAlso',
+          },
+        ]);
+        expect(canvases[1].waveform).toEqual([]);
+        expect(canvases[2].waveform).toEqual([
+          {
+            id: 'http://example.com/waveform-3.png',
+            format: 'image/jpeg',
+            waveformType: 'image',
+            source: 'accompanyingCanvas',
+          },
+        ]);
       });
     });
   });
@@ -236,20 +306,24 @@ describe('iiif-parser', () => {
         console.warn = jest.fn();
         const { sources } = iiifParser.getMediaInfo({
           manifest: singleSrcManifest,
-          canvasIndex: 0
+          canvasIndex: 0,
         });
         expect(sources).toHaveLength(1);
-        expect(sources[0].src).toEqual('https://example.com/sample/high/media.mp4');
+        expect(sources[0].src).toEqual(
+          'https://example.com/sample/high/media.mp4',
+        );
         console.warn = originalWarn;
       });
 
-      it("appends start time to src when there is a manifest start", () => {
+      it('appends start time to src when there is a manifest start', () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
           canvasIndex: 1,
-          startTime: 120.5
+          startTime: 120.5,
         });
-        expect(sources[0].src).toEqual('https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660');
+        expect(sources[0].src).toEqual(
+          'https://example.com/manifest/high/lunchroom_manners_1024kb.mp4#t=120.5,660',
+        );
       });
     });
 
@@ -260,33 +334,43 @@ describe('iiif-parser', () => {
         console.error = jest.fn();
       });
 
-      afterAll(() => console.error = originalError);
+      afterAll(() => (console.error = originalError));
 
       it('returns sources, mediaType for a video resource with type="Canvas"', () => {
         const { sources, mediaType, error } = iiifParser.getMediaInfo({
           manifest: multiCanvasV4Manifest,
-          canvasIndex: 0, version: '4'
+          canvasIndex: 0,
+          version: '4',
         });
         expect(sources).toHaveLength(1);
         expect(mediaType).toBe('video');
         expect(error).toBeNull();
         expect(sources[0]).toEqual({
-          src: 'http://example.com/low.mp4', key: 'http://example.com/low.mp4',
-          type: 'video/mp4', label: 'Low', kind: 'Video', selected: true,
+          src: 'http://example.com/low.mp4',
+          key: 'http://example.com/low.mp4',
+          type: 'video/mp4',
+          label: 'Low',
+          kind: 'Video',
+          selected: true,
         });
       });
 
       it('returns sources, mediaType for an audio resource with type="Timeline"', () => {
         const { sources, mediaType, error } = iiifParser.getMediaInfo({
           manifest: multiCanvasV4Manifest,
-          canvasIndex: 2, version: '4'
+          canvasIndex: 2,
+          version: '4',
         });
         expect(sources).toHaveLength(1);
         expect(mediaType).toBe('sound');
         expect(error).toBeNull();
         expect(sources[0]).toEqual({
-          src: 'http://example.com/audio-canvas.mp3', key: 'http://example.com/audio-canvas.mp3',
-          type: 'audio/mpeg', label: 'auto', kind: 'Sound', selected: true,
+          src: 'http://example.com/audio-canvas.mp3',
+          key: 'http://example.com/audio-canvas.mp3',
+          type: 'audio/mpeg',
+          label: 'auto',
+          kind: 'Sound',
+          selected: true,
         });
       });
 
@@ -295,7 +379,8 @@ describe('iiif-parser', () => {
         console.error = jest.fn();
         const { sources, mediaType, poster } = iiifParser.getMediaInfo({
           manifest: multiCanvasV4Manifest,
-          canvasIndex: 1, version: '4'
+          canvasIndex: 1,
+          version: '4',
         });
         expect(sources).toHaveLength(0);
         // Media type defaults to video to show any error messages in the player container in UI
@@ -307,13 +392,17 @@ describe('iiif-parser', () => {
       it('resolves quality to auto, when not given', () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: multiCanvasV4Manifest,
-          canvasIndex: 3, version: '4'
+          canvasIndex: 3,
+          version: '4',
         });
         expect(sources).toHaveLength(3);
         expect(sources[2]).toEqual({
           src: 'https://example.com/manifest/low/audio_256kb.mp3',
           key: 'https://example.com/manifest/low/audio_256kb.mp3',
-          label: 'auto', type: 'audio/mpeg', selected: true, kind: 'Sound',
+          label: 'auto',
+          type: 'audio/mpeg',
+          selected: true,
+          kind: 'Sound',
         });
         expect(sources[2].selected).toBeTruthy();
       });
@@ -323,7 +412,8 @@ describe('iiif-parser', () => {
         console.warn = jest.fn();
         const { sources } = iiifParser.getMediaInfo({
           manifest: multiCanvasV4Manifest,
-          canvasIndex: 0, version: '4'
+          canvasIndex: 0,
+          version: '4',
         });
         expect(sources).toHaveLength(1);
         expect(sources[0].src).toEqual('http://example.com/low.mp4');
@@ -333,10 +423,13 @@ describe('iiif-parser', () => {
       it('appends start time to src when there is a custom start', () => {
         const { sources } = iiifParser.getMediaInfo({
           manifest: multiCanvasV4Manifest,
-          canvasIndex: 0, version: '4',
-          startTime: 120.5
+          canvasIndex: 0,
+          version: '4',
+          startTime: 120.5,
         });
-        expect(sources[0].src).toEqual('http://example.com/low.mp4#t=120.5,7278.422');
+        expect(sources[0].src).toEqual(
+          'http://example.com/low.mp4#t=120.5,7278.422',
+        );
       });
     });
 
@@ -345,12 +438,12 @@ describe('iiif-parser', () => {
         iiifParser.getMediaInfo({
           manifest: lunchroomManifest,
           canvasIndex: -1,
-        })
+        }),
       ).toEqual({
         error: 'Error fetching content',
         sources: [],
         tracks: [],
-        canvasTargets: []
+        canvasTargets: [],
       });
     });
 
@@ -358,8 +451,8 @@ describe('iiif-parser', () => {
       expect(
         iiifParser.getMediaInfo({
           manifest: emptyManifest,
-          canvasIndex: 0
-        })
+          canvasIndex: 0,
+        }),
       ).toEqual({
         sources: [],
         tracks: [],
@@ -370,7 +463,7 @@ describe('iiif-parser', () => {
 
     it('returns an error when body `prop` is empty', () => {
       expect(
-        iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 1 })
+        iiifParser.getMediaInfo({ manifest: manifest, canvasIndex: 1 }),
       ).toHaveProperty('error', 'No resources found in Canvas');
     });
 
@@ -392,7 +485,8 @@ describe('iiif-parser', () => {
           expect(tracks[0]).toEqual(expectedObject);
         });
 
-        it('with captions in the id', () => { // Avalon-specific
+        it('with captions in the id', () => {
+          // Avalon-specific
           const expectedObject = {
             src: 'https://example.com/manifest/lunchroom_manners/captions',
             key: 'https://example.com/manifest/lunchroom_manners/captions',
@@ -434,8 +528,8 @@ describe('iiif-parser', () => {
   it('getCanvasId() returns canvas ID', () => {
     expect(
       iiifParser.getCanvasId(
-        'http://example.com/sample/transcript-annotation/canvas/1#t=0,374'
-      )
+        'http://example.com/sample/transcript-annotation/canvas/1#t=0,374',
+      ),
     ).toEqual('http://example.com/sample/transcript-annotation/canvas/1');
   });
 
@@ -450,37 +544,53 @@ describe('iiif-parser', () => {
       console.error = originalError;
     });
     it('returns url for video manifest', () => {
-      const posterUrl = iiifParser.getPlaceholderResource(lunchroomManifest.items[0], true);
+      const posterUrl = iiifParser.getPlaceholderResource(
+        lunchroomManifest.items[0],
+        true,
+      );
       expect(posterUrl).toEqual(
-        'https://example.com/manifest/poster/lunchroom_manners_poster.jpg'
+        'https://example.com/manifest/poster/lunchroom_manners_poster.jpg',
       );
     });
 
     it('returns null for audio manifest', () => {
-      const posterUrl = iiifParser.getPlaceholderResource(manifest.items[0], true);
+      const posterUrl = iiifParser.getPlaceholderResource(
+        manifest.items[0],
+        true,
+      );
       expect(posterUrl).toBeNull();
     });
 
     it('returns placeholderCanvas text and sets timer to given duration', () => {
       const itemMessage = iiifParser.getPlaceholderResource(manifest.items[1]);
-      expect(itemMessage).toEqual('You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n');
+      expect(itemMessage).toEqual(
+        'You do not have permission to playback this item. \nPlease contact support to report this error: <a href="mailto:admin-list@example.com">admin-list@example.com</a>.\n',
+      );
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(4000);
     });
 
     it('returns placeholderCanvas text and sets timer to default when duration is not defined', () => {
-      const itemMessage = iiifParser.getPlaceholderResource(playlistManifest.items[0]);
-      expect(itemMessage).toEqual('You do not have permission to playback this item.');
+      const itemMessage = iiifParser.getPlaceholderResource(
+        playlistManifest.items[0],
+      );
+      expect(itemMessage).toEqual(
+        'You do not have permission to playback this item.',
+      );
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns hard coded text when placeholderCanvas has no text and sets timer to default', () => {
-      const itemMessage = iiifParser.getPlaceholderResource(lunchroomManifest.items[0]);
+      const itemMessage = iiifParser.getPlaceholderResource(
+        lunchroomManifest.items[0],
+      );
       expect(itemMessage).toEqual('This item cannot be played.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
     });
 
     it('returns default message when no placeholderCanvas is in the Canvas and sets timer to default', () => {
-      const itemMessage = iiifParser.getPlaceholderResource(singleSrcManifest.items[0]);
+      const itemMessage = iiifParser.getPlaceholderResource(
+        singleSrcManifest.items[0],
+      );
       expect(console.error).toBeCalledTimes(1);
       expect(itemMessage).toEqual('This item cannot be played.');
       expect(util.CANVAS_MESSAGE_TIMEOUT).toEqual(10000);
@@ -489,16 +599,20 @@ describe('iiif-parser', () => {
     describe('with a Presentation 4 Canvas', () => {
       it('returns url from placeholderContainer', () => {
         const posterUrl = iiifParser.getPlaceholderResource(
-          multiCanvasV4Manifest.items[0], true, '4'
+          multiCanvasV4Manifest.items[0],
+          true,
+          '4',
         );
         expect(posterUrl).toEqual(
-          'http://example.com/multi-canvas-manifest-v4/poster/poster.jpg'
+          'http://example.com/multi-canvas-manifest-v4/poster/poster.jpg',
         );
       });
 
       it('does not find placeholderContainer when read as version "3"', () => {
         const posterUrl = iiifParser.getPlaceholderResource(
-          multiCanvasV4Manifest.items[0], true, '3'
+          multiCanvasV4Manifest.items[0],
+          true,
+          '3',
         );
         expect(posterUrl).toBeNull();
       });
@@ -512,7 +626,9 @@ describe('iiif-parser', () => {
       originalWarn = console.warn;
       console.warn = jest.fn();
     });
-    afterAll(() => { console.warn = originalWarn; });
+    afterAll(() => {
+      console.warn = originalWarn;
+    });
 
     describe('when type="Canvas"', () => {
       it('returns custom start canvas', () => {
@@ -543,7 +659,7 @@ describe('iiif-parser', () => {
       it('startCanvasId overrides start canvas in Manifest', () => {
         const customStart = iiifParser.getCustomStart(
           manifest,
-          'https://example.com/sample/transcript-annotation/canvas/2'
+          'https://example.com/sample/transcript-annotation/canvas/2',
         );
         expect(customStart.type).toEqual('C');
         expect(customStart.time).toEqual(0);
@@ -551,7 +667,11 @@ describe('iiif-parser', () => {
       });
 
       it('startCanvasTime overrides start time in Manifest', () => {
-        const customStart = iiifParser.getCustomStart(lunchroomManifest, undefined, 130);
+        const customStart = iiifParser.getCustomStart(
+          lunchroomManifest,
+          undefined,
+          130,
+        );
         expect(customStart.type).toEqual('SR');
         expect(customStart.time).toEqual(130);
         expect(customStart.canvas).toEqual(0);
@@ -561,7 +681,7 @@ describe('iiif-parser', () => {
         const customStart = iiifParser.getCustomStart(
           manifest,
           'https://example.com/sample/transcript-annotation/canvas/2',
-          120
+          120,
         );
         expect(customStart.type).toEqual('SR');
         expect(customStart.time).toEqual(120);
@@ -578,7 +698,8 @@ describe('iiif-parser', () => {
 
     it('returns values related to given start canvas ID', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/3'
+        playlistManifest,
+        'http://example.com/playlists/1/canvas/3',
       );
       expect(customStart.type).toEqual('C');
       expect(customStart.time).toEqual(0);
@@ -586,7 +707,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns values related to given start canvas time', () => {
-      const customStart = iiifParser.getCustomStart(manifestWoStructure, undefined, 23);
+      const customStart = iiifParser.getCustomStart(
+        manifestWoStructure,
+        undefined,
+        23,
+      );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(23);
       expect(customStart.canvas).toEqual(0);
@@ -594,7 +719,9 @@ describe('iiif-parser', () => {
 
     it('returns values related to given start canvas ID and time', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/4', 233
+        playlistManifest,
+        'http://example.com/playlists/1/canvas/4',
+        233,
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(233);
@@ -603,7 +730,9 @@ describe('iiif-parser', () => {
 
     it('returns zero as start time when given value is outside of Canvas duration', () => {
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/4', 653
+        playlistManifest,
+        'http://example.com/playlists/1/canvas/4',
+        653,
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
@@ -614,7 +743,9 @@ describe('iiif-parser', () => {
     it('returns zero as current canvas index when given ID is not in the Manifest', () => {
       console.warn = jest.fn();
       const customStart = iiifParser.getCustomStart(
-        playlistManifest, 'http://example.com/playlists/1/canvas/33', 653
+        playlistManifest,
+        'http://example.com/playlists/1/canvas/33',
+        653,
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
@@ -624,7 +755,9 @@ describe('iiif-parser', () => {
 
     it('return default values with empty manifest', () => {
       const customStart = iiifParser.getCustomStart(
-        emptyManifest, 'http://example.com/playlists/1/canvas/33', 653
+        emptyManifest,
+        'http://example.com/playlists/1/canvas/33',
+        653,
       );
       expect(customStart.type).toEqual('SR');
       expect(customStart.time).toEqual(0);
@@ -637,7 +770,9 @@ describe('iiif-parser', () => {
     it('with `rendering` prop only at manifest level', () => {
       const files = iiifParser.getRenderingFiles(lunchroomManifest, 0);
       expect(files.manifest.length).toBe(1);
-      expect(files.manifest[0].label).toEqual('Transcript rendering file (.vtt)');
+      expect(files.manifest[0].label).toEqual(
+        'Transcript rendering file (.vtt)',
+      );
       expect(files.manifest[0].filename).toEqual('Transcript rendering file');
     });
 
@@ -689,18 +824,28 @@ describe('iiif-parser', () => {
 
     describe('reading only manifest-level metadata', () => {
       it('manifest with metadata returns a list of key, value pairs', () => {
-        const { manifestMetadata, canvasMetadata, rights } = iiifParser.getMetadata(lunchroomManifest, false);
+        const { manifestMetadata, canvasMetadata, rights } =
+          iiifParser.getMetadata(lunchroomManifest, false);
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(0);
-        expect(manifestMetadata[0]).toEqual({ label: "Title", value: "This is the title of the item!" });
-        expect(rights).toEqual([{
-          label: 'License',
-          value: "<a href=http://creativecommons.org/licenses/by-sa/3.0/>http://creativecommons.org/licenses/by-sa/3.0/</a>"
-        }]);
+        expect(manifestMetadata[0]).toEqual({
+          label: 'Title',
+          value: 'This is the title of the item!',
+        });
+        expect(rights).toEqual([
+          {
+            label: 'License',
+            value:
+              '<a href=http://creativecommons.org/licenses/by-sa/3.0/>http://creativecommons.org/licenses/by-sa/3.0/</a>',
+          },
+        ]);
       });
 
       it('manifest without metadata returns []', () => {
-        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(volleyballManifest, false);
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(
+          volleyballManifest,
+          false,
+        );
         expect(manifestMetadata).toEqual([]);
         expect(canvasMetadata.length).toEqual(0);
         expect(console.log).toBeCalledTimes(1);
@@ -709,23 +854,31 @@ describe('iiif-parser', () => {
 
     describe('reading canvas-level metadata', () => {
       it('canvas with metadata returns a list of key, value pairs', () => {
-        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(
+          playlistManifest,
+          true,
+        );
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(6);
-        expect(canvasMetadata[2].metadata[0]).toEqual({ label: "Title", value: "Second Playlist Item" });
+        expect(canvasMetadata[2].metadata[0]).toEqual({
+          label: 'Title',
+          value: 'Second Playlist Item',
+        });
         expect(canvasMetadata[2]).toHaveProperty('rights');
-        expect(canvasMetadata[2].rights[0]).toEqual(
-          {
-            label: "Attribution",
-            value: "<span>Creative commons <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a></span>"
-          });
+        expect(canvasMetadata[2].rights[0]).toEqual({
+          label: 'Attribution',
+          value:
+            '<span>Creative commons <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a></span>',
+        });
         // console.log is called twice for the 5 canvases without metadata
         expect(console.log).toBeCalledTimes(5);
       });
 
-
       it('canvas without metadata returns []', () => {
-        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(playlistManifest, true);
+        const { manifestMetadata, canvasMetadata } = iiifParser.getMetadata(
+          playlistManifest,
+          true,
+        );
         expect(manifestMetadata.length).toBeGreaterThan(0);
         expect(canvasMetadata.length).toEqual(6);
         expect(canvasMetadata[0].metadata).toEqual([]);
@@ -735,50 +888,61 @@ describe('iiif-parser', () => {
     });
 
     it('replaces new line characters with <br/> tags', () => {
-      const { manifestMetadata, _ } = iiifParser.getMetadata(lunchroomManifest, false);
+      const { manifestMetadata, _ } = iiifParser.getMetadata(
+        lunchroomManifest,
+        false,
+      );
       expect(manifestMetadata[3]).toEqual({
-        label: "Summary",
-        value: "This is the summary field. It may include a summary of the item.<br><br>Does a  pre  tag exist here?<br><br><b>How about some bold?</b><br><br><i>Or italics?</i>"
+        label: 'Summary',
+        value:
+          'This is the summary field. It may include a summary of the item.<br><br>Does a  pre  tag exist here?<br><br><b>How about some bold?</b><br><br><i>Or italics?</i>',
       });
     });
 
     it('sanitize HTML in value for each metadata item', () => {
       const { manifestMetadata, _ } = iiifParser.getMetadata(lunchroomManifest);
       expect(manifestMetadata[0]).toEqual({
-        label: "Title",
-        value: "This is the title of the item!"
+        label: 'Title',
+        value: 'This is the title of the item!',
       });
       // Strips unsafe 'javascript:' from the metadata field
       expect(manifestMetadata[1]).toEqual({
-        label: "Date",
-        value: "2023 (Creation date: 2023)<br><a>xss</a>"
+        label: 'Date',
+        value: '2023 (Creation date: 2023)<br><a>xss</a>',
       });
       expect(manifestMetadata[2]).toEqual({
-        label: "Main contributors",
-        value: "<a href=\"mailto:johndoe@example.com\">John Doe</a><br>The Avalon Media System Team"
+        label: 'Main contributors',
+        value:
+          '<a href="mailto:johndoe@example.com">John Doe</a><br>The Avalon Media System Team',
       });
       // Strips unsafe 'data:' from the metadata field
       expect(manifestMetadata[4]).toEqual({
-        label: "Contributors",
-        value: "Jon's Cats<br>Adorable Dogs<br><a>Cats &amp; Dogs</a>"
+        label: 'Contributors',
+        value: "Jon's Cats<br>Adorable Dogs<br><a>Cats &amp; Dogs</a>",
       });
       expect(manifestMetadata[5]).toEqual({
-        label: "Collection",
-        value: "<a href=\"https://example.com/collections/fb4948403\">Testing</a>"
+        label: 'Collection',
+        value:
+          '<a href="https://example.com/collections/fb4948403">Testing</a>',
       });
       expect(manifestMetadata[6]).toEqual({
-        label: "Related Items",
-        value: "<a href=\"https://iu.edu\">IU</a><br><a href=\"https://avalonmediasystem.org\">Avalon Website</a>"
+        label: 'Related Items',
+        value:
+          '<a href="https://iu.edu">IU</a><br><a href="https://avalonmediasystem.org">Avalon Website</a>',
       });
       expect(manifestMetadata[7]).toEqual({
-        label: "Notes", value: "<a></a>"
+        label: 'Notes',
+        value: '<a></a>',
       });
     });
 
     it('interprets null value as an empty string', () => {
-      const { manifestMetadata, _ } = iiifParser.getMetadata(lunchroomManifest, false);
+      const { manifestMetadata, _ } = iiifParser.getMetadata(
+        lunchroomManifest,
+        false,
+      );
       expect(manifestMetadata.length).toBeGreaterThan(0);
-      expect(manifestMetadata[9]).toEqual({ label: "Notes", value: "" });
+      expect(manifestMetadata[9]).toEqual({ label: 'Notes', value: '' });
     });
   });
 
@@ -791,16 +955,20 @@ describe('iiif-parser', () => {
 
     describe('with manifest with auto-advance behavior', () => {
       it('should return true', () => {
-        expect(iiifParser.parseAutoAdvance(autoAdvanceManifest.behavior)).toBe(true);
+        expect(iiifParser.parseAutoAdvance(autoAdvanceManifest.behavior)).toBe(
+          true,
+        );
       });
     });
   });
 
   describe('getStructureRanges()', () => {
     it('returns parsed structures and timespans when structure is defined in manifest', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        manifest, iiifParser.canvasesInManifest(manifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          manifest,
+          iiifParser.canvasesInManifest(manifest),
+        );
       expect(structures).toHaveLength(2);
       expect(timespans).toHaveLength(12);
       expect(markRoot).toBeFalsy();
@@ -812,7 +980,9 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeTruthy();
-      expect(firstStructCanvas.rangeId).toEqual('https://example.com/sample/transcript-annotation/range/1');
+      expect(firstStructCanvas.rangeId).toEqual(
+        'https://example.com/sample/transcript-annotation/range/1',
+      );
       expect(firstStructCanvas.id).toEqual(undefined);
       expect(firstStructCanvas.isClickable).toBeFalsy();
       expect(firstStructCanvas.duration).toEqual('09:32');
@@ -825,8 +995,12 @@ describe('iiif-parser', () => {
       expect(firstTimespan.isCanvas).toBeFalsy();
       expect(firstTimespan.isEmpty).toBeFalsy();
       expect(firstTimespan.isTitle).toBeFalsy();
-      expect(firstTimespan.rangeId).toEqual('https://example.com/sample/transcript-annotation/range/1-1');
-      expect(firstTimespan.id).toEqual('https://example.com/sample/transcript-annotation/canvas/1#t=0,374');
+      expect(firstTimespan.rangeId).toEqual(
+        'https://example.com/sample/transcript-annotation/range/1-1',
+      );
+      expect(firstTimespan.id).toEqual(
+        'https://example.com/sample/transcript-annotation/canvas/1#t=0,374',
+      );
       expect(firstTimespan.isClickable).toBeTruthy();
       expect(firstTimespan.duration).toEqual('06:14');
       expect(firstTimespan.canvasDuration).toEqual(572.034);
@@ -834,9 +1008,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns empty structures and timespans when behavior is set to no-nav', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        volleyballManifest, iiifParser.canvasesInManifest(volleyballManifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          volleyballManifest,
+          iiifParser.canvasesInManifest(volleyballManifest),
+        );
       expect(structures).toHaveLength(0);
       expect(timespans).toHaveLength(0);
       expect(markRoot).toBeFalsy();
@@ -844,9 +1020,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns identical structures and timespans when structure is childless', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        autoAdvanceManifest, iiifParser.canvasesInManifest(autoAdvanceManifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          autoAdvanceManifest,
+          iiifParser.canvasesInManifest(autoAdvanceManifest),
+        );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(2);
       expect(markRoot).toBeTruthy();
@@ -858,8 +1036,12 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2');
-      expect(firstStructCanvas.id).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,');
+      expect(firstStructCanvas.rangeId).toEqual(
+        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2',
+      );
+      expect(firstStructCanvas.id).toEqual(
+        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,',
+      );
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('01:06:11');
       expect(firstStructCanvas.canvasDuration).toEqual(3971.24);
@@ -870,9 +1052,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns identical structures when Canvas id is not a mediafragment', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        autoAdvanceManifest, iiifParser.canvasesInManifest(autoAdvanceManifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          autoAdvanceManifest,
+          iiifParser.canvasesInManifest(autoAdvanceManifest),
+        );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(2);
       expect(markRoot).toBeTruthy();
@@ -884,8 +1068,12 @@ describe('iiif-parser', () => {
       expect(secondStructCanvas.isCanvas).toBeTruthy();
       expect(secondStructCanvas.isEmpty).toBeFalsy();
       expect(secondStructCanvas.isTitle).toBeFalsy();
-      expect(secondStructCanvas.rangeId).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3');
-      expect(secondStructCanvas.id).toEqual('https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,');
+      expect(secondStructCanvas.rangeId).toEqual(
+        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3',
+      );
+      expect(secondStructCanvas.id).toEqual(
+        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,',
+      );
       expect(secondStructCanvas.isClickable).toBeTruthy();
       expect(secondStructCanvas.duration).toEqual('55:07');
       expect(secondStructCanvas.canvasDuration).toEqual(3307.22);
@@ -893,9 +1081,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          lunchroomManifest,
+          iiifParser.canvasesInManifest(lunchroomManifest),
+        );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(13);
       expect(markRoot).toBeTruthy();
@@ -907,8 +1097,12 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/1');
-      expect(firstStructCanvas.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=0,');
+      expect(firstStructCanvas.rangeId).toEqual(
+        'https://example.com/manifest/lunchroom_manners/range/1',
+      );
+      expect(firstStructCanvas.id).toEqual(
+        'https://example.com/manifest/lunchroom_manners/canvas/1#t=0,',
+      );
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:00');
       expect(firstStructCanvas.canvasDuration).toEqual(660);
@@ -916,9 +1110,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns structure with root for a single canvas manifest', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        singleCanvasManifest, iiifParser.canvasesInManifest(singleCanvasManifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          singleCanvasManifest,
+          iiifParser.canvasesInManifest(singleCanvasManifest),
+        );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(3);
       expect(markRoot).toBeFalsy();
@@ -930,7 +1126,9 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isCanvas).toBeFalsy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeTruthy();
-      expect(firstStructCanvas.rangeId).toEqual('http://example.com/single-canvas-manifest/range/2');
+      expect(firstStructCanvas.rangeId).toEqual(
+        'http://example.com/single-canvas-manifest/range/2',
+      );
       expect(firstStructCanvas.id).toBeUndefined();
       expect(firstStructCanvas.isClickable).toBeFalsy();
       expect(firstStructCanvas.canvasDuration).toEqual(7278.422);
@@ -938,9 +1136,11 @@ describe('iiif-parser', () => {
     });
 
     it('returns [] when structure is not present', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        manifestWoStructure, iiifParser.canvasesInManifest(manifestWoStructure)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          manifestWoStructure,
+          iiifParser.canvasesInManifest(manifestWoStructure),
+        );
       expect(structures).toEqual([]);
       expect(timespans).toEqual([]);
       expect(markRoot).toBeFalsy();
@@ -949,21 +1149,31 @@ describe('iiif-parser', () => {
 
     it('returns canvas summary with structure for playlist manifests', () => {
       const { structures, timespans } = iiifParser.getStructureRanges(
-        playlistManifest, iiifParser.canvasesInManifest(playlistManifest), true
+        playlistManifest,
+        iiifParser.canvasesInManifest(playlistManifest),
+        true,
       );
       expect(structures).toHaveLength(6);
       expect(timespans).toHaveLength(6);
 
       const firstStructCanvas = structures[2];
       expect(firstStructCanvas.label).toEqual('Playlist Item 1');
-      expect(firstStructCanvas.summary).toEqual('Clip from Volleyball for boys');
-      expect(firstStructCanvas.homepage).toEqual('https://example.com/playlists/1?position=3');
+      expect(firstStructCanvas.summary).toEqual(
+        'Clip from Volleyball for boys',
+      );
+      expect(firstStructCanvas.homepage).toEqual(
+        'https://example.com/playlists/1?position=3',
+      );
       expect(firstStructCanvas.items).toHaveLength(0);
       expect(firstStructCanvas.isCanvas).toBeTruthy();
       expect(firstStructCanvas.isEmpty).toBeFalsy();
       expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual('http://example.com/playlists/1/range/2');
-      expect(firstStructCanvas.id).toEqual('http://example.com/playlists/1/canvas/3#t=0,');
+      expect(firstStructCanvas.rangeId).toEqual(
+        'http://example.com/playlists/1/range/2',
+      );
+      expect(firstStructCanvas.id).toEqual(
+        'http://example.com/playlists/1/canvas/3#t=0,',
+      );
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
       expect(firstStructCanvas.canvasDuration).toEqual(32);
@@ -972,7 +1182,8 @@ describe('iiif-parser', () => {
 
     it('marks a timespan as not clickable when its times are out-of-range of Canvas duration', () => {
       const { structures, timespans } = iiifParser.getStructureRanges(
-        outOfRangeManifest, iiifParser.canvasesInManifest(outOfRangeManifest)
+        outOfRangeManifest,
+        iiifParser.canvasesInManifest(outOfRangeManifest),
       );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(2);
@@ -991,9 +1202,11 @@ describe('iiif-parser', () => {
     });
 
     it('return empty structures and timespans when behavior is set to thumbnail-nav', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
-        singleSrcManifest, iiifParser.canvasesInManifest(singleSrcManifest)
-      );
+      const { structures, timespans, markRoot, hasCollapsibleStructure } =
+        iiifParser.getStructureRanges(
+          singleSrcManifest,
+          iiifParser.canvasesInManifest(singleSrcManifest),
+        );
       expect(structures).toHaveLength(0);
       expect(timespans).toHaveLength(0);
       expect(markRoot).toBeFalsy();
@@ -1003,50 +1216,71 @@ describe('iiif-parser', () => {
     describe('when mediafragment has times in hh:mm:ss format', () => {
       it('returns parsed times and duration for start and end times', () => {
         const { structures, timespans } = iiifParser.getStructureRanges(
-          lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+          lunchroomManifest,
+          iiifParser.canvasesInManifest(lunchroomManifest),
         );
         expect(structures).toHaveLength(1);
         expect(timespans).toHaveLength(13);
 
         const timespanWithStringMediaFrag = timespans[10];
-        expect(timespanWithStringMediaFrag.label).toEqual('Putting Things Away');
+        expect(timespanWithStringMediaFrag.label).toEqual(
+          'Putting Things Away',
+        );
         expect(timespanWithStringMediaFrag.items).toHaveLength(0);
         expect(timespanWithStringMediaFrag.isCanvas).toBeFalsy();
         expect(timespanWithStringMediaFrag.isEmpty).toBeFalsy();
         expect(timespanWithStringMediaFrag.isTitle).toBeFalsy();
-        expect(timespanWithStringMediaFrag.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/2-3-2');
-        expect(timespanWithStringMediaFrag.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47');
+        expect(timespanWithStringMediaFrag.rangeId).toEqual(
+          'https://example.com/manifest/lunchroom_manners/range/2-3-2',
+        );
+        expect(timespanWithStringMediaFrag.id).toEqual(
+          'https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47',
+        );
         expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
         expect(timespanWithStringMediaFrag.duration).toEqual('00:16');
         expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
-        expect(timespanWithStringMediaFrag.times).toEqual({ start: 511, end: 527 });
+        expect(timespanWithStringMediaFrag.times).toEqual({
+          start: 511,
+          end: 527,
+        });
       });
 
       it('with only start time, returns parsed times and duration', () => {
         const { structures, timespans } = iiifParser.getStructureRanges(
-          lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+          lunchroomManifest,
+          iiifParser.canvasesInManifest(lunchroomManifest),
         );
         expect(structures).toHaveLength(1);
         expect(timespans).toHaveLength(13);
 
         const timespanWithStringMediaFrag = timespans[12];
-        expect(timespanWithStringMediaFrag.label).toEqual('Lunchroom Manners 2');
+        expect(timespanWithStringMediaFrag.label).toEqual(
+          'Lunchroom Manners 2',
+        );
         expect(timespanWithStringMediaFrag.items).toHaveLength(0);
         expect(timespanWithStringMediaFrag.isCanvas).toBeTruthy();
         expect(timespanWithStringMediaFrag.isEmpty).toBeFalsy();
         expect(timespanWithStringMediaFrag.isTitle).toBeFalsy();
-        expect(timespanWithStringMediaFrag.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/1');
-        expect(timespanWithStringMediaFrag.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/2#t=00:00:00,');
+        expect(timespanWithStringMediaFrag.rangeId).toEqual(
+          'https://example.com/manifest/lunchroom_manners/range/1',
+        );
+        expect(timespanWithStringMediaFrag.id).toEqual(
+          'https://example.com/manifest/lunchroom_manners/canvas/2#t=00:00:00,',
+        );
         expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
         expect(timespanWithStringMediaFrag.duration).toEqual('11:00');
         expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
-        expect(timespanWithStringMediaFrag.times).toEqual({ start: 0, end: 660 });
+        expect(timespanWithStringMediaFrag.times).toEqual({
+          start: 0,
+          end: 660,
+        });
       });
     });
 
     it('returns parsed times and duration when mediafragment is in hh:mm:ss.ms format', () => {
       const { structures, timespans } = iiifParser.getStructureRanges(
-        lunchroomManifest, iiifParser.canvasesInManifest(lunchroomManifest)
+        lunchroomManifest,
+        iiifParser.canvasesInManifest(lunchroomManifest),
       );
       expect(structures).toHaveLength(1);
       expect(timespans).toHaveLength(13);
@@ -1057,17 +1291,25 @@ describe('iiif-parser', () => {
       expect(timespanWithStringMediaFrag.isCanvas).toBeFalsy();
       expect(timespanWithStringMediaFrag.isEmpty).toBeFalsy();
       expect(timespanWithStringMediaFrag.isTitle).toBeFalsy();
-      expect(timespanWithStringMediaFrag.rangeId).toEqual('https://example.com/manifest/lunchroom_manners/range/2-3-2');
-      expect(timespanWithStringMediaFrag.id).toEqual('https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47');
+      expect(timespanWithStringMediaFrag.rangeId).toEqual(
+        'https://example.com/manifest/lunchroom_manners/range/2-3-2',
+      );
+      expect(timespanWithStringMediaFrag.id).toEqual(
+        'https://example.com/manifest/lunchroom_manners/canvas/1#t=00:08:31,00:08:47',
+      );
       expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
       expect(timespanWithStringMediaFrag.duration).toEqual('00:16');
       expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
-      expect(timespanWithStringMediaFrag.times).toEqual({ start: 511, end: 527 });
+      expect(timespanWithStringMediaFrag.times).toEqual({
+        start: 511,
+        end: 527,
+      });
     });
 
     it('returns parsed metadata for a Range', () => {
       const { structures } = iiifParser.getStructureRanges(
-        rangeMetadataManifest, iiifParser.canvasesInManifest(rangeMetadataManifest)
+        rangeMetadataManifest,
+        iiifParser.canvasesInManifest(rangeMetadataManifest),
       );
       const washingHands = structures[0].items[0].items[0];
       expect(washingHands.label).toEqual('Washing Hands');
@@ -1084,13 +1326,91 @@ describe('iiif-parser', () => {
 
     it('returns an empty array for a Range without metadata', () => {
       const { timespans } = iiifParser.getStructureRanges(
-        rangeMetadataManifest, iiifParser.canvasesInManifest(rangeMetadataManifest)
+        rangeMetadataManifest,
+        iiifParser.canvasesInManifest(rangeMetadataManifest),
       );
       const rinsingWell = timespans.find(
-        (t) => t.rangeId === 'https://example.com/manifest/lunchroom_manners/range/1-1-3'
+        (t) =>
+          t.rangeId ===
+          'https://example.com/manifest/lunchroom_manners/range/1-1-3',
       );
       expect(rinsingWell).toBeDefined();
       expect(rinsingWell.metadata).toEqual([]);
+    });
+    describe('with multi-part Range', () => {
+      let timespans;
+
+      beforeAll(() => {
+        ({ timespans } = iiifParser.getStructureRanges(
+          crossRangeManifest,
+          iiifParser.canvasesInManifest(crossRangeManifest),
+        ));
+      });
+
+      it('returns one item per Canvas part', () => {
+        const parts = timespans.filter(
+          (t) => t.label === 'Track spanning both sides',
+        );
+        expect(parts).toHaveLength(2);
+      });
+
+      it('returns each item per Canvas part with relevant information', () => {
+        const parts = timespans.filter(
+          (t) => t.label === 'Track spanning both sides',
+        );
+        expect(parts[0]).toMatchObject({
+          id: 'http://example.com/multi-part-ranges/canvas/1#t=550,600',
+          canvasIndex: 1,
+          times: { start: 550, end: 600 },
+          duration: '00:50',
+          isMultiRange: true,
+        });
+        expect(parts[1]).toMatchObject({
+          id: 'http://example.com/multi-part-ranges/canvas/2#t=0,100',
+          canvasIndex: 2,
+          times: { start: 0, end: 100 },
+          duration: '01:40',
+          isMultiRange: true,
+        });
+      });
+
+      it('shares the same rangeId across Canvas parts in a single Range', () => {
+        const parts = timespans.filter(
+          (t) => t.label === 'Track spanning both sides',
+        );
+        expect(parts[0].rangeId).toEqual(parts[1].rangeId);
+      });
+
+      it('shares one itemIndex across Canvas parts', () => {
+        const parts = timespans.filter(
+          (t) => t.label === 'Track spanning both sides',
+        );
+        expect(parts[0].itemIndex).toEqual(parts[1].itemIndex);
+
+        /* Item indices in timespans are in the order of 1,2,2, and 3 where,
+        the two parts of the same Range share itemIndex 2. */
+        expect(timespans.map((t) => t.itemIndex)).toEqual([1, 2, 2, 3]);
+      });
+
+      it('assigns Canvas parts a display index label with a letter', () => {
+        const parts = timespans.filter(
+          (t) => t.label === 'Track spanning both sides',
+        );
+        expect(parts[0].itemIndexLabel).toEqual('2a');
+        expect(parts[1].itemIndexLabel).toEqual('2b');
+      });
+
+      it('does not set itemIndexLabel for a single Canvas part Range', () => {
+        // First and last single Canvas items
+        expect(timespans[0].itemIndexLabel).toBeUndefined();
+        expect(timespans[3].itemIndexLabel).toBeUndefined();
+      });
+
+      it('doest not set "isMultiRange=true" flag for a single Canvas part Range', () => {
+        // First and last single Canvas items
+        expect(timespans[0].isMultiRange).toBeFalsy();
+        expect(timespans[3].isMultiRange).toBeFalsy();
+      });
     });
   });
 
@@ -1101,13 +1421,13 @@ describe('iiif-parser', () => {
 
     test('returns an id for a manifest with manifest-level search service', () => {
       expect(iiifParser.getSearchService(lunchroomManifest)).toEqual(
-        'http://example.com/manifest/search'
+        'http://example.com/manifest/search',
       );
     });
 
     test('returns an id for a manifest with canvas-level search service', () => {
       expect(iiifParser.getSearchService(manifest.items[0])).toEqual(
-        'http://example.com/sample/transcript-annotation/canvas/1/search'
+        'http://example.com/sample/transcript-annotation/canvas/1/search',
       );
     });
 
@@ -1140,7 +1460,9 @@ describe('iiif-parser', () => {
       });
 
       test('has no annotation body services', () => {
-        expect(iiifParser.getAuthService(singleCanvasManifest.items[0])).toBeNull();
+        expect(
+          iiifParser.getAuthService(singleCanvasManifest.items[0]),
+        ).toBeNull();
       });
     });
 
@@ -1189,21 +1511,31 @@ describe('iiif-parser', () => {
       test('for errorHeading and errorNote from probe when provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[0]);
         expect(result.probe.errorHeading).toBe('No access');
-        expect(result.probe.errorNote).toBe('You do not have permission to access this resource');
+        expect(result.probe.errorNote).toBe(
+          'You do not have permission to access this resource',
+        );
       });
 
       test('for heading, note, confirmLable, and label from accessService when provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[0]);
         expect(result.accessService.heading).toBe('Authentication Required');
-        expect(result.accessService.note).toBe('Please log in with your institution credentials');
+        expect(result.accessService.note).toBe(
+          'Please log in with your institution credentials',
+        );
         expect(result.accessService.confirmLabel).toBe('Log in');
-        expect(result.accessService.label).toBe('Login to access restricted content');
+        expect(result.accessService.label).toBe(
+          'Login to access restricted content',
+        );
       });
 
       test('for heading and note from tokenService when provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[0]);
-        expect(result.tokenService.errorHeading).toBe('Something went wrong with the token service');
-        expect(result.tokenService.errorNote).toBe('Could not get a token. Please contact support.');
+        expect(result.tokenService.errorHeading).toBe(
+          'Something went wrong with the token service',
+        );
+        expect(result.tokenService.errorNote).toBe(
+          'Could not get a token. Please contact support.',
+        );
       });
 
       test('for label from logoutService when provided', () => {
@@ -1216,7 +1548,9 @@ describe('iiif-parser', () => {
       test('for probe when not provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[4]);
         expect(result.probe.errorHeading).toBe('Something went wrong');
-        expect(result.probe.errorNote).toBe('Could not confirm authorization with token.');
+        expect(result.probe.errorNote).toBe(
+          'Could not confirm authorization with token.',
+        );
       });
 
       test('for accessService when not provided', () => {
@@ -1230,7 +1564,9 @@ describe('iiif-parser', () => {
       test('for tokenService when not provided', () => {
         const result = iiifParser.getAuthService(authManifest.items[2]);
         expect(result.tokenService.errorHeading).toBe('Authentication failed');
-        expect(result.tokenService.errorNote).toBe('Could not obtain an access token.');
+        expect(result.tokenService.errorNote).toBe(
+          'Could not obtain an access token.',
+        );
       });
 
       test('for logoutService when not provided', () => {
@@ -1243,30 +1579,33 @@ describe('iiif-parser', () => {
   });
 
   describe('getWaveformResource()', () => {
-    const canvas = {
-      duration: 1094.977, height: 1080, width: 1920, service: [], thumbnail: [], type: "Canvas", items: [],
-      id: "http://example.com/manifest/canvas/1", label: { en: ['Canvas'] },
-      placeholderCanvas: { type: "Canvas", id: "http://example.com/manifest/canvas/1/placeholder", width: 1280, height: 720 },
-    };
-    test('returns null when Canvas is empty', () => {
-      expect(iiifParser.getWaveformResource({})).toBeNull();
+    let waveformManifest;
+    beforeEach(() => {
+      // Reset the waveform data before each test
+      waveformManifest = cloneDeep(waveformManifestRaw);
     });
 
-    test('returns null when Canvas doesn\'t have both "seeAlso" and "accompanyingCanvas"', () => {
-      expect(iiifParser.getWaveformResource(canvas)).toBeNull();
+    test('returns an empty array when Canvas is empty', () => {
+      expect(iiifParser.getWaveformResource({})).toEqual([]);
+    });
+
+    test('returns an empty array when Canvas doesn\'t have both "seeAlso" and "accompanyingCanvas"', () => {
+      expect(
+        iiifParser.getWaveformResource(lunchroomManifest.items[0]),
+      ).toEqual([]);
     });
 
     describe('when "seeAlso"', () => {
-      test('doesn\'t include a recognized waveform format returns null', () => {
-        expect(iiifParser.getWaveformResource({
-          ...canvas,
-          seeAlso: [{ id: 'http://example.com/structure.xml', type: 'Dataset', format: 'application/xml' }],
-        })).toBeNull();
+      test("doesn't include a recognized waveform format returns an empty array", () => {
+        expect(
+          iiifParser.getWaveformResource(waveformManifest.items[3]),
+        ).toEqual([]);
       });
 
       test('has a .dat resource returns waveformType: "data" ', () => {
-        const seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset', format: 'application/octet-stream' }];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const [waveform] = iiifParser.getWaveformResource(
+          waveformManifest.items[2],
+        );
         expect(waveform.waveformType).toBe('data');
         expect(waveform.id).toBe('http://example.com/waveform.dat');
         expect(waveform.source).toBe('seeAlso');
@@ -1274,25 +1613,25 @@ describe('iiif-parser', () => {
       });
 
       test('has a .json resource returns waveformType: "data"', () => {
-        const seeAlso = [{ id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' }];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const [waveform] = iiifParser.getWaveformResource(
+          waveformManifest.items[0],
+        );
         expect(waveform.waveformType).toBe('data');
         expect(waveform.source).toBe('seeAlso');
         expect(waveform.id).toBe('http://example.com/waveform.json');
         expect(waveform.format).toBe('application/json');
       });
 
-      test('has a .png resource returns null', () => {
-        const seeAlso = [{ id: 'https://example.com/waveform.png', type: 'Image', format: 'image/png' }];
-        expect(iiifParser.getWaveformResource({ ...canvas, seeAlso })).toBeNull();
+      test('has a .png resource returns an empty array', () => {
+        expect(
+          iiifParser.getWaveformResource(waveformManifest.items[5]),
+        ).toEqual([]);
       });
 
       test('has both dataset and image resources binary dataset takes precendence', () => {
-        const seeAlso = [
-          { id: 'http://example.com/waveform.png', type: 'Image', format: 'image/png' },
-          { id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' },
-        ];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const [waveform] = iiifParser.getWaveformResource(
+          waveformManifest.items[6],
+        );
         expect(waveform.waveformType).toBe('data');
         expect(waveform.id).toBe('http://example.com/waveform.json');
       });
@@ -1300,8 +1639,11 @@ describe('iiif-parser', () => {
 
     describe('resolves type using resource id extension when format is absent for', () => {
       test('a seeAlso resource', () => {
-        const seeAlso = [{ id: 'http://example.com/waveform.dat', type: 'Dataset' }];
-        const waveform = iiifParser.getWaveformResource({ ...canvas, seeAlso });
+        const canvas = waveformManifest.items[0];
+        canvas.seeAlso = [
+          { id: 'http://example.com/waveform.dat', type: 'Dataset' },
+        ];
+        const [waveform] = iiifParser.getWaveformResource(canvas);
         expect(waveform.waveformType).toBe('data');
         expect(waveform.source).toBe('seeAlso');
         expect(waveform.id).toBe('http://example.com/waveform.dat');
@@ -1309,18 +1651,14 @@ describe('iiif-parser', () => {
       });
 
       test('an accompanyingCanvas resource', () => {
-        const accompanyingCanvas = {
-          type: 'Canvas',
-          label: { en: ['Waveform'] },
-          items: [{
-            type: 'AnnotationPage',
-            items: [{
-              type: 'Annotation', motivation: 'painting',
-              body: { id: 'http://example.com/waveform.png', type: 'Image' },
-            }],
-          }],
+        const canvas = waveformManifest.items[1];
+        canvas.accompanyingCanvas.items[0].items[0].body = {
+          id: 'http://example.com/waveform.png',
+          type: 'Image',
+          height: 200,
+          width: 800,
         };
-        const waveform = iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas });
+        const [waveform] = iiifParser.getWaveformResource(canvas);
         expect(waveform.waveformType).toBe('image');
         expect(waveform.source).toBe('accompanyingCanvas');
         expect(waveform.id).toBe('http://example.com/waveform.png');
@@ -1330,61 +1668,77 @@ describe('iiif-parser', () => {
 
     describe('when "accompanyingCanvas"', () => {
       test('has a waveform image returns waveformType: "image"', () => {
-        const accompanyingCanvas = {
-          type: 'Canvas', label: { en: ['Waveform data as an image'] },
-          items: [{
-            type: 'AnnotationPage',
-            items: [{
-              type: 'Annotation', motivation: 'painting',
-              body: {
-                id: 'http://example.com/waveform.png',
-                type: 'Image', format: 'image/jpeg',
-              },
-            }],
-          }],
-        };
-        const waveform = iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas });
+        const [waveform] = iiifParser.getWaveformResource(
+          waveformManifest.items[1],
+        );
         expect(waveform.waveformType).toBe('image');
-        expect(waveform.id).toBe('http://example.com/waveform.png');
+        expect(waveform.id).toBe('http://example.com/waveform.jpg');
         expect(waveform.format).toBe('image/jpeg');
         expect(waveform.source).toBe('accompanyingCanvas');
       });
 
-      test('doesn\'t have text "waveform" in its label returns null', () => {
-        const accompanyingCanvas = {
-          type: 'Canvas',
-          label: { en: ['Poster frame'] },
-          items: [{
-            type: 'AnnotationPage',
-            items: [{
-              type: 'Annotation', motivation: 'painting',
-              body: { id: 'http://example.com/poster.png', type: 'Image', format: 'image/png' },
-            }],
-          }],
-        };
-        expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
+      test('doesn\'t have text "waveform" in its label returns an empty array', () => {
+        const canvas = waveformManifest.items[1];
+        canvas.accompanyingCanvas.label = { en: ['Poster Image'] };
+        expect(iiifParser.getWaveformResource(canvas)).toEqual([]);
       });
     });
 
     test('"seeAlso" takes precendence over "accompanyingCanvas" when both are present', () => {
-      const waveformRes = {
-        seeAlso: [{ id: 'http://example.com/waveform.json', type: 'Dataset', format: 'application/json' }],
-        accompanyingCanvas: {
-          label: { en: ['Waveform as an image'] },
-          items: [{ items: [{ body: { id: 'http://example.com/waveform.png', type: 'Image', format: 'image/png' } }] }],
-        },
-      };
-      const waveform = iiifParser.getWaveformResource({ ...canvas, ...waveformRes });
+      const [waveform] = iiifParser.getWaveformResource(
+        waveformManifest.items[4],
+      );
       expect(waveform.waveformType).toBe('data');
       expect(waveform.source).toBe('seeAlso');
     });
 
-    test('returns null when "accompanyingCanvas" is not an image with text "waveform" in label', () => {
-      const accompanyingCanvas = {
+    test('returns an empty array when "accompanyingCanvas" is not an image with text "waveform" in label', () => {
+      const canvas = waveformManifest.items[1];
+      canvas.accompanyingCanvas = {
+        id: 'http://example.com/waveform-example/canvas/2/accompanying',
         label: { en: ['WebVTT not a waveform'] },
-        items: [{ items: [{ body: { id: 'https://example.com/text.vtt', type: 'Text' } }] }]
+        items: [
+          {
+            items: [
+              { body: { id: 'https://example.com/text.vtt', type: 'Text' } },
+            ],
+          },
+        ],
       };
-      expect(iiifParser.getWaveformResource({ ...canvas, accompanyingCanvas })).toBeNull();
+      expect(iiifParser.getWaveformResource(canvas)).toEqual([]);
+    });
+
+    describe('for a multi-source Canvas', () => {
+      test('returns an array of waveform resources for each Annotation in-order from their "seeAlso" properties', () => {
+        const waveform = iiifParser.getWaveformResource(
+          waveformManifest.items[7],
+        );
+        expect(Array.isArray(waveform)).toBe(true);
+        expect(waveform).toHaveLength(2);
+        expect(waveform[0]).toEqual(
+          expect.objectContaining({
+            id: 'https://example.com/waveform-side-1.json',
+            waveformType: 'data',
+            source: 'seeAlso',
+            format: 'application/json',
+          }),
+        );
+        expect(waveform[1]).toEqual(
+          expect.objectContaining({
+            id: 'https://example.com/waveform-side-2.dat',
+            waveformType: 'data',
+            source: 'seeAlso',
+            format: 'application/octet-stream',
+          }),
+        );
+      });
+
+      test('omits invalid "seeAlso" waveform format in a source', () => {
+        const waveform = iiifParser.getWaveformResource(
+          waveformManifest.items[7],
+        );
+        expect(waveform).toHaveLength(2);
+      });
     });
   });
 });

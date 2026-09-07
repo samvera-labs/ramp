@@ -1134,3 +1134,58 @@ export const getWaveformType = (format, id) => {
   if (ext === 'png' || ext === 'jpeg' || ext === 'jpg') return { waveformType: 'image', format: resolvedFormat };
   return { waveformType: null, format: resolvedFormat };
 };
+
+/**
+ * Determine whether playback has reached the end of the currently playing range of the
+ * timespan spanning across multiple canvases. If so, identify which range/timespan to
+ * get next.
+ * @function Utils#getNextRange
+ * @param {Array} ranges list of ranges for the active timespan
+ * @param {Number} index index of the currently playing range in timespan
+ * @param {Number} canvasIndex index of the current Canvas
+ * @param {Number} playerTime playhead's current time
+ * @returns {Object|null} the next segment to switch to, or null when no transition is due
+ */
+export function getNextRange(ranges, index, canvasIndex, playerTime) {
+  if (!(ranges?.length > 1) || index >= ranges.length - 1) {
+    return null;
+  }
+  const currentRange = ranges[index];
+  if (currentRange && (canvasIndex === currentRange.canvasIndex
+    && playerTime >= currentRange.times.end)) {
+    // Advance to the next range in timespan
+    return ranges[index + 1];
+  }
+  return null;
+}
+
+/**
+ * Get the active range for the current Canvas within the timespan's ranges. The active
+ * timespan carries information (such as times, canvasIndex, etc.) related to the first
+ * Canvas range by default. Filtering the active range and updating the timespan based on
+ * its information highlights the structure and updates player's progress-bar markers accurately.
+ * @function Utils#getActiveRangeForCanvas
+ * @param {Object} item a structure item from 'canvasSegments'
+ * @param {Number} canvasIndex index of the current Canvas
+ * @param {Number} canvasDuration duration of the current Canvas
+ * @returns {Object|null}
+ */
+export function getActiveRangeForCanvas(item, canvasIndex, canvasDuration) {
+  // Return the item when it is on the current Canvas
+  if (item.canvasIndex === canvasIndex) {
+    return item;
+  }
+  const range = item.ranges?.length > 1
+    ? item.ranges.find((s) => s.canvasIndex === canvasIndex)
+    : null;
+  if (!range) {
+    return null;
+  }
+  // Update the item based on the active range
+  return {
+    ...item,
+    canvasIndex: range.canvasIndex,
+    times: range.times,
+    canvasDuration: canvasDuration ?? item.canvasDuration,
+  };
+}

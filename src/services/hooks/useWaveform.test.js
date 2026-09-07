@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { useWaveform } from './useWaveform';
-import { withManifestAndPlayerProvider, manifestState } from '@Services/testing-helpers';
+import { buildWaveformBinary, manifestState, withManifestAndPlayerProvider } from '@Services/testing-helpers';
 import waveformManifest from '@TestData/waveform-example';
 
 describe('useWaveform', () => {
@@ -223,6 +223,94 @@ describe('useWaveform', () => {
 
       await waitFor(() => {
         expect(fetchSpy).toHaveBeenCalledTimes(2);
+      });
+    });
+
+    describe('for a multi-source Canvas', () => {
+      const JSON_URL = 'https://example.com/waveform-side-1.json';
+      const DAT_URL = 'https://example.com/waveform-side-2.dat';
+
+      test('is fetched for each source and combined into a single continuous waveform', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation((url) => {
+          if (url === JSON_URL) {
+            return Promise.resolve({
+              ok: true,
+              // Set max_sample to 10 in this content
+              json: jest.fn().mockResolvedValue({
+                version: 2, channels: 1, sample_rate: 44100, samples_per_pixel: 512,
+                bits: 8, length: 1, data: [0, 10],
+              }),
+            });
+          }
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            headers: { 'Content-Type': 'application/octet-stream' },
+            // Set min_sample to -5 in this content
+            arrayBuffer: () => Promise.resolve(buildWaveformBinary([-5, 8])),
+          });
+        });
+        const CustomComponent = withManifestAndPlayerProvider(renderHook({}), {
+          initialManifestState: { ...manifestState(waveformManifest, 7) },
+          initialPlayerState: { player },
+        });
+        render(<CustomComponent />);
+
+        await waitFor(() => {
+          expect(player._controlBar.getChild('videoJSWaveform')).toBeDefined();
+        });
+        expect(fetchSpy).toHaveBeenCalledWith(JSON_URL, expect.anything());
+        expect(fetchSpy).toHaveBeenCalledWith(DAT_URL, expect.anything());
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+
+        expect(player.waveform.type).toBe('peaks');
+        expect(player.waveform.data.length).toBe(2);
+        expect(player.waveform.data.channel(0).min_sample(0)).toBe(0);
+        expect(player.waveform.data.channel(0).min_sample(1)).toBe(-5);
+      });
+
+      test('is fetched while skipping failed waveform resource request(s)', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation((url) => {
+          if (url === JSON_URL) {
+            return Promise.resolve({
+              ok: true,
+              json: jest.fn().mockResolvedValue({
+                version: 2, channels: 1, sample_rate: 44100, samples_per_pixel: 512,
+                bits: 8, length: 1, data: [0, 10],
+              }),
+            });
+          }
+          return Promise.reject(new Error('Network error'));
+        });
+        const CustomComponent = withManifestAndPlayerProvider(renderHook({}), {
+          initialManifestState: { ...manifestState(waveformManifest, 7) },
+          initialPlayerState: { player },
+        });
+        render(<CustomComponent />);
+
+        await waitFor(() => {
+          expect(player._controlBar.getChild('videoJSWaveform')).toBeDefined();
+        });
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+        expect(player.waveform.type).toBe('peaks');
+        expect(player.waveform.data.length).toBe(1);
+      });
+
+      test('is failed to fetch; waveform toggle is not displayed', async () => {
+        const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation((url) => {
+          return Promise.reject(new Error('Network error'));
+        });
+        const CustomComponent = withManifestAndPlayerProvider(renderHook({}), {
+          initialManifestState: { ...manifestState(waveformManifest, 7) },
+          initialPlayerState: { player },
+        });
+        render(<CustomComponent />);
+
+        await waitFor(() => {
+          expect(player._controlBar.getChild('videoJSWaveform')).not.toBeDefined();
+        });
+        expect(fetchSpy).toHaveBeenCalledTimes(2);
+        expect(player.waveform).toBeNull();
       });
     });
   });

@@ -130,7 +130,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
             canvasIndex: currentCanvasIndex,
             type: 'switchCanvas',
           });
-          canvasIsEmptyRef.current = canvasStructRef.current[currentCanvasIndex].isEmpty;
+          canvasIsEmptyRef.current = allCanvases[currentCanvasIndex]?.isEmpty;
         }
       }
 

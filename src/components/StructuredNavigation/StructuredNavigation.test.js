@@ -9,6 +9,7 @@ import thumbnailNavStructure from '@TestData/transcript-multiple-canvas';
 import playlist from '@TestData/playlist';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
+import crossRangeManifest from '@TestData/multi-part-ranges';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -620,6 +621,10 @@ describe('StructuredNavigation component', () => {
         treeItems = screen.getAllByTestId('tree-item');
       });
 
+      afterAll(() => {
+        jest.spyOn(hooks, 'useActiveStructure').mockRestore();
+      });
+
       test('rendered as sections', () => {
         expect(screen.queryAllByTestId('tree-item').length).toEqual(21);
         expect(treeItems[0].children[1].children.length).toBe(2);
@@ -948,6 +953,109 @@ describe('StructuredNavigation component', () => {
         expect(timespan).not.toHaveFocus();
         expect(tooltip).toHaveClass('visible');
       });
+    });
+  });
+
+  describe('with a multi-part structure', () => {
+    test('renders a link for each Canvas part in a multi item Range', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      const multiPartItem = screen.getAllByText(/Track spanning both sides/);
+      expect(multiPartItem).toHaveLength(2);
+
+      const firstPart = multiPartItem[0].parentElement;
+      expect(firstPart.tagName).toBe('A');
+      expect(firstPart.lastChild).toHaveClass('structure-item-cross-canvas');
+      expect(firstPart).toHaveTextContent('2a.');
+      expect(firstPart).toHaveAttribute(
+        'href', expect.stringContaining('canvas/1#t=550,600')
+      );
+
+      const secondPart = multiPartItem[1].parentElement;
+      expect(secondPart.tagName).toBe('A');
+      expect(secondPart.lastChild).toHaveClass('structure-item-cross-canvas');
+      expect(secondPart).toHaveTextContent('2b.');
+      expect(secondPart).toHaveAttribute(
+        'href', expect.stringContaining('canvas/2#t=0,100')
+      );
+    });
+
+    test('applies structure highlights for each part on click', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      const multiPartItem = screen.getAllByText(/Track spanning both sides/);
+      expect(multiPartItem).toHaveLength(2);
+
+      const firstPart = multiPartItem[0].parentElement;
+      const secondPart = multiPartItem[1].parentElement;
+
+      fireEvent.click(secondPart);
+
+      expect(secondPart.closest('li')).toHaveClass('ramp--structured-nav__tree-item active');
+      expect(firstPart.closest('li')).not.toHaveClass('active');
+    });
+
+    test('renders an ordinary link for single item Range', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+
+      const structureItem = screen.getAllByText(/Track within Side A/);
+      expect(structureItem).toHaveLength(1);
+
+      const canvasPart = structureItem[0].parentElement;
+      expect(canvasPart.lastChild).not.toHaveClass('structure-item-cross-canvas');
+      expect(canvasPart.lastChild).toHaveClass('structured-nav__item-label');
+      expect(canvasPart).toHaveTextContent('1.Track within Side A (01:00)');
+      expect(canvasPart).toHaveAttribute(
+        'href', expect.stringContaining('canvas/1#t=0,60')
+      );
+    });
+
+    test('applies structure higlights for oridinary item link click', () => {
+      const NavWithProviders = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(crossRangeManifest) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithProviders />
+        </ErrorBoundary>
+      );
+      const structureItem = screen.getAllByText(/Track within Side A/);
+      expect(structureItem).toHaveLength(1);
+
+      const canvasPart = structureItem[0].parentElement;
+      fireEvent.click(canvasPart);
+
+      expect(canvasPart.closest('li')).toHaveClass('ramp--structured-nav__tree-item active');
+
+      const multiPartItem = screen.getAllByText(/Track spanning both sides/);
+      expect(multiPartItem).toHaveLength(2);
+
+      expect(multiPartItem[0].closest('li')).not.toHaveClass('active');
     });
   });
 });

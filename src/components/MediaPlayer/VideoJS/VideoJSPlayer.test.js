@@ -2,13 +2,14 @@ import React from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { ErrorBoundary } from 'react-error-boundary';
 import MediaPlayer from '@Components/MediaPlayer/MediaPlayer';
-import { withManifestAndPlayerProvider, manifestState } from '@Services/testing-helpers';
+import { buildWaveformBinary, manifestState, withManifestAndPlayerProvider } from '@Services/testing-helpers';
 import * as authService from '@Services/auth-service';
 import videoManifest from '@TestData/lunchroom-manners';
 import playlistManifest from '@TestData/playlist';
 import singleCanvasManifest from '@TestData/single-canvas';
 import authManifest from '@TestData/auth-manifest';
 import waveformManifest from '@TestData/waveform-example';
+import multiSourceManifest from '@TestData/multi-source-manifest';
 
 // Mock 'requestLogout' from auth-service module
 jest.mock('@Services/auth-service', () => ({
@@ -700,7 +701,7 @@ describe('VideoJSPlayer component', () => {
     const resumeModalRef = { current: document.createElement('div') };
     const props = { resumeModalRef, waveformRef };
 
-    const mockWaveformFetch = () => {
+    const mockWaveformJSONFetch = () => {
       jest.spyOn(global, 'fetch').mockImplementation(() => {
         return Promise.resolve({
           ok: true,
@@ -710,6 +711,17 @@ describe('VideoJSPlayer component', () => {
           }),
         });
       });
+    };
+
+    const mockWaveformBinFetch = () => {
+      jest.spyOn(global, 'fetch').mockImplementation(() =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          headers: { 'Content-Type': 'application/octet-stream' },
+          arrayBuffer: () => Promise.resolve(buildWaveformBinary([0, 10, -5, 8]))
+        })
+      );
     };
 
     describe('doesn\'t add waveform toggle button or panel', () => {
@@ -818,7 +830,7 @@ describe('VideoJSPlayer component', () => {
     });
 
     test('toggles waveform panel visibility', async () => {
-      mockWaveformFetch();
+      mockWaveformJSONFetch();
       await renderPlayer({
         manifest: waveformManifest, canvasIndex: 0,
         props: { ...props, showWaveform: true },
@@ -837,7 +849,7 @@ describe('VideoJSPlayer component', () => {
 
     describe('on page load', () => {
       test('shows the panel for an audio Canvas without a saved playback position', async () => {
-        mockWaveformFetch();
+        mockWaveformBinFetch();
 
         await renderPlayer({
           manifest: waveformManifest, canvasIndex: 2,
@@ -850,7 +862,7 @@ describe('VideoJSPlayer component', () => {
       });
 
       test('hides the panel for an audio Canvas with a saved playback position', async () => {
-        mockWaveformFetch();
+        mockWaveformJSONFetch();
         localStorage.setItem(
           'playbackPositions',
           JSON.stringify([{
@@ -873,7 +885,7 @@ describe('VideoJSPlayer component', () => {
       });
 
       test('hides the panel for a video Canvas regardless of saved playback position', async () => {
-        mockWaveformFetch();
+        mockWaveformJSONFetch();
         localStorage.setItem(
           'playbackPositions',
           JSON.stringify([{
@@ -894,6 +906,109 @@ describe('VideoJSPlayer component', () => {
         await screen.findByTestId('videojs-waveform-button');
         const panel = screen.getByTestId('videojs-waveform-panel');
         expect(panel).toHaveClass('hidden');
+      });
+    });
+  });
+
+  describe('feature: track scrubber', () => {
+    /* Simulates the pointer click event at a given pixel offset on the track scrubber's progress
+    bar, which then invokes the VideoJSTrackScrubber component's 'handleSetProgress()' function.
+    Each time the track scrubber's width is set to the corresponding track's duration to keep the
+    pixel:second ratio 1:1 for easier calculation. */
+    const clickTrackScrubberAt = (scrubber, offsetX, clientWidth = 7278.422) => {
+      act(() => {
+        scrubber.handleSetProgress({ offsetX, target: { clientWidth } });
+      });
+    };
+
+    let currentTimeSpy, nextItemClickedSpy;
+    const renderPlayerWithScrubber = async (manifest) => {
+      await renderPlayer({
+        manifest, canvasIndex: 0, manifestOverrides: { structures: { hasStructure: true } }
+      });
+      const player = await triggerLoadedMetadata('videojs-video-element');
+      const scrubber = player.controlBar.getChild('videoJSTrackScrubber');
+      act(() => { scrubber.handleTimeUpdate(); });
+
+      currentTimeSpy = jest.spyOn(player, 'currentTime');
+      nextItemClickedSpy = jest.fn();
+      scrubber.options.nextItemClicked = nextItemClickedSpy;
+
+      return { player, scrubber };
+    };
+
+    describe('with a single-source (regular) Canvas', () => {
+      test('seeks the player to a calculated time for the first track starting at zero', async () => {
+        const { scrubber } = await renderPlayerWithScrubber(singleCanvasManifest);
+        clickTrackScrubberAt(scrubber, 300.34);
+
+        expect(nextItemClickedSpy).not.toHaveBeenCalled();
+        expect(currentTimeSpy).toHaveBeenCalledWith(300.34);
+      });
+
+      test('seeks the player to a calculated time relative to the offset of the current track', async () => {
+        const { scrubber } = await renderPlayerWithScrubber(singleCanvasManifest);
+
+        /* Set a track with a non-zero start time as the current track to test offset time calculation
+        in progress handling. e.g. the second timespan in the example test Manifest which spans from
+        302.05s to 3971.24s */
+        const trackDuration = 3971.24 - 302.05;
+        act(() => {
+          scrubber.setCurrentTrack({
+            time: 302.05, duration: trackDuration, text: 'Remainder of Atto Primo',
+            key: 'http://example.com/single-canvas-manifest/range/4'
+          });
+        });
+
+        /* Click at the same relative position (300.34s) as before within the track scrubber. Since
+        the active track now starts at 302.05s, the resulting player time is offset by that track's start. */
+        act(() => {
+          clickTrackScrubberAt(scrubber, 300.34, trackDuration);
+        });
+
+        expect(nextItemClickedSpy).not.toHaveBeenCalled();
+        expect(currentTimeSpy).toHaveBeenCalledWith(300.34 + 302.05);
+      });
+
+      test('displays the track scrubber for the Canvas duration when playhead is outside of defined timespans', async () => {
+        const { scrubber } = await renderPlayerWithScrubber(singleCanvasManifest);
+
+        /* Set the 'Complete media file' track as the current track. e.g. after the last timespan in
+        the example test Manifest which ends at 7000.422s with a Canvas duration of 7278.422s. */
+        act(() => {
+          scrubber.setCurrentTrack({
+            time: 0, duration: 7278.422, text: 'Complete media file', key: ''
+          });
+        });
+
+        // Click at 7139.422s that is between 7000.422s and 7278.422s gap
+        clickTrackScrubberAt(scrubber, 7139.422);
+
+        expect(nextItemClickedSpy).not.toHaveBeenCalled();
+        expect(currentTimeSpy).toHaveBeenCalledWith(7139.422);
+      });
+    });
+
+    describe('with a multi-source Canvas', () => {
+      test('seeks the player without switching source when clicked within the range of the current source', async () => {
+        const { scrubber } = await renderPlayerWithScrubber(multiSourceManifest);
+        // Click at <50% of the full 7278.422s Canvas => 2534.34s that falls within the current source in Canvas
+        clickTrackScrubberAt(scrubber, 2534.34);
+
+        expect(nextItemClickedSpy).not.toHaveBeenCalled();
+        expect(currentTimeSpy).toHaveBeenCalledWith(2534.34);
+      });
+
+      test('switches the player source when clicked outside of the range of the current source', async () => {
+        const { scrubber } = await renderPlayerWithScrubber(multiSourceManifest);
+
+        // Click at >50% of the full 7278.422s Canvas => 4352.34s that falls in the second source in Canvas
+        clickTrackScrubberAt(scrubber, 4352.34);
+
+        // Switches to second source, offset 381.1s into that source (4352.34 - 3971.24 = 381.1s)
+        expect(nextItemClickedSpy).toHaveBeenCalledWith(1, 381.1);
+        // Seeks to the offset 381.1s within the second source
+        expect(currentTimeSpy).toHaveBeenCalledWith(381.1);
       });
     });
   });

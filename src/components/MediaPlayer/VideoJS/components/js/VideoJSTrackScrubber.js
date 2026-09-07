@@ -2,7 +2,7 @@ import { createRef } from 'react';
 import videojs from 'video.js';
 import '../styles/VideoJSTrackScrubber.scss';
 import '../styles/VideoJSProgress.scss';
-import { timeToHHmmss } from '@Services/utility-helpers';
+import { roundToPrecision, timeToHHmmss } from '@Services/utility-helpers';
 import { svgIconToSymbol, TrackScrubberZoomInIcon, TrackScrubberZoomOutIcon } from '@Services/svg-icons';
 
 // Function to inject SVGs into the DOM
@@ -214,10 +214,11 @@ class VideoJSTrackScrubber extends Button {
     }
 
     const { altStart, srcIndex } = player;
-    // Calculate corresponding time and played percentage values within track
-    let trackoffset = srcIndex > 0
-      ? currentTime - currentTrackRef.current.time + altStart
-      : currentTime - currentTrackRef.current.time;
+    // Calculate corresponding Canvas relative time and played percentage values within track
+    const offsetTime = currentTime - currentTrackRef.current.time;
+    /* For multi-source items, add the current source's altStart to the Canvas
+    relative time to get the source relative time. */
+    let trackoffset = srcIndex > 0 ? offsetTime + altStart : offsetTime;
     let trackpercent = Math.min(
       100,
       Math.max(0, 100 * trackoffset / currentTrackRef.current.duration)
@@ -284,16 +285,39 @@ class VideoJSTrackScrubber extends Button {
    * Event handler for mousedown event on the track scrubber. This sets the
    * progress percentage within track scrubber and update the player's current time
    * when user clicks on a point within the track scrubber.
+   * For a multi-source Canvas, a click past the currently loaded source's duration needs to
+   * switch the source in the VideoJS player instance before loading any corresponding active
+   * tracks into the panel.
    * @param {Event} e pointer event for user interaction
    */
   handleSetProgress(e) {
-    const { currentTrackRef, player } = this;
-    if (!currentTrackRef.current) {
+    const { currentTrackRef, player, options } = this;
+    if (!currentTrackRef.current || !player) {
       return;
     }
+
+    const { altStart, srcIndex, targets } = player;
+
     let trackoffset = this.getTrackTime(e);
 
-    if (trackoffset != undefined) {
+    /* Add the currentTrack's time (start time) to the track offset, as this is the Canvas
+    relative time for the trackoffset derived from the pointer event. */
+    const offsetTime = trackoffset + (currentTrackRef.current?.time ?? 0);
+
+    // Find the source corresponding to the pointer click event
+    const clickedTarget = targets?.length > 1
+      ? targets.find((t) => offsetTime >= t.altStart && offsetTime <= t.altStart + t.duration)
+      : undefined;
+
+    /* When clicked past the currently loaded source, switch the source in the main VideoJS instance.
+    This corresponds to the use-case where entire duration of the current player instance is portrayed
+    in the track scrubber. i.e. when a time range not included in the structures is loaded in the
+    player while the track scrubber is open. */
+    if (clickedTarget && clickedTarget.sIndex !== srcIndex) {
+      const playerCurrentTime = roundToPrecision(offsetTime - clickedTarget.altStart);
+      options.nextItemClicked?.(clickedTarget.sIndex, playerCurrentTime);
+      player.currentTime(playerCurrentTime);
+    } else if (trackoffset != undefined) {
       // Calculate percentage of the progress based on the pointer position's
       // time and duration of the track
       let trackpercent = Math.min(
@@ -303,16 +327,10 @@ class VideoJSTrackScrubber extends Button {
 
       this.setTrackScrubberValue(trackpercent, trackoffset);
 
-      /**
-       * Only add the currentTrack's start time for a single source items as this is
-       * the offset of the time displayed in the track scrubber.
-       * For multi-source items; the start time for the currentTrack is the offset of
-       * the duration displayed in the main progress-bar, which translates to 0 in the
-       * track-scrubber display
-       */
-      const playerCurrentTime = player?.srcIndex > 0
-        ? trackoffset
-        : trackoffset + currentTrackRef.current.time;
+      /* For multi-source Canvases, substract the current source's altStart from the Canvas
+      relative time to get the source relative time. This is the inverse of the conversion
+      done in updateTrackScrubberProgressBar(). */
+      const playerCurrentTime = offsetTime - (srcIndex > 0 ? altStart : 0);
       player.currentTime(playerCurrentTime);
     }
   };

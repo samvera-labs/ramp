@@ -216,7 +216,7 @@ const MediaPlayer = ({
           videoJSNextButton: isMultiCanvased &&
             { canvasIndex, lastCanvasIndex, switchPlayer },
           videoJSTrackScrubber: (hasStructure || isPlaylist) &&
-            { trackScrubberRef, timeToolRef, isPlaylist },
+            { trackScrubberRef, timeToolRef, isPlaylist, nextItemClicked },
           videoJSADButton: (audioDescTracks.length > 0) && { audioDescTracks }
         },
         /* Only pass along the sources with access in VideoJS options. Allow both 'authorized' and

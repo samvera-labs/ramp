@@ -129,6 +129,26 @@ class CustomSeekBar extends SeekBar {
         '--range-progress', `calc(${0}%)`
       );
     }
+
+    /* The super.update() call relies on VideoJS's native getPercent() in VideoJS's
+    '/control-bar/progress-control/seek-bar.js', which uses player.duration() for the
+    calculation.
+    For multi-source Canvases in Firefox this player.duration() comes up with an incorrect
+    time due a split-second difference in the event progressions. This pushes the playhead
+    towards the end of the player's progress-bar.
+    Since super.update() defers the update to the next repaint using 'requestAnimationFrame'
+    in the browser. Re-use that call for this specific method to correct it by cancelling
+    and replacing the pending native write instead of running before it and getting
+    overwritten a frame later. */
+    if (this.isMultiSourceRef.current && this.totalDuration > 0) {
+      // Recompute width using the total duration of sources in the Canvas
+      const width = Math.min(100,
+        Math.max(0, 100 * (this.player.currentTime() / this.totalDuration))
+      );
+      this.requestNamedAnimationFrame('Slider#update', () => {
+        this.playProgress.el_.style.width = `${width}%`;
+      });
+    }
   }
 
   // Create progress bar using Video.js' SeekBar component

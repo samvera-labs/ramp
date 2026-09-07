@@ -103,7 +103,7 @@ export default {
           items: [
             {
               type: "Canvas",
-              id: "http://example.com/single-canvas-manifest/canvas/1#t=3971.24"
+              id: "http://example.com/single-canvas-manifest/canvas/1#t=3971.24,7000.422"
             }
           ]
         }
