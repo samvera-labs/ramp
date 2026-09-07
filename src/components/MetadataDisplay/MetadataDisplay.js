@@ -65,10 +65,7 @@ const MetadataDisplay = ({
       setShowManifestMetadata(showManifest);
 
       // Display Range metadata only when specified in the props
-      const showRange =
-        displayOnlyRangeMetadata ||
-        displayAllMetadata ||
-        !displayOnlyCanvasMetadata;
+      const showRange = displayOnlyRangeMetadata || displayAllMetadata;
       setShowRangeMetadata(showRange);
 
       // Parse metadata from Manifest
