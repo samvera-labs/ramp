@@ -5,11 +5,12 @@ import { getMetadata } from '@Services/iiif-parser';
 import './MetadataDisplay.scss';
 import cx from 'classnames';
 
-/** 
+/**
  * Parse and display metadata, rights, and requiredStatement information
  * related to the current resource. The display of the scope of this information
  * can be customized using props as needed.
  * @param {Object} props
+ * @param {Boolean} props.displayOnlyRangeMetadata
  * @param {Boolean} props.displayOnlyCanvasMetadata
  * @param {Boolean} props.displayAllMetadata
  * @param {Boolean} props.displayTitle
@@ -18,6 +19,7 @@ import cx from 'classnames';
  * @param {String} props.sectionHeading
  */
 const MetadataDisplay = ({
+  displayOnlyRangeMetadata = false,
   displayOnlyCanvasMetadata = false,
   displayAllMetadata = false,
   displayTitle = true,
@@ -25,7 +27,7 @@ const MetadataDisplay = ({
   itemHeading = 'Item Details',
   sectionHeading = 'Section Details',
 }) => {
-  const { manifest, canvasIndex } = useManifestState();
+  const { manifest, canvasIndex, currentNavItem } = useManifestState();
 
   const [manifestMetadata, setManifestMetadata] = useState();
   // Metadata for all Canavases in state
@@ -35,10 +37,10 @@ const MetadataDisplay = ({
   // Boolean flags set according to user props to hide/show metadata
   const [showManifestMetadata, setShowManifestMetadata] = useState();
   const [showCanvasMetadata, setShowCanvasMetadata] = useState();
+  const [showRangeMetadata, setShowRangeMetadata] = useState();
 
   const [manifestRights, setManifestRights] = useState();
   const [canvasRights, setCanvasRights] = useState();
-  const [hasMetadata, setHasMetadata] = useState(false);
 
   let canvasesMetadataRef = useRef();
   const setCanvasesMetadata = (m) => {
@@ -53,10 +55,18 @@ const MetadataDisplay = ({
   useEffect(() => {
     if (manifest) {
       // Display Canvas metadata only when specified in the props
-      const showCanvas = displayOnlyCanvasMetadata || displayAllMetadata;
+      const showCanvas =
+        (displayOnlyCanvasMetadata || displayAllMetadata) &&
+        !displayOnlyRangeMetadata;
       setShowCanvasMetadata(showCanvas);
-      const showManifest = !displayOnlyCanvasMetadata || displayAllMetadata;
+      const showManifest =
+        (!displayOnlyCanvasMetadata || displayAllMetadata) &&
+        !displayOnlyRangeMetadata;
       setShowManifestMetadata(showManifest);
+
+      // Display Range metadata only when specified in the props
+      const showRange = displayOnlyRangeMetadata || displayAllMetadata;
+      setShowRangeMetadata(showRange);
 
       // Parse metadata from Manifest
       const parsedMetadata = getMetadata(manifest, showCanvas);
@@ -69,10 +79,11 @@ const MetadataDisplay = ({
       if (showManifest) {
         let manifestMeta = parsedMetadata.manifestMetadata;
         if (!displayTitle) {
-          manifestMeta = manifestMeta.filter(md => md.label.toLowerCase() != 'title');
+          manifestMeta = manifestMeta.filter(
+            (md) => md.label.toLowerCase() != 'title',
+          );
         }
         setManifestMetadata(manifestMeta);
-        setHasMetadata(manifestMeta?.length > 0);
       }
       if (parsedMetadata.rights?.length > 0) {
         setManifestRights(parsedMetadata.rights);
@@ -95,15 +106,15 @@ const MetadataDisplay = ({
    * Set canvas metadata in state
    */
   const setCanvasMetadataInState = () => {
-    const canvasData = canvasesMetadataRef.current
-      .filter((m) => m.canvasindex === canvasIndex)[0];
+    const canvasData = canvasesMetadataRef.current.filter(
+      (m) => m.canvasindex === canvasIndex,
+    )[0];
     if (canvasData != undefined) {
       let { metadata, rights } = canvasData;
       if (!displayTitle && metadata != undefined) {
-        metadata = metadata.filter(md => md.label.toLowerCase() != 'title');
+        metadata = metadata.filter((md) => md.label.toLowerCase() != 'title');
       }
       setCanvasMetadata(metadata);
-      setHasMetadata(metadata?.length > 0);
       if (rights != undefined && rights?.length > 0) {
         setCanvasRights(rights);
       }
@@ -118,7 +129,7 @@ const MetadataDisplay = ({
           <Fragment key={index}>
             <dt>{md.label}</dt>
             <dd dangerouslySetInnerHTML={{ __html: md.value }}></dd>
-          </Fragment>
+          </Fragment>,
         );
       });
     }
@@ -127,77 +138,104 @@ const MetadataDisplay = ({
 
   const manifestMetadataBlock = useMemo(() => {
     if (showManifestMetadata && manifestMetadata?.length > 0) {
-      return (<>
-        {displayAllMetadata && <span>{itemHeading}</span>}
-        {buildMetadata(manifestMetadata)}
-        {manifestRights?.length > 0 && (
-          <span
-            className='ramp--metadata-rights-heading'
-            data-testid='manifest-rights'>
-            Rights
-          </span>
-        )}
-        {buildMetadata(manifestRights)}
-      </>
+      return (
+        <>
+          {displayAllMetadata && <span>{itemHeading}</span>}
+          {buildMetadata(manifestMetadata)}
+          {manifestRights?.length > 0 && (
+            <span
+              className="ramp--metadata-rights-heading"
+              data-testid="manifest-rights"
+            >
+              Rights
+            </span>
+          )}
+          {buildMetadata(manifestRights)}
+        </>
       );
     }
   }, [manifestMetadata]);
 
   const canvasMetadataBlock = useMemo(() => {
     if (showCanvasMetadata && canvasMetadata?.length > 0) {
-      return (<>
-        {displayAllMetadata && <span>{sectionHeading}</span>}
-        {buildMetadata(canvasMetadata)}
-        {canvasRights?.length > 0 && (
-          <span
-            className='ramp--metadata-rights-heading'
-            data-testid='canvas-rights'>
-            Rights
-          </span>
-        )}
-        {buildMetadata(canvasRights)}
-      </>);
+      return (
+        <>
+          {displayAllMetadata && <span>{sectionHeading}</span>}
+          {buildMetadata(canvasMetadata)}
+          {canvasRights?.length > 0 && (
+            <span
+              className="ramp--metadata-rights-heading"
+              data-testid="canvas-rights"
+            >
+              Rights
+            </span>
+          )}
+          {buildMetadata(canvasRights)}
+        </>
+      );
     }
   }, [canvasMetadata]);
 
+  const rangeMetadataBlock = useMemo(() => {
+    if (showRangeMetadata && currentNavItem?.metadata?.length > 0) {
+      return (
+        <>
+          <span>{currentNavItem.label}</span>
+          {buildMetadata(currentNavItem.metadata)}
+        </>
+      );
+    }
+  }, [currentNavItem, showRangeMetadata]);
+
+  const hasMetadata =
+    manifestMetadata?.length > 0 ||
+    canvasMetadata?.length > 0 ||
+    (showRangeMetadata && currentNavItem?.metadata?.length > 0);
+
   return (
     <div
-      data-testid='metadata-display'
-      className='ramp--metadata-display'
-      role='complementary'
-      aria-label='metadata display'
+      data-testid="metadata-display"
+      className="ramp--metadata-display"
+      role="complementary"
+      aria-label="metadata display"
     >
       {showHeading && (
-        <div className='ramp--metadata-display-title' data-testid='metadata-display-title'>
+        <div
+          className="ramp--metadata-display-title"
+          data-testid="metadata-display-title"
+        >
           <h4>Details</h4>
         </div>
       )}
-      {hasMetadata
-        ? (
-          <div className={cx(
+      {hasMetadata ? (
+        <div
+          className={cx(
             'ramp--metadata-display-content',
-            showHeading && 'with-heading'
-          )}>
-            {manifestMetadataBlock}
-            {canvasMetadataBlock}
-          </div>
-        )
-        : (
-          <div
-            data-testid='metadata-display-message'
-            className={cx(
-              'ramp--metadata-display-message',
-              showHeading && 'with-heading'
-            )}>
-            <p>No valid Metadata is in the Manifest/Canvas(es)</p>
-          </div>
-        )
-      }
+            showHeading && 'with-heading',
+          )}
+        >
+          {manifestMetadataBlock}
+          {canvasMetadataBlock}
+          {rangeMetadataBlock}
+        </div>
+      ) : (
+        <div
+          data-testid="metadata-display-message"
+          className={cx(
+            'ramp--metadata-display-message',
+            showHeading && 'with-heading',
+          )}
+        >
+          <p>No valid Metadata is in the Manifest/Canvas(es)</p>
+        </div>
+      )}
     </div>
   );
 };
 
 MetadataDisplay.propTypes = {
+  /** Display only the active Range metadata without Manifest-level metadata. */
+  displayOnlyRangeMetadata: PropTypes.bool,
   /** Display only the active Canvas metadata without Manifest-level metadata. */
   displayOnlyCanvasMetadata: PropTypes.bool,
   /** Display metadata for both the active Canvas and the Manifest. */
@@ -215,4 +253,3 @@ MetadataDisplay.propTypes = {
 };
 
 export default MetadataDisplay;
-

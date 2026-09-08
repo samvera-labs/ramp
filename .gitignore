@@ -7,3 +7,4 @@ yarn-error.log
 .npmrc
 storybook-static
 debug-storybook.log
+.yarn/install-state.gz

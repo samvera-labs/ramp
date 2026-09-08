@@ -6,6 +6,7 @@ import manifestWoMetadata from '@TestData/volleyball-for-boys';
 import manifestWoCanvases from '@TestData/empty-playlist';
 import noRightsManifest from '@TestData/transcript-annotation';
 import playlistManifest from '@TestData/playlist';
+import rangeMetadataManifest from '@TestData/range-metadata';
 import { withManifestProvider } from '../../services/testing-helpers';
 
 describe('MetadataDisplay component', () => {
@@ -271,5 +272,113 @@ describe('MetadataDisplay component', () => {
     expect(screen.queryByTestId('metadata-display-message')).toBeInTheDocument();
     expect(screen.getByText('No valid Metadata is in the Manifest/Canvas(es)')).toBeInTheDocument();
     expect(console.log).toBeCalledTimes(0);
+  });
+
+  describe('with prop, displayOnlyRangeMetadata', () => {
+    it('with default value displays Range metadata when currentNavItem has metadata', () => {
+      const currentNavItem = {
+        label: 'Using Soap',
+        metadata: [
+          { label: 'The metadata label for range 1-1-1', value: 'The metadata value for range 1-1-1' },
+        ],
+      };
+      const MetadataDisp = withManifestProvider(MetadataDisplay, {
+        initialState: { manifest: rangeMetadataManifest, currentNavItem },
+      });
+      render(<MetadataDisp />);
+      expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+
+      // Manifest metadata still shows
+      expect(screen.getByText('Title')).toBeInTheDocument();
+
+      // Range metadata shows
+      expect(screen.getByText('Using Soap')).toBeInTheDocument();
+      expect(screen.getByText('The metadata label for range 1-1-1')).toBeInTheDocument();
+      expect(screen.getByText('The metadata value for range 1-1-1')).toBeInTheDocument();
+    });
+
+    it('with default value does not display Range metadata when currentNavItem has no metadata', () => {
+      const currentNavItem = {
+        label: 'Rinsing Well',
+        metadata: [],
+      };
+      const MetadataDisp = withManifestProvider(MetadataDisplay, {
+        initialState: { manifest: rangeMetadataManifest, currentNavItem },
+      });
+      render(<MetadataDisp />);
+      expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+
+      // Manifest metadata still shows
+      expect(screen.getByText('Title')).toBeInTheDocument();
+
+      // No range metadata
+      expect(screen.queryByText('Rinsing Well')).not.toBeInTheDocument();
+    });
+
+    it('with currentNavItem null does not display Range metadata', () => {
+      const MetadataDisp = withManifestProvider(MetadataDisplay, {
+        initialState: { manifest: rangeMetadataManifest, currentNavItem: null },
+      });
+      render(<MetadataDisp />);
+      expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+      expect(screen.getByText('Title')).toBeInTheDocument();
+    });
+
+    it('set to true displays only Range metadata', () => {
+      const currentNavItem = {
+        label: 'Washing Hands',
+        metadata: [
+          { label: 'The first metadata label for range 1-1', value: 'The first metadata value for range 1-1' },
+          { label: 'The second metadata label for range 1-1', value: 'The second metadata value for range 1-1' },
+        ],
+      };
+      const MetadataDisp = withManifestProvider(MetadataDisplay, {
+        initialState: { manifest: rangeMetadataManifest, currentNavItem },
+        displayOnlyRangeMetadata: true,
+      });
+      render(<MetadataDisp />);
+      expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+
+      expect(screen.queryByText('Title')).not.toBeInTheDocument();
+
+      expect(screen.getByText('Washing Hands')).toBeInTheDocument();
+      expect(screen.getByText('The first metadata label for range 1-1')).toBeInTheDocument();
+      expect(screen.getByText('The second metadata label for range 1-1')).toBeInTheDocument();
+    });
+
+    it('displayOnlyCanvasMetadata suppresses Range metadata', () => {
+      const currentNavItem = {
+        label: 'Using Soap',
+        metadata: [
+          { label: 'The metadata label for range 1-1-1', value: 'The metadata value for range 1-1-1' },
+        ],
+      };
+      const MetadataDisp = withManifestProvider(MetadataDisplay, {
+        initialState: { manifest: rangeMetadataManifest, canvasIndex: 0, currentNavItem },
+        displayOnlyCanvasMetadata: true,
+      });
+      render(<MetadataDisp />);
+      expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
+
+      expect(screen.queryByText('Using Soap')).not.toBeInTheDocument();
+      expect(screen.queryByText('The metadata label for range 1-1-1')).not.toBeInTheDocument();
+    });
+
+    it('displayAllMetadata shows Manifest and Range metadata together', () => {
+      const currentNavItem = {
+        label: 'Washing Hands',
+        metadata: [
+          { label: 'The first metadata label for range 1-1', value: 'The first metadata value for range 1-1' },
+        ],
+      };
+      const MetadataDisp = withManifestProvider(MetadataDisplay, {
+        initialState: { manifest: rangeMetadataManifest, currentNavItem },
+        displayAllMetadata: true,
+      });
+      render(<MetadataDisp />);
+      expect(screen.getByText('Title')).toBeInTheDocument();
+      expect(screen.getByText('Washing Hands')).toBeInTheDocument();
+      expect(screen.getByText('The first metadata label for range 1-1')).toBeInTheDocument();
+    });
   });
 });
