@@ -4,6 +4,7 @@ This document describes how to cut a release of `@samvera/ramp` component librar
 
 ## Prerequisites
 
+- GitHub CLI installed and setup (https://cli.github.com/)
 - Publish access to `@samvera/ramp` on [npmjs.com](https://www.npmjs.com/), with 2FA enabled which is required to approve a staged publish - see step 3 below.
 - Write access to the `samvera-labs/ramp` GitHub repository
 - A [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) configured on [`@samvera/ramp`](https://www.npmjs.com/package/@samvera/ramp)'s "Settings" page, pointing at `samvera-labs/ramp` and workflow file `publish-and-release.yml` (this is a one-time setup)
