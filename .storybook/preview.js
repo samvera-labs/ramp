@@ -58,7 +58,7 @@ const preview = {
       storySort: {
         method: 'alphabetical', // Sorts items without a specified order alphabetically
         order: [
-          'Introduction', ['Getting Started', 'Contributing'],
+          'Introduction', ['Getting Started', 'Contributing', 'Releasing'],
           'Components', ['IIIFPlayer', 'MediaPlayer', 'StructuredNavigation', 'Transcript', 'Annotations']]
       },
     },

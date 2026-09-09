@@ -103,6 +103,12 @@ export default defineConfig({
           'mammoth': 'mammoth',
           'classnames': 'cx'
         },
+        // Put dynamically-imported VideoJS language chunks into a dist/lang directory
+        chunkFileNames: (chunkInfo) => {
+          return chunkInfo.facadeModuleId?.includes('video.js/dist/lang/')
+            ? 'lang/[name]-[hash].js'
+            : 'assets/[name]-[hash].js';
+        },
       },
     },
   },
