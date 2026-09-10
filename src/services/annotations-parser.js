@@ -4,9 +4,10 @@ import {
   getLabelValue, getMediaFragment, handleFetchErrors,
   identifySupplementingAnnotation,
   parseTimeStrings, sortAnnotations,
-  timeToHHmmss
+  timeToHHmmss,
+  S_ANNOTATION_TYPE
 } from "./utility-helpers";
-import { hasMotivation, normalizeMotivation } from "./iiif-version-parser";
+import { hasMotivation, normalizeValues } from "./iiif-version-parser";
 
 // Global variable to store random tag colors for the current tags
 let TAG_COLORS = [];
@@ -137,11 +138,12 @@ function parseAnnotationPages(annotationPages, duration, manifestLabel = '') {
           annotationPage.items.map((item) => {
             // Parse linked resources as a single annotation set
             if (isExternalAnnotation(item.body)) {
-              const { body, id, motivation, target } = item;
-              const annotationMotivation = normalizeMotivation(motivation);
+              const { body, id, motivation, provides, target } = item;
+              const annotationMotivation = normalizeValues(motivation);
+              const annotationProvides = normalizeValues(provides);
               // Only add WebVTT, SRT, and JSON files as annotations
               const timeSynced = TIME_SYNCED_FORMATS.includes(body.format);
-              const annotationInfo = parseAnnotationBody(body, annotationMotivation)[0];
+              const annotationInfo = parseAnnotationBody(body, annotationMotivation, annotationProvides)[0];
               if (annotationInfo != undefined) {
                 annotationSets.push({
                   ...annotationInfo,
@@ -236,13 +238,14 @@ export function parseAnnotationItem(annotation, duration) {
     canvasId = source.id;
     times = parseSelector(selector, duration);
   }
-  const motivations = normalizeMotivation(annotation.motivation);
+  const motivations = normalizeValues(annotation.motivation);
+  const provides = normalizeValues(annotation.provides);
   const item = {
     motivation: motivations,
     id: annotation.id,
     time: times,
     canvasId,
-    value: parseAnnotationBody(annotation.body, motivations),
+    value: parseAnnotationBody(annotation.body, motivations, provides),
   };
   return item;
 };
@@ -327,8 +330,9 @@ function parseTextualBody(textualBody, motivations) {
  * @function parseAnnotationBody
  * @param {Array || Object} annotationBody body property of an Annotation
  * @param {Array} motivations motivation(s) of Annotation/AnnotationPage
+ * @param {Array} provides 'provides' value of the Annotation
  */
-function parseAnnotationBody(annotationBody, motivations) {
+function parseAnnotationBody(annotationBody, motivations, provides = []) {
   if (!Array.isArray(annotationBody)) {
     annotationBody = [annotationBody];
   }
@@ -343,7 +347,7 @@ function parseAnnotationBody(annotationBody, motivations) {
       case 'Text':
         const { format, id, label } = body;
         // Skip linked annotations that are captions in Avalon manifests
-        let sType = identifySupplementingAnnotation(id);
+        let sType = identifySupplementingAnnotation(id, provides);
         // Default to derive filename from URL
         let filename = id.split('/').pop();
         let parsedLabel = filename ? filename.split('.')[0] : '';
@@ -353,7 +357,8 @@ function parseAnnotationBody(annotationBody, motivations) {
           // Assume that an unassigned language is meant to be the downloadable filename
           filename = label.hasOwnProperty('none') ? getLabelValue(label.none[0]) : parsedLabel;
         }
-        if (sType !== 2) {
+        // Add a 'supplementing' Annotation categorized as either a 'transcript' or 'audioDescription' only once
+        if ([S_ANNOTATION_TYPE.transcript, S_ANNOTATION_TYPE.audioDescription].some(t => sType.includes(t))) {
           values.push({
             format: format,
             label: parsedLabel,

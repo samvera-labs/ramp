@@ -463,7 +463,7 @@ describe('util helper', () => {
       });
     });
 
-    test('does not parse painting annotations with no browser supported resources', () => {
+    test('does not parse "painting" annotations with no browser supported resources', () => {
       // Mock canPlayType to return '' (falsy value) to mock browser unsupported MIME types
       HTMLMediaElement.prototype.canPlayType = jest.fn(() => '');
       const annotations =
@@ -505,61 +505,130 @@ describe('util helper', () => {
       jest.restoreAllMocks();
     });
 
-    test('parses supplementin annotations', () => {
-      const annotations = [
-        {
-          type: 'AnnotationPage',
-          items: [
-            {
-              id: 'http://example.com/manifest/canvas/1/page/annotation/1',
-              type: 'Annotation',
-              motivation: 'supplementing',
-              body: {
-                id: 'http://example.com/manifest/English.vtt',
-                label: { en: ['Captions in WebVTT format'] },
-                language: 'en',
-                type: 'Text',
-                format: 'text/vtt',
+    describe('parses "supplementing" annotations', () => {
+      test('without "provides"', () => {
+        const annotations = [
+          {
+            type: 'AnnotationPage',
+            items: [
+              {
+                id: 'http://example.com/manifest/canvas/1/page/annotation/1',
+                type: 'Annotation',
+                motivation: 'supplementing',
+                body: {
+                  id: 'http://example.com/manifest/English.vtt',
+                  label: { en: ['Captions in WebVTT format'] },
+                  language: 'en',
+                  type: 'Text',
+                  format: 'text/vtt',
+                },
+                target: 'http://example.com/manifest/canvas/1',
               },
-              target: 'http://example.com/manifest/canvas/1',
-            },
-            {
-              id: 'http://example.com/manifest/canvas/1/page/annotation/2',
-              type: 'Annotation',
-              motivation: 'supplementing',
-              body: {
-                id: 'http://example.com/manifest/Italian.vtt',
-                label: { it: ['Sottotitoli in formato WebVTT'] },
-                language: 'it',
-                type: 'Text',
-                format: 'text/vtt',
+              {
+                id: 'http://example.com/manifest/canvas/1/page/annotation/2',
+                type: 'Annotation',
+                motivation: 'supplementing',
+                body: {
+                  id: 'http://example.com/manifest/Italian.vtt',
+                  label: { it: ['Sottotitoli in formato WebVTT'] },
+                  language: 'it',
+                  type: 'Text',
+                  format: 'text/vtt',
+                },
+                target: 'http://example.com/manifest/canvas/1',
+              }
+            ]
+          }
+        ];
+        const { resources, _, isMultiResource } = util.parseResourceAnnotations(
+          { annotation: annotations, duration: 896.55, motivation: 'supplementing' }
+        );
+        expect(resources).toHaveLength(2);
+        expect(resources[0]).toEqual({
+          src: 'http://example.com/manifest/English.vtt',
+          key: 'http://example.com/manifest/English.vtt',
+          type: 'text/vtt',
+          kind: 'subtitles',
+          srclang: 'en',
+          label: 'Captions in WebVTT format',
+        });
+        expect(resources[1]).toEqual({
+          src: 'http://example.com/manifest/Italian.vtt',
+          key: 'http://example.com/manifest/Italian.vtt',
+          type: 'text/vtt',
+          kind: 'subtitles',
+          srclang: 'it',
+          label: 'Sottotitoli in formato WebVTT',
+        });
+        expect(isMultiResource).toBeFalsy();
+      });
+
+      test('with "provides"', () => {
+        const annotations = [
+          {
+            type: 'AnnotationPage',
+            items: [
+              {
+                id: 'http://example.com/manifest/canvas/1/page/annotation/1',
+                type: 'Annotation',
+                motivation: ['supplementing'],
+                provides: ['closedCaptions'],
+                body: {
+                  id: 'http://example.com/manifest/English.vtt',
+                  label: { en: ['Captions in WebVTT format'] },
+                  language: 'en',
+                  type: 'Text',
+                  format: 'text/vtt',
+                },
+                target: 'http://example.com/manifest/canvas/1',
               },
-              target: 'http://example.com/manifest/canvas/1',
-            }
-          ]
-        }
-      ];
-      const { resources, _, isMultiResource } = util.parseResourceAnnotations(
-        { annotation: annotations, duration: 896.55, motivation: 'supplementing' }
-      );
-      expect(resources).toHaveLength(2);
-      expect(resources[0]).toEqual({
-        src: 'http://example.com/manifest/English.vtt',
-        key: 'http://example.com/manifest/English.vtt',
-        type: 'text/vtt',
-        kind: 'subtitles',
-        srclang: 'en',
-        label: 'Captions in WebVTT format',
+              {
+                id: 'http://example.com/manifest/canvas/1/page/annotation/2',
+                type: 'Annotation',
+                motivation: ['supplementing'],
+                provides: ['closedCaptions', 'audioDescription'],
+                body: {
+                  id: 'http://example.com/manifest/Italian.vtt',
+                  label: { it: ['Sottotitoli in formato WebVTT'] },
+                  language: 'it',
+                  type: 'Text',
+                  format: 'text/vtt',
+                },
+                target: 'http://example.com/manifest/canvas/1',
+              }
+            ]
+          }
+        ];
+        const { resources, _, isMultiResource } = util.parseResourceAnnotations(
+          { annotation: annotations, duration: 896.55, motivation: 'supplementing' }
+        );
+        expect(resources).toHaveLength(3);
+        expect(resources[0]).toEqual({
+          src: 'http://example.com/manifest/English.vtt',
+          key: 'http://example.com/manifest/English.vtt',
+          type: 'text/vtt',
+          kind: 'subtitles',
+          srclang: 'en',
+          label: 'Captions in WebVTT format',
+        });
+        expect(resources[1]).toEqual({
+          src: 'http://example.com/manifest/Italian.vtt',
+          key: 'http://example.com/manifest/Italian.vtt',
+          type: 'text/vtt',
+          kind: 'subtitles',
+          srclang: 'it',
+          label: 'Sottotitoli in formato WebVTT',
+        });
+        expect(resources[2]).toEqual({
+          src: 'http://example.com/manifest/Italian.vtt',
+          key: 'http://example.com/manifest/Italian.vtt',
+          type: 'text/vtt',
+          kind: 'descriptions',
+          srclang: 'it',
+          label: 'Sottotitoli in formato WebVTT',
+        });
+        expect(isMultiResource).toBeFalsy();
       });
-      expect(resources[1]).toEqual({
-        src: 'http://example.com/manifest/Italian.vtt',
-        key: 'http://example.com/manifest/Italian.vtt',
-        type: 'text/vtt',
-        kind: 'subtitles',
-        srclang: 'it',
-        label: 'Sottotitoli in formato WebVTT',
-      });
-      expect(isMultiResource).toBeFalsy();
     });
 
     test('parses forced caption annotation from label and sets forced flag', () => {
@@ -791,24 +860,82 @@ describe('util helper', () => {
   });
 
   describe('identifySupplementingAnnotation()', () => {
-    test('with transcripts at the end of URI', () => {
-      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/transcripts');
-      expect(value).toEqual(1);
+    describe('without a "provides" array', () => {
+      test('with transcripts at the end of URI resolves to S_ANNOTATION_TYPE.transcript', () => {
+        const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/transcripts');
+        expect(value).toEqual([1]);
+      });
+
+      test('with captions at the end of URI resolves to S_ANNOTATION_TYPE.caption', () => {
+        const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/captions');
+        expect(value).toEqual([2]);
+      });
+
+      test('with subtitles at the end of URI resolves to S_ANNOTATION_TYPE.caption', () => {
+        const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/subtitles');
+        expect(value).toEqual([2]);
+      });
+
+      test('with descriptions at the end of URI resolves to S_ANNOTATION_TYPE.audioDescription', () => {
+        const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/descriptions');
+        expect(value).toEqual([3]);
+      });
+
+      test('with generic URI resolves to S_ANNOTATION_TYPE.transcript and S_ANNOTATION_TYPE.caption', () => {
+        const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/lunchroom-manners.vtt');
+        expect(value).toEqual([1, 2]);
+      });
     });
 
-    test('with captions at the end of URI', () => {
-      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/captions');
-      expect(value).toEqual(2);
-    });
+    describe('with a "provides" array', () => {
+      test('with only "transcript"', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/lunchroom-manners.vtt', ['transcript']
+        );
+        expect(value).toEqual([1]);
+      });
 
-    test('with descriptions at the end of URI', () => {
-      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/descriptions');
-      expect(value).toEqual(4);
-    });
+      test('with only "closedCaptions"', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/lunchroom-manners.vtt', ['closedCaptions']
+        );
+        expect(value).toEqual([2]);
+      });
 
-    test('with generic URI', () => {
-      const value = util.identifySupplementingAnnotation('https://example.com/lunchroom-manners/lunchroom-manners.vtt');
-      expect(value).toEqual(3);
+      test('with only "subtitles"', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/lunchroom-manners.vtt', ['subtitles']
+        );
+        expect(value).toEqual([2]);
+      });
+
+      test('with only "audioDescription"', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/lunchroom-manners.vtt', ['audioDescription']
+        );
+        expect(value).toEqual([3]);
+      });
+
+      test('with multiple mapped values', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/lunchroom-manners.vtt', ['closedCaptions', 'audioDescription']
+        );
+        expect(value).toEqual([2, 3]);
+      });
+
+      test('with an unmapped value', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/lunchroom-manners.vtt', ['alternativeText']
+        );
+        expect(value).toEqual([]);
+      });
+
+      test('and a URI with conflicting information, "provides" takes precedence', () => {
+        const value = util.identifySupplementingAnnotation(
+          'https://example.com/lunchroom-manners/captions', ['transcript']
+        );
+        expect(value).toEqual([1]);
+      });
     });
   });
 
@@ -1837,6 +1964,7 @@ describe('util helper', () => {
       });
     });
   });
+
   describe('getAnnotations()', () => {
     describe('for a Presentation 3 Manifest, returns annotation content', () => {
       test('with a motivation array for a painting annotation', () => {

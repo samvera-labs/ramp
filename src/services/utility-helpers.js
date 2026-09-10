@@ -4,9 +4,18 @@ import mimeTypes from 'mime-types';
 import DOMPurify from 'dompurify';
 import { getPlaceholderResource } from './iiif-parser';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
-import { hasMotivation, normalizeMotivation } from '@Services/iiif-version-parser';
+import { hasMotivation, normalizeValues } from '@Services/iiif-version-parser';
 
-const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, both: 3, audioDescription: 4 };
+export const S_ANNOTATION_TYPE = { transcript: 1, caption: 2, audioDescription: 3 };
+
+/* Map IIIF Presentation v4 'provides' registry values (https://iiif.io/api/registry/accessibility/)
+to Ramp's Annotation display data structure internally. */
+const PROVIDES_TYPE_MAP = {
+  transcript: S_ANNOTATION_TYPE.transcript,
+  closedCaptions: S_ANNOTATION_TYPE.caption,
+  subtitles: S_ANNOTATION_TYPE.caption,
+  audioDescription: S_ANNOTATION_TYPE.audioDescription,
+};
 // Number of decimal places for milliseconds used in time calculations. 
 // This is used to ensure there are no mis-calculations around times that has a long decimal for milliseconds.
 const MILLISECOND_PRECISION = 1000;
@@ -379,7 +388,7 @@ export function getAnnotations(annotation, motivation = '', version = '3') {
   }
 
   // Normalize 'motivation' to an array on each Annotation
-  content = content.map((a) => ({ ...a, motivation: normalizeMotivation(a.motivation) }));
+  content = content.map((a) => ({ ...a, motivation: normalizeValues(a.motivation) }));
   // Filter the annotations if a motivation is given
   if (content && motivation != '') {
     const relevantAnnotations = content.filter(
@@ -409,22 +418,22 @@ export function parseResourceAnnotations({ annotation, duration, motivation, ver
     poster = '',
     error = 'No resources found in Canvas';
 
-  const parseAnnotation = (annotationItems) => {
+  const parseAnnotation = (annotationItems, provides = []) => {
     /**
-     * Convert annotation items to an array, because 'body' property 
+     * Convert annotation items to an array, because 'body' property
      * can sometimes contain an array instead of an object.
      * Ex: Aviary annotations: https://weareavp.aviaryplatform.com/iiif/hm52f7jz70/manifest
      */
     annotationItems = annotationItems?.length > 0 ? annotationItems : [annotationItems];
     annotationItems.map((a) => {
-      const source = getResourceInfo(a, start, duration, motivation);
+      const sources = getResourceInfo(a, start, duration, motivation, provides);
       // Check if the parsed sources has a resource URL
-      (source && source.src) && resources.push(source);
+      (sources && sources?.length > 0) && resources.push(...sources);
     });
   };
 
   if (annotation && annotation != undefined) {
-    const items = getAnnotations(annotation, '', version);
+    const items = getAnnotations(annotation, motivation, version);
     if (!items) { return { resources, canvasTargets, error }; }
     if (items.length === 0) {
       return {
@@ -436,7 +445,7 @@ export function parseResourceAnnotations({ annotation, duration, motivation, ver
     else if (items?.length > 1) {
       items.map((p, index) => {
         if (hasMotivation(p.motivation, motivation)) {
-          parseAnnotation(p.body);
+          parseAnnotation(p.body, normalizeValues(p.provides));
           if (motivation === 'painting') {
             isMultiSource = true;
             const target = parseCanvasTarget(p, duration, index);
@@ -448,12 +457,12 @@ export function parseResourceAnnotations({ annotation, duration, motivation, ver
     // When multiple qualities/sources are given for the resource in the Canvas => choice
     else if (items[0].body.items?.length > 0 && hasMotivation(items[0]?.motivation, motivation)) {
       items[0].body.items.map((p) => {
-        parseAnnotation(p);
+        parseAnnotation(p, normalizeValues(items[0].provides));
       });
     }
     // When a singe source is given for the resource in the Canvas
     else if (!isEmpty(items[0].body) && items[0].body?.id != '' && hasMotivation(items[0]?.motivation, motivation)) {
-      parseAnnotation(items[0].body);
+      parseAnnotation(items[0].body, normalizeValues(items[0].provides));
     } else if (motivation === 'painting') {
       return { resources, error, poster: getPlaceholderResource(annotation, false, version), canvasTargets };
     }
@@ -491,11 +500,10 @@ export function parseResourceAnnotations({ annotation, duration, motivation, ver
  * @param {Number} start custom start either from user props/Manifest start prop
  * @param {Number} duration duration of the media file
  * @param {String} motivation Annotation motivation
- * @returns parsed source/track information
+ * @param {Array} provides normalized 'provides' value read off the parent Annotation
+ * @returns {Array<Object>} array of source/track information for a given set of 'provides' values
  */
-function getResourceInfo(item, start, duration, motivation) {
-  let source = null;
-  let aType = S_ANNOTATION_TYPE.both;
+function getResourceInfo(item, start, duration, motivation, provides = []) {
   let fileExt = '';
   const resourceURL = item.id;
   if (resourceURL) {
@@ -510,44 +518,56 @@ function getResourceInfo(item, start, duration, motivation) {
   // If there are multiple labels, assume the first one
   // is the one intended for default display
   let label = getLabelValue(item.label);
-  // Detect forced captions by detecting '[forced]' text in the label
-  const isForced = typeof label === 'string' && label.toLowerCase().includes('[forced]');
-  if (motivation === 'supplementing') {
-    aType = identifySupplementingAnnotation(item.id);
-  }
-  if (aType != S_ANNOTATION_TYPE.transcript) {
-    let isSupported = true;
+
+  if (motivation === 'painting') {
     // Check if the media type is supported by the browser
-    if (motivation === 'painting') {
-      isSupported = checkMediaIsSupported(mimeType, fileExt);
-    }
+    const isSupported = checkMediaIsSupported(mimeType, fileExt);
     if (isSupported) {
-      source = {
+      return [{
         src: start > 0 ? `${item.id}#t=${start},${duration}` : item.id,
         key: item.id,
         type: mimeType,
         kind: item.type,
         label: label || 'auto',
-      };
-    }
-    if (motivation === 'supplementing') {
-      // Set language for captions/subtitles/descriptions
-      source.srclang = item.language ?? 'en';
-      if (aType === S_ANNOTATION_TYPE.audioDescription) {
-        // Mark VideoJS 'descriptions' kind for audio description tracks
-        source.kind = 'descriptions';
-      } else {
-        // And the rest as 'subtitles' for VTT annotations and others as 'metadata'
-        // Without this VideoJS resolves the kind='metadata' for subtitles file, 
-        // resulting in empty subtitles lists in iOS devices' native players.
-        source.kind = item.format.toLowerCase().includes('text/vtt')
-          ? 'subtitles'
-          : 'metadata';
-      }
-      if (isForced) source.forced = true;
+      }];
+    } else {
+      return [];
     }
   }
-  return source;
+  let sources = [];
+  if (motivation === 'supplementing') {
+    const aType = identifySupplementingAnnotation(item.id, provides);
+
+    // Detect forced captions by detecting '[forced]' text in the label
+    const isForced = typeof label === 'string' && label.toLowerCase().includes('[forced]');
+
+    /* Create objects for each supported "provides" value for the given 'supplementing' Annotation
+    for the VideoJS player to use to build <track> elements for captions/subtitles/audio description
+    text tracks. */
+    aType.forEach((t) => {
+      let source = { label, type: mimeType, key: item.id, src: item.id };
+      /* Do not create an object if the "provides" value is 'transcript' because, transcripts
+      are built seperately in the Transcript component outside the VideoJS instance. */
+      if (t !== S_ANNOTATION_TYPE.transcript) {
+        // Set language for captions/subtitles/descriptions
+        source.srclang = item.language ?? 'en';
+        if (t === S_ANNOTATION_TYPE.audioDescription) {
+          // Mark VideoJS 'descriptions' kind for audio description tracks
+          source.kind = 'descriptions';
+        } else {
+          // And the rest as 'subtitles' for VTT annotations and others as 'metadata'
+          // Without this VideoJS resolves the kind='metadata' for subtitles file, 
+          // resulting in empty subtitles lists in iOS devices' native players.
+          source.kind = item.format.toLowerCase().includes('text/vtt')
+            ? 'subtitles'
+            : 'metadata';
+        }
+        if (isForced) source.forced = true;
+        sources.push(source);
+      }
+    });
+  }
+  return sources;
 }
 
 /**
@@ -625,26 +645,37 @@ export function identifyMachineGen(label) {
 }
 
 /**
- * Resolve captions and transcripts in supplementing annotations.
- * This is specific for Avalon's usecase, where Avalon generates
- * adds 'transcripts' and 'captions' to the URI to distinguish them.
+ * Resolve transcript/caption/AD in 'supplementing' annotations.
+ * Checks the 'provides' property (introduced in Presentation v4) of
+ * the 'supplementing' annotation to determine if the given Annotation is a
+ * transcript/caption/AD track.
+ * Otherwise, falls back to checking the URI to distinguish the Annotation category
+ * according to Avalon's convention of adding 'transcripts/'captions'/'descriptions'
+ * to the URI in Presentation v3.
  * In other cases supplementing annotations are displayed as both
  * captions and transcripts in Ramp.
  * @function Utils#identifySupplementingAnnotation
  * @param {String} uri id from supplementing annotation
- * @returns {Number} a value from S_ANNOTATION_TYPE ENum
+ * @param {Array} provides 'provides' from supplementing Annotation
+ * @returns {Array<Number>} matching value(s) from S_ANNOTATION_TYPE ENum
  */
-export function identifySupplementingAnnotation(uri) {
-  if (!uri) { return; }
+export function identifySupplementingAnnotation(uri, provides = []) {
+  if (provides?.length > 0) {
+    return provides
+      .filter((key) => Object.prototype.hasOwnProperty.call(PROVIDES_TYPE_MAP, key))
+      .map((key) => PROVIDES_TYPE_MAP[key]);
+  }
+
+  if (!uri) { return []; }
   let identifier = uri.split('/').reverse()[0];
   if (identifier === 'transcripts') {
-    return S_ANNOTATION_TYPE.transcript;
-  } else if (identifier === 'captions') {
-    return S_ANNOTATION_TYPE.caption;
+    return [S_ANNOTATION_TYPE.transcript];
+  } else if (identifier === 'captions' || identifier === 'subtitles') {
+    return [S_ANNOTATION_TYPE.caption];
   } else if (identifier === 'descriptions') {
-    return S_ANNOTATION_TYPE.audioDescription;
+    return [S_ANNOTATION_TYPE.audioDescription];
   } else {
-    return S_ANNOTATION_TYPE.both;
+    return [S_ANNOTATION_TYPE.transcript, S_ANNOTATION_TYPE.caption];
   }
 }
 
