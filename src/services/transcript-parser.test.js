@@ -4,9 +4,9 @@ import noAnnotationManifest from '@TestData/multiple-canvas-auto-advance';
 import multipleCanvas from '@TestData/transcript-multiple-canvas';
 import annotationTranscript from '@TestData/transcript-annotation';
 import multiSourceManifest from '@TestData/multi-source-manifest';
-import paintingAnnotationManifest from '@TestData/transcript-multiple-canvas';
 import noSupplementingManifest from '@TestData/single-canvas';
 import adManifest from '@TestData/ad-annotation';
+import providesManifest from '@TestData/multi-canvas-v4';
 import mammoth from 'mammoth';
 import { cleanup } from '@testing-library/react';
 import * as utils from '@Services/utility-helpers';
@@ -84,8 +84,8 @@ describe('transcript-parser', () => {
       expect(transcripts[1].items).toHaveLength(0);
     });
 
-    describe('valid manifestURL with supplementing annotations', () => {
-      test('for transcript as a list of annotations', async () => {
+    describe('with a valid manifestURL with "supplementing" annotations', () => {
+      test('returns transcripts for a list of annotations', async () => {
         const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 200,
           headers: { get: jest.fn(() => 'application/json') },
@@ -113,33 +113,127 @@ describe('transcript-parser', () => {
         ]);
       });
 
-      test('for transcripts as an external resource', async () => {
+      describe('returns transcript(s) for external resource(s)', () => {
+        test('without "provides" property', async () => {
+          const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+            status: 200,
+            headers: { get: jest.fn(() => 'application/json') },
+            json: jest.fn(() => multipleCanvas),
+          });
+
+          const transcripts = await transcriptParser.readSupplementingAnnotations(
+            'https://example.com/multiple-canvas/manifest.json', '', signal
+          );
+
+          expect(fetchSpy).toHaveBeenCalledTimes(1);
+          expect(fetchSpy).toHaveBeenCalledWith(
+            'https://example.com/multiple-canvas/manifest.json', { signal }
+          );
+          expect(transcripts).toHaveLength(2);
+          expect(transcripts[0].items).toHaveLength(0);
+          expect(transcripts[1].items).toEqual([
+            {
+              title: 'Captions in WebVTT format',
+              filename: 'sample-subtitles.vtt',
+              id: 'Captions in WebVTT format-1-0',
+              url: 'https://example.com/sample/subtitles.vtt',
+              isMachineGen: false,
+              format: 'text/vtt'
+            }
+          ]);
+        });
+
+        describe('with a "provides" value', () => {
+          test('["transcript"]', async () => {
+            const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+              status: 200,
+              headers: { get: jest.fn(() => 'application/json') },
+              json: jest.fn(() => providesManifest),
+            });
+
+            const transcripts = await transcriptParser.readSupplementingAnnotations(
+              'http://example.com/multi-canvas-manifest-v4/manifest.json', '', signal
+            );
+
+            expect(fetchSpy).toHaveBeenCalledTimes(1);
+            expect(transcripts).toHaveLength(4);
+            expect(transcripts[2].items).toHaveLength(1);
+            expect(transcripts[2].items).toEqual([
+              {
+                title: 'Transcript in WebVTT format', filename: 'audio-transcript.vtt',
+                id: 'Transcript in WebVTT format-2-0', isMachineGen: false, format: 'text/vtt',
+                url: 'https://example.com/multi-canvas-manifest-v4/1/transcripts'
+              }
+            ]);
+          });
+
+          test('["transcript", "closedCaptions"]', async () => {
+            const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+              status: 200,
+              headers: { get: jest.fn(() => 'application/json') },
+              json: jest.fn(() => providesManifest),
+            });
+
+            const transcripts = await transcriptParser.readSupplementingAnnotations(
+              'http://example.com/multi-canvas-manifest-v4/manifest.json', '', signal
+            );
+
+            expect(fetchSpy).toHaveBeenCalledTimes(1);
+            expect(transcripts).toHaveLength(4);
+            expect(transcripts[3].items).toHaveLength(2);
+            expect(transcripts[3].items[0]).toEqual({
+              title: 'Caption Transcript in WebVTT format', filename: 'sample-captions.vtt',
+              id: 'Caption Transcript in WebVTT format-3-0', isMachineGen: false, format: 'text/vtt',
+              url: 'https://example.com/captions-transcript.vtt',
+            });
+          });
+
+          test('["audioDescription"]', async () => {
+            const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+              status: 200,
+              headers: { get: jest.fn(() => 'application/json') },
+              json: jest.fn(() => providesManifest),
+            });
+
+            const transcripts = await transcriptParser.readSupplementingAnnotations(
+              'http://example.com/multi-canvas-manifest-v4/manifest.json', '', signal
+            );
+
+            expect(fetchSpy).toHaveBeenCalledTimes(1);
+            expect(transcripts).toHaveLength(4);
+            expect(transcripts[3].items).toHaveLength(2);
+            expect(transcripts[3].items[1]).toEqual({
+              title: 'AD in WebVTT format', filename: 'ad.vtt',
+              id: 'AD in WebVTT format-3-2', isMachineGen: false, format: 'text/vtt',
+              url: 'https://example.com/ad.vtt',
+            });
+          });
+        });
+      });
+
+      test('does not return a transcript for external resource with "provides" value ["subtitles"]', async () => {
+        const manifestWithProvides = JSON.parse(JSON.stringify(multipleCanvas));
+        const annotation = manifestWithProvides.items[1].annotations[0].items[0];
+        annotation.provides = ['closedCaptions'];
+
         const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
           status: 200,
           headers: { get: jest.fn(() => 'application/json') },
-          json: jest.fn(() => multipleCanvas),
+          json: jest.fn(() => providesManifest),
         });
 
         const transcripts = await transcriptParser.readSupplementingAnnotations(
-          'https://example.com/multiple-canvas/manifest.json', '', signal
+          'http://example.com/multi-canvas-manifest-v4/manifest.json', '', signal
         );
 
         expect(fetchSpy).toHaveBeenCalledTimes(1);
-        expect(fetchSpy).toHaveBeenCalledWith(
-          'https://example.com/multiple-canvas/manifest.json', { signal }
+        expect(transcripts).toHaveLength(4);
+        expect(transcripts[3].items).toHaveLength(2);
+        expect(transcripts[3].items).not.toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ label: 'Subtitles in WebVTT format' })
+          ])
         );
-        expect(transcripts).toHaveLength(2);
-        expect(transcripts[0].items).toHaveLength(0);
-        expect(transcripts[1].items).toEqual([
-          {
-            title: 'Captions in WebVTT format',
-            filename: 'sample-subtitles.vtt',
-            id: 'Captions in WebVTT format-1-0',
-            url: 'https://example.com/sample/subtitles.vtt',
-            isMachineGen: false,
-            format: 'text/vtt'
-          }
-        ]);
       });
 
       test('for transcript as an AnnotationPage (Aviary)', async () => {
@@ -502,11 +596,11 @@ puppet show \nwas put on at school.\n\r\n3\r\n00:00:26.700 --> 00:00:31.500\nIt 
           expect(response.tFileExt).toEqual('json');
         });
 
-        test('without supplementing annotaitons', async () => {
+        test('without "supplementing" annotations', async () => {
           const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValueOnce({
             status: 200,
             headers: { get: jest.fn(() => 'application/json') },
-            json: jest.fn(() => paintingAnnotationManifest),
+            json: jest.fn(() => multipleCanvas),
           });
           const response = await transcriptParser
             .parseTranscriptData({ url: 'https://example.com/transcript-multiple-canvas.json', format: 'application/json' });
