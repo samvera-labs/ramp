@@ -475,6 +475,32 @@
                       "Using Soap"
                     ]
                   },
+                  "metadata": [
+                    {
+                      "label": {
+                        "en": [
+                          "Creator"
+                        ]
+                      },
+                      "value": {
+                        "en": [
+                          "Avalon Media System"
+                        ]
+                      }
+                    },
+                    {
+                      "label": {
+                        "en": [
+                          "Notes"
+                        ]
+                      },
+                      "value": {
+                        "en": [
+                          "Phil washed his hands well, with lots of soap."
+                        ]
+                      }
+                    }
+                  ],
                   "items": [
                     {
                       "id": "http://localhost:6060/storybook-manifests/dev/lunchroom_manners/canvas/1#t=157,160",
@@ -596,6 +622,33 @@
                           "There will be Cake"
                         ]
                       },
+                      "metadata": [
+                        {
+                          "label": {
+                            "en": [
+                              "Creator"
+                            ]
+                          },
+                          "value": {
+                            "en": [
+                              "Avalon Media System"
+                            ]
+                          }
+                        },
+                        {
+                          "label": {
+                            "en": [
+                              "Notes"
+                            ]
+                          },
+                          "value": {
+                            "en": [
+                              "Phil did not forget his dessert. The looked delicious.",
+                              "Picking up a slice of chocolate cake for dessert."
+                            ]
+                          }
+                        }
+                      ],
                       "items": [
                         {
                           "id": "http://localhost:6060/storybook-manifests/dev/lunchroom_manners/canvas/1#t=301,308",

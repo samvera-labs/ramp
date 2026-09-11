@@ -257,7 +257,7 @@ describe('MetadataDisplay component', () => {
     render(<MetadataDisp />);
     expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
     expect(screen.queryByTestId('metadata-display-message')).toBeInTheDocument();
-    expect(screen.getByText('No valid Metadata is in the Manifest/Canvas(es)')).toBeInTheDocument();
+    expect(screen.getByText('No valid Metadata for the current selection.')).toBeInTheDocument();
     expect(console.log).toBeCalledTimes(1);
   });
 
@@ -270,7 +270,7 @@ describe('MetadataDisplay component', () => {
     render(<MetadataDisp />);
     expect(screen.queryByTestId('metadata-display')).toBeInTheDocument();
     expect(screen.queryByTestId('metadata-display-message')).toBeInTheDocument();
-    expect(screen.getByText('No valid Metadata is in the Manifest/Canvas(es)')).toBeInTheDocument();
+    expect(screen.getByText('No valid Metadata for the current selection.')).toBeInTheDocument();
     expect(console.log).toBeCalledTimes(0);
   });
 
