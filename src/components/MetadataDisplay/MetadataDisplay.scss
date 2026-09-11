@@ -2,6 +2,7 @@
 
 .ramp--metadata-display {
   min-width: inherit;
+  margin-top: 20px;
 
   p {
     padding-left: 1rem;
@@ -45,7 +46,7 @@
       color: vars.$primaryDarker;
       border-bottom: 0.1rem solid vars.$primaryDark;
       display: block;
-      margin: 0 -1.5rem 0.5rem -1.5rem;
+      margin: 0 -1rem 0.5rem -1rem;
     }
 
     .ramp--metadata-rights-heading {

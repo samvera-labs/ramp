@@ -5,11 +5,19 @@ import * as MetadataDisplayStories from './MetadataDisplay.stories';
 
 # MetadataDisplay
 
-MetadataDisplay component, renders any available metadata in a given IIIF manifest. By default it displays metadata relevant to the Manifest, and can be customized to show Canvas level metadata using the following props. 
-Any changes to `displayTitle` prop is applied to both Manifest and Canvas metadata. This component reads manifest data from central state management provided by Contexts. 
-Thus it should be wrapped by context providers using [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs) which is the component in Ramp providing these out of the box.
+MetadataDisplay component, renders any available metadata in a given IIIF manifest. By default it displays metadata relevant to the Manifest, and can be customized to show
+Canvas and/or Range level metadata using the `displayOnlyCanvasMetadata` and/or `displayOnlyRangeMetadata` props respectively. 
 
-The `displayTitle` prop applies to both Manifest and Canvas metadata sections.
+Any changes to `displayTitle` prop is applied to both Manifest and Canvas metadata.
+
+Setting `displayOnlyRangeMetadata` to `true` displays only the metadata for the active Range in the [`StructuredNavigation`](?path=/docs/components-structurednavigation--docs).
+If the active Range has no metadata, or no Range is currently active, the message `No valid Metadata for the current selection.` is displayed.
+
+Only one of `displayOnlyCanvasMetadata`/`displayOnlyRangeMetadata` should be set to `true` at a time. `displayOnlyRangeMetadata` takes precedence when both are set to `true`,
+showing only the Range metadata. `displayAllMetadata` displays both Manifest and Canvas metadata together, and is ignored when `displayOnlyRangeMetadata` is `true`.
+
+This component reads manifest data from central state management provided by Contexts. Thus it should be wrapped by context providers using
+[`IIIFPlayer`](?path=/docs/components-iiifplayer--docs) which is the component in Ramp providing these out of the box.
 
 ## Usage
 

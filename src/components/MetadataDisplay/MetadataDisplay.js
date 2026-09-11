@@ -9,6 +9,10 @@ import cx from 'classnames';
  * Parse and display metadata, rights, and requiredStatement information
  * related to the current resource. The display of the scope of this information
  * can be customized using props as needed.
+ *
+ * Only one of `displayOnlyRangeMetadata`/`displayOnlyCanvasMetadata` should be set to
+ * `true` at a time. If both are set, `displayOnlyRangeMetadata` takes precedence and
+ * `displayAllMetadata` is ignored.
  * @param {Object} props
  * @param {Boolean} props.displayOnlyRangeMetadata
  * @param {Boolean} props.displayOnlyCanvasMetadata
@@ -226,7 +230,7 @@ const MetadataDisplay = ({
             showHeading && 'with-heading',
           )}
         >
-          <p>No valid Metadata is in the Manifest/Canvas(es)</p>
+          <p>No valid Metadata for the current selection.</p>
         </div>
       )}
     </div>
