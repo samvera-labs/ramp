@@ -29,8 +29,16 @@ describe('StructuredNavigation component', () => {
 
   window.ResizeObserver = ResizeObserver;
 
-  // Cleanup all Jest mocks after tests are run
-  afterAll(() => { jest.resetAllMocks(); });
+  let originalLogger;
+  beforeAll(() => {
+    // Mock console.log function for getMetadata()
+    originalLogger = console.log;
+    console.log = jest.fn();
+  });
+  afterAll(() => {
+    // Clean up mock
+    console.log = originalLogger;
+  });
 
   describe('with manifest', () => {
     describe('with structures including Canvas references for sections', () => {

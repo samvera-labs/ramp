@@ -963,6 +963,17 @@ describe('iiif-parser', () => {
   });
 
   describe('getStructureRanges()', () => {
+    let originalLogger;
+    beforeAll(() => {
+      // Mock console.log function for getMetadata()
+      originalLogger = console.log;
+      console.log = jest.fn();
+    });
+    afterAll(() => {
+      // Clean up mock
+      console.log = originalLogger;
+    });
+
     it('returns parsed structures and timespans when structure is defined in manifest', () => {
       const { structures, timespans, markRoot, hasCollapsibleStructure } =
         iiifParser.getStructureRanges(
@@ -983,6 +994,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.rangeId).toEqual(
         'https://example.com/sample/transcript-annotation/range/1',
       );
+
       expect(firstStructCanvas.id).toEqual(undefined);
       expect(firstStructCanvas.isClickable).toBeFalsy();
       expect(firstStructCanvas.duration).toEqual('09:32');
@@ -1337,6 +1349,7 @@ describe('iiif-parser', () => {
       expect(rinsingWell).toBeDefined();
       expect(rinsingWell.metadata).toEqual([]);
     });
+
     describe('with multi-part Range', () => {
       let timespans;
 
