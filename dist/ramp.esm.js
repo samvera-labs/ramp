@@ -64598,7 +64598,7 @@ const kM = ({
       k,
       W,
       F
-    ] }) : /* @__PURE__ */ X.jsx("div", { "data-testid": "metadata-display-message", className: Tn("ramp--metadata-display-message", r && "with-heading"), children: /* @__PURE__ */ X.jsx("p", { children: "No valid Metadata is in the Manifest/Canvas(es)" }) })
+    ] }) : /* @__PURE__ */ X.jsx("div", { "data-testid": "metadata-display-message", className: Tn("ramp--metadata-display-message", r && "with-heading"), children: /* @__PURE__ */ X.jsx("p", { children: "No valid Metadata for the current selection." }) })
   ] });
 };
 kM.propTypes = {
