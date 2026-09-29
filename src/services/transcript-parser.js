@@ -7,7 +7,9 @@ import {
   identifyMachineGen,
   identifySupplementingAnnotation,
   getAnnotations,
+  S_ANNOTATION_TYPE,
 } from '@Services/utility-helpers';
+import { normalizeValues } from '@Services/iiif-version-parser';
 import { parseAnnotationSets } from '@Services/annotations-parser';
 
 // ENum for supported transcript MIME types
@@ -153,10 +155,13 @@ function buildTranscriptAnnotation(annotations, index, manifestURL, resource, ti
           label = `${i}`;
         }
         let id = annotBody.id;
-        let sType = identifySupplementingAnnotation(id);
+        let sType = identifySupplementingAnnotation(id, normalizeValues(annotation.provides));
         let { isMachineGen, labelText } = identifyMachineGen(label);
         if (filename === '') { filename = labelText; };
-        if (sType === 1 || sType === 3 || sType === 4) {
+        /* Only add the 'supplementing' Annotation to the transcripts list if it is,
+        - indicated as a transcript file in the Manifest 
+        - indicated as an AD text track in the Manifest */
+        if ([S_ANNOTATION_TYPE.transcript, S_ANNOTATION_TYPE.audioDescription].some(t => sType.includes(t))) {
           canvasTranscripts.push({
             title: labelText,
             filename: filename,

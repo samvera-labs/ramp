@@ -759,6 +759,121 @@ const highlightingAnnotationWithCaptions = {
   ]
 };
 
+// IIIF Presentation v4 Manifest with 'provides' property in 'supplementing' Annotations
+const providesAnnotations = {
+  '@context': 'http://iiif.io/api/presentation/4/context.json',
+  id: 'https://example.com/provides-annotations/manifest.json',
+  type: 'Manifest',
+  label: { 'en': ['Supplementing Annotations with Provides'] },
+  items: [
+    {
+      id: 'https://example.com/provides-annotations/canvas/1',
+      type: 'Timeline',
+      duration: 3400.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/provides-annotations/canvas/1/annotation-page/1',
+          items: [
+            {
+              id: 'https://example.com/provides-annotations/canvas/1/annotation-page/1/annotation/1',
+              type: 'Annotation', motivation: ['supplementing'], provides: ['transcript', 'audioDescription'],
+              body: {
+                id: 'https://example.com/provides-annotations/lunchroom_manners/supplemental/1/transcripts',
+                type: 'Text', format: 'text/vtt', label: { en: ['Transcript in WebVTT format'] }, language: 'en',
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/1", type: "Timeline" }
+            },
+            {
+              id: 'https://example.com/provides-annotations/canvas/1/annotation-page/1/annotation/2',
+              type: 'Annotation', motivation: ['supplementing'], provides: ['audioDescription'],
+              body: {
+                id: 'https://example.com/provides-annotations/lunchroom_manners/supplemental/2/captions',
+                type: 'Text', format: 'text/vtt', label: { en: ['AD in WebVTT format'] }, language: 'en',
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/1", type: "Timeline" }
+            },
+            {
+              id: 'https://example.com/provides-annotations/canvas/1/annotation-page/1/annotation/3',
+              type: 'Annotation', motivation: ['supplementing'], provides: ['transcript', 'closedCaptions'],
+              body: {
+                id: 'https://example.com/provides-annotations/lunchroom_manners/supplemental/3/captions',
+                type: 'Text', format: 'text/vtt', label: { en: ['Captions in WebVTT format'] }, language: 'en',
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/1", type: "Timeline" }
+            },
+          ]
+        }
+      ],
+      items: [
+        {
+          id: "https://example.com/provides-annotations/canvas/1/page",
+          type: "AnnotationPage",
+          items: [
+            {
+              id: "https://example.com/provides-annotations/canvas/1/page/annotation",
+              type: "Annotation", motivation: ["painting"],
+              body: {
+                id: "https://example.com/provides-annotations/mahler-symphony.mp3",
+                type: "Sound", format: "audio/mp3", duration: 3400
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/1", type: "Timeline" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'https://example.com/provides-annotations/canvas/2',
+      type: 'Timeline',
+      duration: 3400.0,
+      annotations: [
+        {
+          type: 'AnnotationPage',
+          id: 'https://example.com/provides-annotations/canvas/2/annotation-page/1',
+          items: [
+            {
+              id: 'https://example.com/provides-annotations/canvas/2/annotation-page/1/annotation/1',
+              type: 'Annotation', motivation: ['supplementing'], provides: ['transcript'],
+              body: {
+                id: 'https://example.com/provides-annotations/lunchroom_manners/supplemental/1/transcripts',
+                type: 'Text', format: 'text/vtt', label: { en: ['Transcript in WebVTT format'] }, language: 'en',
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/2", type: "Timeline" }
+            },
+            {
+              id: 'https://example.com/provides-annotations/canvas/2/annotation-page/1/annotation/3',
+              type: 'Annotation', motivation: ['supplementing'], provides: ['closedCaptions'],
+              body: {
+                id: 'https://example.com/provides-annotations/lunchroom_manners/supplemental/3/captions',
+                type: 'Text', format: 'text/vtt', label: { en: ['Captions in WebVTT format'] }, language: 'en',
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/2", type: "Timeline" }
+            },
+          ]
+        }
+      ],
+      items: [
+        {
+          id: "https://example.com/provides-annotations/canvas/2/page",
+          type: "AnnotationPage",
+          items: [
+            {
+              id: "https://example.com/provides-annotations/canvas/2/page/annotation",
+              type: "Annotation", motivation: ["painting"],
+              body: {
+                id: "https://example.com/provides-annotations/mahler-symphony.mp3",
+                type: "Sound", format: "audio/mp3", duration: 3400
+              },
+              target: { id: "https://example.com/provides-annotations/canvas/2", type: "Timeline" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
 describe('annotation-parser', () => {
   describe('parseAnnotationSets()', () => {
     test('returns null when canvasIndex is undefined', () => {
@@ -973,6 +1088,45 @@ describe('annotation-parser', () => {
           canvasId: 'https://example.com/linked-mixed-annotations/canvas-1/canvas/1',
           value: 'Test Marker 2',
         });
+      });
+    });
+
+    describe('parses "supplementing" Annotations with "provides" property', () => {
+      test('returns an annotationSet for each Annotation item', () => {
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(providesAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(3);
+
+        expect(annotationSets[0].label).toEqual('Transcript in WebVTT format');
+        expect(annotationSets[1].label).toEqual('AD in WebVTT format');
+        expect(annotationSets[2].label).toEqual('Captions in WebVTT format');
+      });
+
+      test('returns an annotationSet when "provides" has both "transcript" and "closedCaptions" values', () => {
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(providesAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(3);
+
+        expect(annotationSets[2].label).toEqual('Captions in WebVTT format');
+      });
+
+      test('returns only one annotationSet when "provides" value has both "transcript" and "audioDescriotion"', () => {
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(providesAnnotations, 0);
+        expect(canvasIndex).toEqual(0);
+        expect(annotationSets.length).toEqual(3);
+
+        // Only one annotationSet is labeled "Transcript in WebVTT format"
+        expect(annotationSets[0].label).toEqual('Transcript in WebVTT format');
+        expect(annotationSets[1].label).toEqual('AD in WebVTT format');
+        expect(annotationSets[2].label).toEqual('Captions in WebVTT format');
+      });
+
+      test('does not return an annotationSet for Annotation with "provides" value "closedCaptions"', () => {
+        const { canvasIndex, annotationSets } = annotationParser.parseAnnotationSets(providesAnnotations, 1);
+        expect(canvasIndex).toEqual(1);
+        expect(annotationSets.length).toEqual(1);
+
+        expect(annotationSets[0].label).toEqual('Transcript in WebVTT format');
       });
     });
   });

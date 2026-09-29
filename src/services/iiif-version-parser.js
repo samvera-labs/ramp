@@ -52,18 +52,20 @@ export function getAccompanyingProp(version) {
  * @returns {Array}
  */
 export function hasMotivation(motivation, expected) {
-  const motivations = normalizeMotivation(motivation);
+  const motivations = normalizeValues(motivation);
   return motivations.includes(expected);
 }
 
 /**
- * Normalize an Annotation/AnnotationPage 'motivation' to an array. This allows to read and parse
- * 'motivation' values for both Presentation v3 and v4;
- * - in Presentation v3 'motivation' is conventionally a single String (e.g. 'painting')
- * @function VersionParser#normalizeMotivation
- * @param {String|Array} motivation 'motivation' value read off an Annotation
- * @returns {Array}
+ * Normalize a value read off of an Annotation/AnnotationPage to an array. This allows to
+ * read and parse properties in IIIF resources that have different formats in different
+ * IIIF Presentation versions,
+ * - 'motivation' -> in v3 it is conventionally a single String while it MUST be an array in v4
+ * - 'provides' -> introduced in v4 and absent in v3 and in Annotation in v4 that haven't set it
+ * @function VersionParser#normalizeValues
+ * @param {String|Array} values values read off a IIIF resource
+ * @returns 
  */
-export function normalizeMotivation(motivation) {
-  return [].concat(motivation ?? []);
+export function normalizeValues(values) {
+  return [].concat(values ?? []);
 }

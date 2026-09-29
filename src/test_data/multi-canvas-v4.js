@@ -71,8 +71,7 @@ export default {
     },
     {
       id: "http://example.com/multi-canvas-manifest-v4/timeline/1",
-      type: "Timeline",
-      duration: 98.25,
+      type: "Timeline", duration: 98.25,
       items: [
         {
           id: "http://example.com/multi-canvas-manifest-v4/timeline/1/annotation_page/1",
@@ -89,15 +88,32 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      annotations: [
+        {
+          id: 'http://example.com/multi-canvas-manifest-v4/timeline/1/page/2',
+          type: 'AnnotationPage',
+          items: [
+            {
+              id: 'http://example.com/multi-canvas-manifest-v4/timeline/1/annotation/1',
+              type: 'Annotation',
+              motivation: ['supplementing'],
+              provides: ['transcript'],
+              body: {
+                id: 'https://example.com/multi-canvas-manifest-v4/1/transcripts', type: 'Text',
+                format: 'text/vtt', language: ['en'], label: {
+                  en: ['Transcript in WebVTT format'], none: ['audio-transcript.vtt']
+                }
+              },
+              target: { id: 'http://example.com/multi-canvas-manifest-v4/timeline/1', type: 'Timeline' }
+            }
+          ]
+        },
+      ],
     },
     {
       id: 'http://example.com/multi-canvas-manifest-v4/timeline/2',
-      type: 'Timeline',
-      width: 480,
-      height: 360,
-      duration: 660,
-      label: { en: ['Multi-src Audio Timeline'] },
+      type: 'Timeline', width: 480, height: 360, duration: 660, label: { en: ['Multi-src Audio Timeline'] },
       items: [
         {
           id: 'http://example.com/multi-canvas-manifest-v4/timeline/2/page',
@@ -105,8 +121,7 @@ export default {
           items: [
             {
               id: 'http://example.com/multi-canvas-manifest-v4/timeline/2/page/1',
-              type: 'Annotation',
-              motivation: ['painting'],
+              type: 'Annotation', motivation: ['painting'],
               body: {
                 type: 'Choice',
                 choiceHint: 'user',
@@ -136,12 +151,35 @@ export default {
           type: 'AnnotationPage',
           items: [
             {
-              id: 'http://example.com/multi-canvas-manifest-v4/timeline/2/annotation/1',
+              id: 'http://example.com/multi-canvas-manifest-v4/timeline/2/page/2/annotation/1',
               type: 'Annotation',
               motivation: ['supplementing'],
+              provides: ['transcript', 'closedCaptions'],
               body: {
-                id: 'https://example.com/audio-transcript.vtt', type: 'Text', format: 'text/vtt', language: ['en'],
-                label: { en: ['Captions in WebVTT format'], none: ['audio-transcript.vtt'] }
+                id: 'https://example.com/captions-transcript.vtt', type: 'Text', format: 'text/vtt', language: ['en'],
+                label: { en: ['Caption Transcript in WebVTT format'], none: ['sample-captions.vtt'] }
+              },
+              target: { id: 'http://example.com/multi-canvas-manifest-v4/timeline/2', type: 'Timeline' }
+            },
+            {
+              id: 'http://example.com/multi-canvas-manifest-v4/timeline/2/page/2/annotation/2',
+              type: 'Annotation',
+              motivation: ['supplementing'],
+              provides: ['subtitles'],
+              body: {
+                id: 'https://example.com/subtitles-transcript.vtt', type: 'Text', format: 'text/vtt', language: ['en'],
+                label: { en: ['Subtitles in WebVTT format'], none: ['sample-subtitles.vtt'] }
+              },
+              target: { id: 'http://example.com/multi-canvas-manifest-v4/timeline/2', type: 'Timeline' }
+            },
+            {
+              id: 'http://example.com/multi-canvas-manifest-v4/timeline/2/page/2/annotation/3',
+              type: 'Annotation',
+              motivation: ['supplementing'],
+              provides: ['audioDescription'],
+              body: {
+                id: 'https://example.com/ad.vtt', type: 'Text', format: 'text/vtt', language: ['en'],
+                label: { en: ['AD in WebVTT format'], none: ['ad.vtt'] }
               },
               target: { id: 'http://example.com/multi-canvas-manifest-v4/timeline/2', type: 'Timeline' }
             }

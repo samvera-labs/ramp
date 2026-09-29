@@ -250,12 +250,17 @@ describe('iiif-parser', () => {
   });
 
   describe('getMediaInfo()', () => {
+    let originalError;
     beforeEach(() => {
       // Mock canPlayType to always return 'maybe' (truthy value)
       HTMLMediaElement.prototype.canPlayType = jest.fn(() => 'maybe');
+      // Mock console.error function
+      originalError = console.error;
+      console.error = jest.fn();
     });
     afterEach(() => {
       jest.restoreAllMocks();
+      console.error = originalError;
     });
 
     describe('with Presentation 3 Manifest', () => {
@@ -431,6 +436,48 @@ describe('iiif-parser', () => {
           'http://example.com/low.mp4#t=120.5,7278.422',
         );
       });
+
+      describe('with "supplementing" Annotation with "provides" value', () => {
+        it('["transcript"] is excluded from tracks', () => {
+          const { tracks } = iiifParser.getMediaInfo({
+            manifest: multiCanvasV4Manifest,
+            canvasIndex: 2, version: '4',
+          });
+          expect(tracks).toHaveLength(0);
+        });
+
+        it('["subtitles"] is appended as a track', () => {
+          const { tracks } = iiifParser.getMediaInfo({
+            manifest: multiCanvasV4Manifest,
+            canvasIndex: 3, version: '4',
+          });
+          expect(tracks).toHaveLength(2);
+          expect(tracks[1].label).toEqual('Subtitles in WebVTT format');
+          expect(tracks[1].kind).toEqual('subtitles');
+        });
+
+        it('["transcript", "closedCaptions"] is appended as a track', () => {
+          const { tracks } = iiifParser.getMediaInfo({
+            manifest: multiCanvasV4Manifest,
+            canvasIndex: 3, version: '4',
+          });
+          expect(tracks).toHaveLength(2);
+          expect(tracks[0].label).toEqual('Caption Transcript in WebVTT format');
+          expect(tracks[0].kind).toEqual('subtitles');
+          expect(tracks[1].label).toEqual('Subtitles in WebVTT format');
+          expect(tracks[1].kind).toEqual('subtitles');
+        });
+
+        it('["audioDescription"] is appended as a track', () => {
+          const { audioDescTracks } = iiifParser.getMediaInfo({
+            manifest: multiCanvasV4Manifest,
+            canvasIndex: 3, version: '4',
+          });
+          expect(audioDescTracks).toHaveLength(1);
+          expect(audioDescTracks[0].label).toEqual('AD in WebVTT format');
+          expect(audioDescTracks[0].kind).toEqual('descriptions');
+        });
+      });
     });
 
     it('returns an error when invalid canvas index is given', () => {
@@ -540,9 +587,9 @@ describe('iiif-parser', () => {
       originalError = console.error;
       console.error = jest.fn();
     });
-    afterAll(() => {
-      console.error = originalError;
-    });
+
+    afterAll(() => console.error = originalError);
+
     it('returns url for video manifest', () => {
       const posterUrl = iiifParser.getPlaceholderResource(
         lunchroomManifest.items[0],

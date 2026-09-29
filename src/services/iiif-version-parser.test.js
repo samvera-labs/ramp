@@ -1,6 +1,6 @@
 import {
   getIIIFAPIVersion, getPlaceholderProp, getAccompanyingProp,
-  hasMotivation, normalizeMotivation
+  hasMotivation, normalizeValues
 } from './iiif-version-parser';
 
 describe('iiif-version-parser', () => {
@@ -86,21 +86,41 @@ describe('iiif-version-parser', () => {
     });
   });
 
-  describe('normalizeMotivation()', () => {
-    test('converts a string motivation into an array', () => {
-      expect(normalizeMotivation('painting')).toEqual(['painting']);
+  describe('normalizeValues()', () => {
+    describe('with "motivation" values', () => {
+      test('converts a string value into an array', () => {
+        expect(normalizeValues('painting')).toEqual(['painting']);
+      });
+
+      test('returns an array value unchanged', () => {
+        expect(normalizeValues(['painting'])).toEqual(['painting']);
+      });
+
+      test('returns an empty array when undefined', () => {
+        expect(normalizeValues(undefined)).toEqual([]);
+      });
+
+      test('returns an empty array when null', () => {
+        expect(normalizeValues(null)).toEqual([]);
+      });
     });
 
-    test('returns an array motivation unchanged', () => {
-      expect(normalizeMotivation(['painting'])).toEqual(['painting']);
-    });
+    describe('with "provides" values', () => {
+      test('converts a string value into an array', () => {
+        expect(normalizeValues('transcript')).toEqual(['transcript']);
+      });
 
-    test('returns an empty array when motivation is undefined', () => {
-      expect(normalizeMotivation(undefined)).toEqual([]);
-    });
+      test('returns an array value unchanged', () => {
+        expect(normalizeValues(['transcript', 'captions'])).toEqual(['transcript', 'captions']);
+      });
 
-    test('returns an empty array when motivation is null', () => {
-      expect(normalizeMotivation(null)).toEqual([]);
+      test('returns an empty array when undefined', () => {
+        expect(normalizeValues(undefined)).toEqual([]);
+      });
+
+      test('returns an empty array when null', () => {
+        expect(normalizeValues(null)).toEqual([]);
+      });
     });
   });
 
