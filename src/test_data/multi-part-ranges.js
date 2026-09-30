@@ -124,10 +124,8 @@ export default {
 };
 
 /* Same Canvases as above, but Canvas 2 only appears as the second part of the spanning
-Range, with no top-level section of its own (unlike the "Side A"/"Side B" shape above) --
-reproduces a real StructuredNavigation crash where the Canvas-level section list used
-for the empty-Canvas check doesn't have an entry per Canvas. */
-export const crossRangeNoSectionForSecondCanvas = {
+Range with another timespan succeeding the Canvas part in "Side B". */
+export const crossRangeWithSwitchBack = {
   "@context": "http://iiif.io/api/presentation/3/context.json",
   id: "http://example.com/multi-part-ranges/manifest.json",
   type: "Manifest",
@@ -214,8 +212,16 @@ export const crossRangeNoSectionForSecondCanvas = {
               id: 'http://example.com/multi-part-ranges/range/2-2',
               label: { en: ['Track spanning both sides'] },
               items: [
-                { type: 'Canvas', id: 'http://example.com/multi-part-ranges/canvas/1#t=550,600' },
-                { type: 'Canvas', id: 'http://example.com/multi-part-ranges/canvas/2#t=0,100' },
+                { type: 'Canvas', id: 'http://example.com/multi-part-ranges/canvas/1#t=550,575' },
+                { type: 'Canvas', id: 'http://example.com/multi-part-ranges/canvas/2#t=80,150' },
+              ],
+            },
+            {
+              type: 'Range',
+              id: 'http://example.com/multi-part-ranges/range/2-3',
+              label: { en: ['Track within Side A after Side B'] },
+              items: [
+                { type: 'Canvas', id: 'http://example.com/multi-part-ranges/canvas/1#t=575,600' },
               ],
             },
           ],

@@ -28,6 +28,7 @@ const defaultState = {
   srcIndex: 0, // index for multiple resources in a single canvas
   startTime: 0,
   autoAdvance: false,
+  structureOnlyPlayback: false,
   playlist: {
     markers: [], // [{ canvasIndex: Number, canvasMarkers: Array, error: String }]
     isEditing: false,
@@ -86,6 +87,8 @@ function manifestReducer(state = defaultState, action) {
         iiifVersion: iiifVersion,
         allCanvases: canvases,
         autoAdvance: manifestBehavior,
+        // Use Manifest's 'behavior' as default value for structure-only playback
+        structureOnlyPlayback: manifestBehavior,
         playlist: {
           ...state.playlist,
           isPlaylist: isPlaylist,
@@ -155,6 +158,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         autoAdvance: action.autoAdvance,
+      };
+    }
+    case 'setStructureOnlyPlayback': {
+      return {
+        ...state,
+        structureOnlyPlayback: action.structureOnlyPlayback,
       };
     }
     case 'setPlaylistMarkers': {

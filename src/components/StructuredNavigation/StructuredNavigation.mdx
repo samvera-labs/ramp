@@ -16,6 +16,11 @@ in the Manifest's `items` list. Following are scenarios that Ramp considers as i
 according to the [IIIF Presentation 3.0 spec](https://iiif.io/api/presentation/3.0/#behavior) should not be displayed in structure
 navigation
 
+When the Manifest has `structures`, StructuredNavigation can also render a toggle, which enables/disables structure-only playback (skipping the gaps in-between structure timespans).
+This can be turned ON with the `structurePlayback` prop, 
+- as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` 
+- as an Object to customize the label -> `<StructuredNavigation structurePlayback={{ enable: true, label: 'Play structure only' }} />`
+
 ## Usage
 
 ```js
