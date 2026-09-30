@@ -1,7 +1,7 @@
 import manifest from '@TestData/transcript-annotation';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
-import crossRangeManifest from '@TestData/multi-part-ranges';
+import crossRangeManifest, { crossRangeWithSwitchBack } from '@TestData/multi-part-ranges';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
@@ -1337,6 +1337,7 @@ describe('iiif-parser', () => {
       expect(rinsingWell).toBeDefined();
       expect(rinsingWell.metadata).toEqual([]);
     });
+
     describe('with multi-part Range', () => {
       let timespans;
 
@@ -1411,6 +1412,18 @@ describe('iiif-parser', () => {
         expect(timespans[0].isMultiRange).toBeFalsy();
         expect(timespans[3].isMultiRange).toBeFalsy();
       });
+    });
+
+    it('uses the referenced Canvas\'s index for a part in a Range nested under another Canvas', () => {
+      const { timespans } = iiifParser.getStructureRanges(
+        crossRangeWithSwitchBack,
+        iiifParser.canvasesInManifest(crossRangeWithSwitchBack));
+
+      expect(timespans.length).toBe(4);
+      expect(timespans[1].isMultiRange).toBeTruthy();
+      expect(timespans[1].canvasIndex).toEqual(1);
+      expect(timespans[2].isMultiRange).toBeTruthy();
+      expect(timespans[2].canvasIndex).toEqual(2);
     });
   });
 

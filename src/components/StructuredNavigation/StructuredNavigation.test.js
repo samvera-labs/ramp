@@ -10,6 +10,7 @@ import playlist from '@TestData/playlist';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
 import crossRangeManifest from '@TestData/multi-part-ranges';
+import manifestWoStructure from '@TestData/ad-annotation';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -29,8 +30,22 @@ describe('StructuredNavigation component', () => {
 
   window.ResizeObserver = ResizeObserver;
 
+  let originalLogger, originalError;
+  beforeEach(() => {
+    // Mock console functions
+    originalLogger = console.log;
+    originalError = console.error;
+    console.log = jest.fn();
+    console.error = jest.fn();
+  });
+
   // Cleanup all Jest mocks after tests are run
-  afterAll(() => { jest.resetAllMocks(); });
+  afterAll(() => {
+    // Cleanup mocks
+    jest.resetAllMocks();
+    console.log = originalLogger;
+    console.error = originalError;
+  });
 
   describe('with manifest', () => {
     describe('with structures including Canvas references for sections', () => {
@@ -257,14 +272,11 @@ describe('StructuredNavigation component', () => {
 
     describe('without structures', () => {
       test('renders no list items and a message when structures are not present in manifest', () => {
-        let manifestWithoutStructures = JSON.parse(JSON.stringify(manifest));
-        delete manifestWithoutStructures.structures;
-
         // Example of how to wrap tests with a "combo Provider" helper
         const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
           StructuredNavigation,
           {
-            initialManifestState: { ...manifestState(manifestWithoutStructures) },
+            initialManifestState: { ...manifestState(manifestWoStructure) },
             initialPlayerState: {},
           }
         );
@@ -275,6 +287,7 @@ describe('StructuredNavigation component', () => {
 
         expect(screen.queryByTestId('nested-tree')).toBeNull();
         expect(screen.getByText(/There are no structures in the manifest/));
+        expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
       });
     });
   });
@@ -296,12 +309,6 @@ describe('StructuredNavigation component', () => {
 
   describe('structure with an invalid media fragment', () => {
     test('logs an error', () => {
-      // Mock console functions
-      let originalLogger = console.log;
-      let originalError = console.error;
-      console.log = jest.fn();
-      console.error = jest.fn();
-
       const NavWithInvalidFragment = withManifestAndPlayerProvider(
         StructuredNavigation,
         {
@@ -321,10 +328,6 @@ describe('StructuredNavigation component', () => {
           'iiif-parser -> getStructureRanges() -> error parsing structures'
         );
       });
-
-      // Cleanup mocks
-      console.log = originalLogger;
-      console.error = originalError;
     });
   });
 
@@ -1056,6 +1059,95 @@ describe('StructuredNavigation component', () => {
       expect(multiPartItem).toHaveLength(2);
 
       expect(multiPartItem[0].closest('li')).not.toHaveClass('active');
+    });
+  });
+
+  describe('structure-only playback toggle', () => {
+    describe('doesn\'t render', () => {
+      test('with default structurePlayback value (false)', () => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {},
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(manifest) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+      });
+
+      test('with structurePlayback turned ON and structures are NOT present', () => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {}, structurePlayback: true,
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(manifestWoStructure) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('renders when structures are present and', () => {
+      test('structurePlayback is turned ON via Boolean shorthand', () => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {}, structurePlayback: true,
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(manifest) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByText('Play structure only')).toBeInTheDocument();
+      });
+
+      test('structurePlayback turned ON via structurePlayback={{ enable: true }}', () => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {}, structurePlayback: { enable: true },
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(manifest) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByText('Play structure only')).toBeInTheDocument();
+      });
+
+      test('structurePlayback turned ON via structurePlayback={{ enable: true, label: "Auto-play structure" }}', () => {
+        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+          initialState: {}, structurePlayback: { enable: true, label: "Auto-play structure" },
+        });
+        const NavWithManifest = withManifestProvider(NavWithPlayer, {
+          initialState: { ...manifestState(manifest) },
+        });
+        render(
+          <ErrorBoundary>
+            <NavWithManifest />
+          </ErrorBoundary>
+        );
+
+        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByText('Auto-play structure')).toBeInTheDocument();
+      });
     });
   });
 });

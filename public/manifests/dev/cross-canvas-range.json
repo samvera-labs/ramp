@@ -553,7 +553,7 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=301,308",
+                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/2#t=301,308",
                           "type": "Canvas"
                         }
                       ]
@@ -639,7 +639,7 @@
                           "type": "Canvas"
                         },
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3#t=0,100",
+                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3#t=80,100",
                           "type": "Canvas"
                         }
                       ]

@@ -11,7 +11,10 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { getMediaFragment, offsetTextTrackCues } from '@Services/utility-helpers';
+import {
+  getFirstStructureTimespanForCanvas, getMediaFragment,
+  offsetTextTrackCues
+} from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -88,6 +91,7 @@ function VideoJSPlayer({
     manifest,
     targets,
     autoAdvance,
+    structureOnlyPlayback,
     structures,
     canvasSegments,
     auth,
@@ -137,6 +141,9 @@ function VideoJSPlayer({
   const autoAdvanceRef = useRef();
   autoAdvanceRef.current = useMemo(() => { return autoAdvance; }, [autoAdvance]);
 
+  const structureOnlyPlaybackRef = useRef();
+  structureOnlyPlaybackRef.current = useMemo(() => { return structureOnlyPlayback; }, [structureOnlyPlayback]);
+
   const srcIndexRef = useRef();
   srcIndexRef.current = useMemo(() => { return srcIndex; }, [srcIndex]);
 
@@ -174,6 +181,11 @@ function VideoJSPlayer({
 
   // Delay resume modal when a cross-Canvas switch is needed
   const pendingResumeRef = useRef(null);
+
+  /* Flag to indicate whether the initial 'play' event starts at the first timespan's start
+  time on initial 'play' event. This is set on 'loadedmetadata' event when structure-only
+  playback is turned ON and no other external factors affect the start time of playback. */
+  const useFirstTimespanRef = useRef(false);
 
   const savePositionRef = useRef();
   savePositionRef.current = savePosition;
@@ -302,6 +314,20 @@ function VideoJSPlayer({
     });
     player.on('play', () => {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
+
+      /* When structure-only playback is ON and no other start times (saved playback
+      position in localStorage, custom start time in Manifest or Ramp props) are declared,
+      playback should start at the start time of the first timespan in 'structures' when
+      user hits 'play' button. */
+      if (useFirstTimespanRef.current) {
+        useFirstTimespanRef.current = false;
+        const firstTimespan = getFirstStructureTimespanForCanvas(cIndexRef.current, canvasSegmentsRef.current);
+        if (firstTimespan) {
+          player.currentTime(firstTimespan.times.start);
+          playerDispatch({ currentTime: firstTimespan.times.start, type: 'setCurrentTime' });
+          manifestDispatch({ item: firstTimespan, type: 'switchItem' });
+        }
+      }
     });
     player.on('timeupdate', () => {
       handleTimeUpdate();
@@ -1000,6 +1026,10 @@ function VideoJSPlayer({
         : (IS_IOS ? currentTimeRef.current : Math.max(currentTimeRef.current, player.currentTime()));
       player.currentTime(targetTime);
 
+      useFirstTimespanRef.current = structureOnlyPlaybackRef.current
+        && targetTime === 0
+        && !pendingResumeRef.current;
+
       // Update control-bar width on player reload
       setControlBar(player);
 
@@ -1382,33 +1412,6 @@ function VideoJSPlayer({
         playerRef.current.markers.removeAll();
       }
 
-      /* When the timespan at the end is one part of a Range spanning multiple Canvases,
-      the next sibling in the timespan has the same rangeId. Since these parts can be
-      used to refer any Canvas in the Manifest, look up the parts by 'rangeId' and use the
-      next sibling part's Canvas index for the switch. To find the timespan at the end of
-      the current Canvas, use the current Canvas index, and the canvasDuration on canvasSegments
-      array. */
-      const endedItem = canvasSegments.find(
-        (t) => t.canvasIndex === cIndexRef.current + 1 && t.times.end >= t.canvasDuration - 0.1
-      );
-      const rangeParts = endedItem?.isMultiRange
-        ? canvasSegments.filter((t) => t.rangeId === endedItem.rangeId)
-        : [];
-      const endedPartIndex = rangeParts.findIndex((t) => t.id === endedItem.id);
-      const nextRangePart = endedPartIndex > -1 ? rangeParts[endedPartIndex + 1] : undefined;
-
-      if (nextRangePart) {
-        manifestDispatch({ canvasIndex: nextRangePart.canvasIndex - 1, type: 'switchCanvas' });
-        playerDispatch({ startTime: 0, type: 'setTimeFragment' });
-        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-        manifestDispatch({ item: nextRangePart, type: 'switchItem' });
-        if (!nextRangePart.isEmpty) {
-          playerRef.current.currentTime(nextRangePart.times.start);
-          playerRef.current.play();
-        }
-        return;
-      }
-
       if (hasMultiItems) {
         // When there are multiple sources in a single canvas advance to next source
         if (srcIndexRef.current + 1 < targets.length) {
@@ -1494,9 +1497,15 @@ function VideoJSPlayer({
         savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
       }
 
+      // Update state based on the next timespan in the 'structures' to adjust playback
+      getNextTimespanRef.current(playerTime, lastTimespanIdRef);
+
       const activeSegment = getActiveSegmentRef.current(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
+        // Reset the guard so that, re-entering this segment can trigger a switch
+        lastTimespanIdRef.current = null;
+
         if (!activeSegment) {
           /**
            * Clear currentNavItem and other related state variables to update the tracker

@@ -1189,3 +1189,41 @@ export function getActiveRangeForCanvas(item, canvasIndex, canvasDuration) {
     canvasDuration: canvasDuration ?? item.canvasDuration,
   };
 }
+
+/**
+ * Get the next timespan for the given current timespan. This is in the order these
+ * timespans are defined in the 'structures' property in the Manifest.
+ * This calculation is used by structure-only playback in the 'timeupdate' event in
+ * VideoJSPlayer.
+ * @function Utils#getNextStructureTimespan
+ * @param {Object} currentTimespan current active timespan
+ * @param {Array} canvasSegments list of timespans in 'structures'
+ * @returns {Object | null} the next timespan, or null when there is none
+ */
+export function getNextStructureTimespan(currentTimespan, canvasSegments) {
+  if (!currentTimespan || !canvasSegments?.length) return null;
+
+  const currentIndex = canvasSegments.findIndex((c) => c.id === currentTimespan.id);
+  if (currentIndex === -1) return null;
+
+  return canvasSegments[currentIndex + 1] || null;
+}
+
+/**
+ * Get first structure timespan for the given canvasIndex. This timespan is used to
+ * start the structure-only playback on the initial 'play' event, when no other
+ * explicit start time (via Ramp start props or Manifest 'start' property) is set
+ * for the Canvas.
+* @function Utils#getFirstStructureTimespanForCanvas
+ * @param {Number} canvasIdx 0-based Canvas index
+ * @returns {Object | null} the earliest 'canvasSegments' leaf on that Canvas, or null
+ */
+export function getFirstStructureTimespanForCanvas(canvasIdx, canvasSegments) {
+  const timespans = canvasSegments.filter(
+    (t) => t.canvasIndex === canvasIdx + 1 && !t.isCanvas
+  );
+  if (timespans.length === 0) return null;
+  return timespans.reduce((earliest, t) => (
+    t.times.start < earliest.times.start ? t : earliest
+  ));
+};
