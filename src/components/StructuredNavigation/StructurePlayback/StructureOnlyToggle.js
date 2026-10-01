@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useStructurePlayback } from '../../../services/hooks/useStructurePlayback';
+import { useStructurePlayback } from '@Services//hooks/useStructurePlayback';
+import { ExclamationSVGIcon } from '@Services//svg-icons';
+import { timeToHHmmss } from '@Services/utility-helpers';
 import './StructureOnlyToggle.scss';
 
 /**
@@ -10,7 +12,7 @@ import './StructureOnlyToggle.scss';
  * @param {String} props.label
  */
 const StructureOnlyToggle = ({ label = 'Play structure only' }) => {
-  const { structureOnlyPlayback, handleChange } = useStructurePlayback();
+  const structureNoticeRef = React.useRef(null);
 
   /**
    * On Space/Enter keypresses enable toggle button
@@ -23,25 +25,69 @@ const StructureOnlyToggle = ({ label = 'Play structure only' }) => {
     }
   };
 
-  return (
-    <div
-      role='switch'
-      onClick={handleChange}
-      onKeyDown={handleKeyDown}
-      aria-checked={String(structureOnlyPlayback)}
-      tabIndex={0}
-      data-testid='structure-only-playback'
-      className='ramp--structure-only-playback'
-    >
-      <span className='ramp--structure-only-playback-label'
-        data-testid='structure-only-playback-label'>
-        {label}
-      </span>
-      <span className='slider'>
-        <span data-testid='structure-only-playback-toggle'></span>
-      </span>
-    </div>
+  /**
+   * Callback to handle the display of the structure-only playback notice when
+   * the buttons in the structure-only playback notice are clicked. This will
+   * dissmiss the notice and remove it from the DOM.
+   */
+  const dismissNotice = () => {
+    if (structureNoticeRef.current) {
+      structureNoticeRef.current.remove();
+      structureNoticeRef.current = null;
+    }
+  };
 
+  const { firstTimespan, handleChange, structureOnlyPlayback, onPlayFromBeginning, onTurnOff }
+    = useStructurePlayback({ dismissNotice });
+
+  const startTime = useMemo(() => {
+    if (firstTimespan) {
+      return timeToHHmmss(firstTimespan.times.start);
+    }
+  }, [firstTimespan]);
+
+  const startLabel = useMemo(() => {
+    return firstTimespan ? firstTimespan.label : '';
+  }, [firstTimespan, startTime]);
+
+  return (
+    <div className='ramp--structure-only-playback'>
+      <div
+        role='switch'
+        onClick={handleChange}
+        onKeyDown={handleKeyDown}
+        aria-checked={String(structureOnlyPlayback)}
+        tabIndex={0}
+        data-testid='structure-only-playback'
+        className='ramp--structure-only-playback__toggle-row'
+      >
+        <div>
+          <strong data-testid='structure-only-playback-label'>
+            {label}
+          </strong>
+          <span>Skip unstructured portions of the media</span>
+        </div>
+        <span className='slider'>
+          <span data-testid='structure-only-playback-toggle'></span>
+        </span>
+      </div>
+      <div className='ramp--structure-only-playback__notice' ref={structureNoticeRef}>
+        <div aria-live='polite' className='ramp--structure-only-playback__banner' role='status'>
+          <div className='ramp--structure-only-playback__icon'>
+            <ExclamationSVGIcon />
+          </div>
+          <div className='ramp--structure-only-playback__content'>
+            <strong>Structure-only playback is turned on</strong>
+            <span>{`Playback will begin at ${startTime} with ${startLabel}`}</span>
+            <div className='ramp--structure-only-playback__actions'>
+              <button className='start-over' onClick={onPlayFromBeginning}>Play from beginning</button>
+              <button className='turn-off' onClick={onTurnOff}>Turn off</button>
+            </div>
+          </div>
+          <button className='ramp--structure-only-playback__dismiss'>×</button>
+        </div>
+      </div>
+    </div>
   );
 };
 

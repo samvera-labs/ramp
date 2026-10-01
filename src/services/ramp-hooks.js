@@ -802,26 +802,21 @@ export const useVideoJSPlayer = ({
    * of playback across the player reload when switching to a new Canvas
    * - the same Canvas -> player's currentTime is set to the start of the next timespan
    * @param {Number} playerTime current playhead time
-   * @param {Object} lastStructureJumpIdRef React ref to store last active timespan ID
    * @returns 
    */
-  const getNextTimespan = (playerTime, lastStructureJumpIdRef) => {
+  const getNextTimespan = (playerTime) => {
+    /* If a clickedUrl exists, then return without checking for the next timespan. This is because
+    when a user clicks on a timespan in the StructuredNavigation, the next timespan is determined by
+    the click instead. */
+    if (clickedUrl != '') return;
     const prevSegment = canvasSegments.find((c) => c.id === activeId);
-    console.log(activeId, prevSegment?.id);
-    if (
-      prevSegment?.times?.end > 0
-      && !prevSegment.isCanvas
-      && playerTime >= prevSegment.times.end
-      && lastStructureJumpIdRef.current !== prevSegment.id
-    ) {
+    if (prevSegment?.times?.end > 0 && !prevSegment.isCanvas && playerTime >= prevSegment.times.end) {
       const nextStructurePart = getNextStructureTimespan(prevSegment, canvasSegments);
       const nextPartCanvasIndex = nextStructurePart
         ? getCanvasIndexForTimespan(nextStructurePart)
         : -1;
 
-      console.log(nextStructurePart, nextPartCanvasIndex, canvasIndex);
       if (nextStructurePart && nextPartCanvasIndex !== -1 && nextPartCanvasIndex !== canvasIndex) {
-        lastStructureJumpIdRef.current = prevSegment.id;
         manifestDispatch({ canvasIndex: nextPartCanvasIndex, type: 'switchCanvas' });
         /* Dispatch the start/end times of the next timespan when 'structureOnlyPlayback' is enabled.
         This allows the playback to skip over the duration of the media in the new Canvas that is not
@@ -843,13 +838,10 @@ export const useVideoJSPlayer = ({
         of the next timespan. */
         if (nextStructurePart && nextPartCanvasIndex === canvasIndex
           && nextStructurePart.times.start > prevSegment.times.end) {
-          // Gap between this timespan and the next timespan on the same Canvas - skip it.
-          lastStructureJumpIdRef.current = prevSegment.id;
           playerRef.current.currentTime(nextStructurePart.times.start);
           return;
         } else if (!nextStructurePart) {
           // Pause playback when there are no more timespans in 'structures'
-          lastStructureJumpIdRef.current = prevSegment.id;
           playerRef.current.pause();
           return;
         }

@@ -25,6 +25,7 @@ const defaultState = {
   },
   targets: [],
   hasMultiItems: false, // multiple resources in a single canvas
+  hasResume: false, // has a saved playback position for the current Manifest
   srcIndex: 0, // index for multiple resources in a single canvas
   startTime: 0,
   autoAdvance: false,
@@ -297,6 +298,12 @@ function manifestReducer(state = defaultState, action) {
       return {
         ...state,
         auth: { token: null, status: 'idle' },
+      };
+    }
+    case 'setHasResume': {
+      return {
+        ...state,
+        hasResume: action.hasResume,
       };
     }
     default: {
