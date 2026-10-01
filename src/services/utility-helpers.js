@@ -1208,22 +1208,3 @@ export function getNextStructureTimespan(currentTimespan, canvasSegments) {
 
   return canvasSegments[currentIndex + 1] || null;
 }
-
-/**
- * Get first structure timespan for the given canvasIndex. This timespan is used to
- * start the structure-only playback on the initial 'play' event, when no other
- * explicit start time (via Ramp start props or Manifest 'start' property) is set
- * for the Canvas.
-* @function Utils#getFirstStructureTimespanForCanvas
- * @param {Number} canvasIdx 0-based Canvas index
- * @returns {Object | null} the earliest 'canvasSegments' leaf on that Canvas, or null
- */
-export function getFirstStructureTimespanForCanvas(canvasIdx, canvasSegments) {
-  const timespans = canvasSegments.filter(
-    (t) => t.canvasIndex === canvasIdx + 1 && !t.isCanvas
-  );
-  if (timespans.length === 0) return null;
-  return timespans.reduce((earliest, t) => (
-    t.times.start < earliest.times.start ? t : earliest
-  ));
-};

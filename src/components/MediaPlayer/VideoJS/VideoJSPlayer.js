@@ -11,10 +11,7 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import {
-  getFirstStructureTimespanForCanvas, getMediaFragment,
-  offsetTextTrackCues
-} from '@Services/utility-helpers';
+import { getMediaFragment, offsetTextTrackCues } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -182,11 +179,6 @@ function VideoJSPlayer({
   // Delay resume modal when a cross-Canvas switch is needed
   const pendingResumeRef = useRef(null);
 
-  /* Flag to indicate whether the initial 'play' event starts at the first timespan's start
-  time on initial 'play' event. This is set on 'loadedmetadata' event when structure-only
-  playback is turned ON and no other external factors affect the start time of playback. */
-  const useFirstTimespanRef = useRef(false);
-
   const savePositionRef = useRef();
   savePositionRef.current = savePosition;
 
@@ -314,20 +306,6 @@ function VideoJSPlayer({
     });
     player.on('play', () => {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
-
-      /* When structure-only playback is ON and no other start times (saved playback
-      position in localStorage, custom start time in Manifest or Ramp props) are declared,
-      playback should start at the start time of the first timespan in 'structures' when
-      user hits 'play' button. */
-      if (useFirstTimespanRef.current) {
-        useFirstTimespanRef.current = false;
-        const firstTimespan = getFirstStructureTimespanForCanvas(cIndexRef.current, canvasSegmentsRef.current);
-        if (firstTimespan) {
-          player.currentTime(firstTimespan.times.start);
-          playerDispatch({ currentTime: firstTimespan.times.start, type: 'setCurrentTime' });
-          manifestDispatch({ item: firstTimespan, type: 'switchItem' });
-        }
-      }
     });
     player.on('timeupdate', () => {
       handleTimeUpdate();
@@ -1026,9 +1004,6 @@ function VideoJSPlayer({
         : (IS_IOS ? currentTimeRef.current : Math.max(currentTimeRef.current, player.currentTime()));
       player.currentTime(targetTime);
 
-      useFirstTimespanRef.current = structureOnlyPlaybackRef.current
-        && targetTime === 0
-        && !pendingResumeRef.current;
 
       // Update control-bar width on player reload
       setControlBar(player);
@@ -1138,7 +1113,7 @@ function VideoJSPlayer({
   };
 
   const {
-    activeId, getActiveSegment, fragmentMarker, isReadyRef, playerRef,
+    activeId, getActiveSegment, getNextTimespan, fragmentMarker, isReadyRef, playerRef,
     setActiveId, setFragmentMarker, setIsReady, updateMenuDirection
   } = useVideoJSPlayer({
     audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
@@ -1152,6 +1127,9 @@ function VideoJSPlayer({
 
   const getActiveSegmentRef = useRef();
   getActiveSegmentRef.current = getActiveSegment;
+
+  const getNextTimespanRef = useRef();
+  getNextTimespanRef.current = getNextTimespan;
 
   /**
    * Remove any VideoJS modals instances in the DOM. Call close() to restore
@@ -1498,14 +1476,11 @@ function VideoJSPlayer({
       }
 
       // Update state based on the next timespan in the 'structures' to adjust playback
-      getNextTimespanRef.current(playerTime, lastTimespanIdRef);
+      getNextTimespanRef.current(playerTime);
 
       const activeSegment = getActiveSegmentRef.current(playerTime);
       // the active segment has changed
       if (activeIdRef.current !== activeSegment?.id) {
-        // Reset the guard so that, re-entering this segment can trigger a switch
-        lastTimespanIdRef.current = null;
-
         if (!activeSegment) {
           /**
            * Clear currentNavItem and other related state variables to update the tracker
@@ -1613,6 +1588,9 @@ function VideoJSPlayer({
 
     // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
     pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
+
+    // Set hasResume to true so that StructureNavigation can show the structure-only playback notice
+    manifestDispatch({ type: 'setHasResume', hasResume: true });
   };
 
   /**
