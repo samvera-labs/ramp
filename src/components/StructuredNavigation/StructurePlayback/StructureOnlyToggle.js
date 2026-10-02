@@ -78,7 +78,7 @@ const StructureOnlyToggle = ({ label = 'Play structure only' }) => {
           </div>
           <div className='ramp--structure-only-playback__content'>
             <strong>Structure-only playback is turned on</strong>
-            <span>{`Playback will begin at ${startTime} with ${startLabel}`}</span>
+            <span>{`Playback will begin at ${startTime} with "${startLabel}"`}</span>
             <div className='ramp--structure-only-playback__actions'>
               <button className='start-over' onClick={onPlayFromBeginning}>Play from beginning</button>
               <button className='turn-off' onClick={onTurnOff}>Turn off</button>

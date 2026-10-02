@@ -801,47 +801,47 @@ export const useVideoJSPlayer = ({
    * - a different Canvas -> 'currentTime' in playerState is updated to remember the currentTime
    * of playback across the player reload when switching to a new Canvas
    * - the same Canvas -> player's currentTime is set to the start of the next timespan
+   * When 'structureOnlyPlayback' is disabled, the player progresses in the order of Canvases
+   * of the 'items' array in the Manifest.
    * @param {Number} playerTime current playhead time
    * @returns 
    */
   const getNextTimespan = (playerTime) => {
-    /* If a clickedUrl exists, then return without checking for the next timespan. This is because
-    when a user clicks on a timespan in the StructuredNavigation, the next timespan is determined by
-    the click instead. */
-    if (clickedUrl != '') return;
+    /* Do not calculate the next timespan if,
+    - a clickedUrl exists because, user initiated interactions always takes priority over the
+    programmatic calculations which is done in this function
+    - 'structureOnlyPlayback' is disabled because, this state honors the default order of
+    Canvases in the in the 'items' array in the Manifest  */
+    if (clickedUrl != '' || !structureOnlyPlayback) return;
+
     const prevSegment = canvasSegments.find((c) => c.id === activeId);
     if (prevSegment?.times?.end > 0 && !prevSegment.isCanvas && playerTime >= prevSegment.times.end) {
-      const nextStructurePart = getNextStructureTimespan(prevSegment, canvasSegments);
-      const nextPartCanvasIndex = nextStructurePart
-        ? getCanvasIndexForTimespan(nextStructurePart)
+      const nextPossibleTimespan = getNextStructureTimespan(prevSegment, canvasSegments);
+      const nextTimespanCIndex = nextPossibleTimespan
+        ? getCanvasIndexForTimespan(nextPossibleTimespan)
         : -1;
 
-      if (nextStructurePart && nextPartCanvasIndex !== -1 && nextPartCanvasIndex !== canvasIndex) {
-        manifestDispatch({ canvasIndex: nextPartCanvasIndex, type: 'switchCanvas' });
-        /* Dispatch the start/end times of the next timespan when 'structureOnlyPlayback' is enabled.
-        This allows the playback to skip over the duration of the media in the new Canvas that is not
-        defined in the structures. Otherwise set the currentTime in state to 0 for the new Canvas. */
-        if (structureOnlyPlayback) {
-          playerDispatch({
-            startTime: nextStructurePart.times.start, endTime: nextStructurePart.times.end,
-            type: 'setTimeFragment',
-          });
-          playerDispatch({ currentTime: nextStructurePart.times.start, type: 'setCurrentTime' });
-        } else {
-          playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-        }
-        manifestDispatch({ item: nextStructurePart, type: 'switchItem' });
+      if (nextPossibleTimespan && nextTimespanCIndex !== -1 && nextTimespanCIndex !== canvasIndex) {
+        manifestDispatch({ canvasIndex: nextTimespanCIndex, type: 'switchCanvas' });
+        /* Dispatch the start/end times of the next timespan. This allows the playback to skip over
+        the duration of the media in the new Canvas that is not defined in the structures. */
+        playerDispatch({
+          startTime: nextPossibleTimespan.times.start, endTime: nextPossibleTimespan.times.end,
+          type: 'setTimeFragment',
+        });
+        playerDispatch({ currentTime: nextPossibleTimespan.times.start, type: 'setCurrentTime' });
+        manifestDispatch({ item: nextPossibleTimespan, type: 'switchItem' });
         return;
-      } else if (structureOnlyPlayback) {
+      } else {
         /* When the next timespan doesn't cross the Canvas boundary, simply skip the gap between
         the activeSegment and the next timespan by setting the player's currentTime to the start
         of the next timespan. */
-        if (nextStructurePart && nextPartCanvasIndex === canvasIndex
-          && nextStructurePart.times.start > prevSegment.times.end) {
-          playerRef.current.currentTime(nextStructurePart.times.start);
+        if (nextPossibleTimespan && nextTimespanCIndex === canvasIndex
+          && nextPossibleTimespan.times.start > prevSegment.times.end) {
+          playerRef.current.currentTime(nextPossibleTimespan.times.start);
           return;
-        } else if (!nextStructurePart) {
-          // Pause playback when there are no more timespans in 'structures'
+        } else if (!nextPossibleTimespan) {
+          // Pause playback when there are no more timespans when 'strutureOnlyPlayback' is enabled
           playerRef.current.pause();
           return;
         }

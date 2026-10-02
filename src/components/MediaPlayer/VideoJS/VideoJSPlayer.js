@@ -88,7 +88,6 @@ function VideoJSPlayer({
     manifest,
     targets,
     autoAdvance,
-    structureOnlyPlayback,
     structures,
     canvasSegments,
     auth,
@@ -137,9 +136,6 @@ function VideoJSPlayer({
 
   const autoAdvanceRef = useRef();
   autoAdvanceRef.current = useMemo(() => { return autoAdvance; }, [autoAdvance]);
-
-  const structureOnlyPlaybackRef = useRef();
-  structureOnlyPlaybackRef.current = useMemo(() => { return structureOnlyPlayback; }, [structureOnlyPlayback]);
 
   const srcIndexRef = useRef();
   srcIndexRef.current = useMemo(() => { return srcIndex; }, [srcIndex]);
@@ -193,6 +189,9 @@ function VideoJSPlayer({
 
   // Number seconds near the start/end of the Manifest where saving playback time is omitted
   const RESUME_EDGE = 5;
+
+  // Flag set on seeks on progress-bar to adjust next timespan calculation for structure-only playback
+  const seekedRef = useRef(false);
 
   /**
    * Setup player with player-related information parsed from the IIIF
@@ -313,7 +312,9 @@ function VideoJSPlayer({
     player.on('play', () => {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
     });
-    player.on('timeupdate', () => {
+    player.on('timeupdate', (e) => {
+      // Set the seek fla on progress-bar scrub actions by the user
+      if (e?.manuallyTriggered) seekedRef.current = true;
       handleTimeUpdate();
     });
     player.on('resize', () => {
@@ -397,6 +398,7 @@ function VideoJSPlayer({
       // Block player while quality is being changed when requests take time
       player.addClass('vjs-disabled');
     });
+    player.on('seeking', () => { seekedRef.current = true; });
     player.on('seeked', (e) => {
       /**
        * Once the player is fully loaded this event is triggered automatically by VideoJS, because
@@ -1504,8 +1506,14 @@ function VideoJSPlayer({
         clearPositionRef.current(manifestURLRef.current);
       }
 
-      // Update state based on the next timespan in the 'structures' to adjust playback
-      getNextTimespanRef.current(playerTime);
+      /* Update state based on the next timespan in the 'structures' to adjust playback. Skip
+      this on the first update after a seek since the user action takes priority over the
+      programmatic updates to the player. */
+      if (seekedRef.current) {
+        seekedRef.current = false;
+      } else {
+        getNextTimespanRef.current(playerTime);
+      }
 
       const activeSegment = getActiveSegmentRef.current(playerTime);
       // the active segment has changed
