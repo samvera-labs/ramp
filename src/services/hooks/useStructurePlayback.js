@@ -5,10 +5,17 @@ import { usePlayerDispatch, usePlayerState } from '../../context/player-context'
 export const useStructurePlayback = ({ dismissNotice }) => {
   const { canvasIndex, canvasSegments, hasResume, structureOnlyPlayback } = useManifestState();
   const manifestDispatch = useManifestDispatch();
-  const { player } = usePlayerState();
+  const { isClicked, player } = usePlayerState();
   const playerDispatch = usePlayerDispatch();
 
   const [firstTimespan, setFirstTimespan] = useState(null);
+  // Store firstTimespan in a ref for the 'play' event hander
+  const firstTimespanRef = useRef(null);
+  firstTimespanRef.current = firstTimespan;
+
+  // React refs for player instance and 'play' event handler callback
+  const onInitialPlayRef = useRef(null);
+  const initializedPlayerRef = useRef(null);
 
   /**
    * Get first structure timespan for the current Canvas. This timespan is used to
@@ -77,21 +84,37 @@ export const useStructurePlayback = ({ dismissNotice }) => {
   playback should start at the start time of the first timespan in 'structures' when user
   hits 'play' button. */
   useEffect(() => {
-    if (player) {
-      player.on('play', () => {
+    /* Register once per player instance with VideoJS's 'one' method. Since the same instance is
+    reused across Canvases and is reset in state on each Canvas change, re-registering the event
+    handler overrides the start times set for structure-only playback for each Canvas. */
+    if (player && initializedPlayerRef.current !== player) {
+      initializedPlayerRef.current = player;
+      onInitialPlayRef.current = () => {
         if (playbackFromFirstTimespanRef.current) {
           // Reset the flag and dismiss the notice so that, next 'play' events don't trigger this again
           playbackFromFirstTimespanRef.current = false;
           dismissNotice();
-          if (firstTimespan) {
-            player.currentTime(firstTimespan.times.start);
-            playerDispatch({ currentTime: firstTimespan.times.start, type: 'setCurrentTime' });
+          if (firstTimespanRef.current) {
+            const { start } = firstTimespanRef.current.times;
+            player.currentTime(start);
+            playerDispatch({ currentTime: start, type: 'setCurrentTime' });
             manifestDispatch({ item: firstTimespan, type: 'switchItem' });
           }
         }
-      });
+      };
+      player.one('play', onInitialPlayRef.current);
     }
   }, [player]);
+
+  /* When a structure item is clicked before the player starts from first timespan for
+  structure-only playback, skip the initial jump from zero time mark to the first timespan
+  and dismiss the structure-only playback notice. */
+  useEffect(() => {
+    if (isClicked && player && onInitialPlayRef.current) {
+      player.off('play', onInitialPlayRef.current);
+      dismissNotice();
+    }
+  });
 
   const handleChange = useCallback((e) => {
     e.target.setAttribute('aria-checked', String(!structureOnlyPlayback));

@@ -1,6 +1,6 @@
 {
   "@context": "http://iiif.io/api/presentation/3/context.json",
-  "id": "http://localhost:3003/dev/lunchroom_manners.json",
+  "id": "http://localhost:3003/dev/cross-canvas-range.json",
   "type": "Manifest",
   "label": {
     "en": [
@@ -172,23 +172,23 @@
   ],
   "items": [
     {
-      "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1",
+      "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1",
       "type": "Canvas",
       "height": 360,
       "width": 480,
       "duration": 572.034,
       "placeholderCanvas": {
-        "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/placeholder",
+        "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/placeholder",
         "type": "Canvas",
         "width": 640,
         "height": 360,
         "items": [
           {
-            "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/placeholder/1",
+            "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/placeholder/1",
             "type": "AnnotationPage",
             "items": [
               {
-                "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/placeholder/1-image",
+                "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/placeholder/1-image",
                 "type": "Annotation",
                 "motivation": "painting",
                 "body": {
@@ -198,7 +198,7 @@
                   "width": 640,
                   "height": 360
                 },
-                "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1/placeholder"
+                "target": "http://localhost:3003/dev/cross-canvas-range/canvas/1/placeholder"
               }
             ]
           }
@@ -206,11 +206,11 @@
       },
       "items": [
         {
-          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/page",
+          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/page",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/page/annotation",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
               "body": {
@@ -249,18 +249,18 @@
                   }
                 ]
               },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1"
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/1"
             }
           ]
         }
       ],
       "annotations": [
         {
-          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/page/2",
+          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/page/2",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/annotation/webvtt",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/annotation/webvtt",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
@@ -273,10 +273,10 @@
                   ]
                 }
               },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1"
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/1"
             },
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1/annotation/srt",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1/annotation/srt",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
@@ -289,25 +289,25 @@
                   ]
                 }
               },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/1"
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/1"
             }
           ]
         }
       ]
     },
     {
-      "id": "http://localhost:3003/dev/lunchroom_manners/canvas/2",
+      "id": "http://localhost:3003/dev/cross-canvas-range/canvas/2",
       "type": "Canvas",
       "height": 360,
       "width": 480,
       "duration": 572.034,
       "items": [
         {
-          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/2/page",
+          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/2/page",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/2/page/annotation",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/2/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
               "body": {
@@ -318,28 +318,28 @@
                 "width": 480,
                 "duration": 572.034
               },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/2"
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/2"
             }
           ]
         }
       ]
     },
     {
-      "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3",
+      "id": "http://localhost:3003/dev/cross-canvas-range/canvas/3",
       "type": "Canvas",
       "width": 1920,
       "height": 1080,
       "duration": 662.037,
       "items": [
         {
-          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3/page",
+          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/3/page",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3/page/annotation",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/3/page/annotation",
               "type": "Annotation",
               "motivation": "painting",
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/3",
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/3",
               "body": {
                 "id": "http://localhost:3003/volleyball-for-boys/volleyball-for-boys.mp4",
                 "type": "Video",
@@ -354,11 +354,11 @@
       ],
       "annotations": [
         {
-          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/canvas/3/page/1",
+          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/canvas/3/page/1",
           "type": "AnnotationPage",
           "items": [
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/canvas/3/page/1/1",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/canvas/3/page/1/1",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
@@ -371,10 +371,10 @@
                   ]
                 }
               },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/3"
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/3"
             },
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3/page/1/2",
+              "id": "http://localhost:3003/dev/cross-canvas-range/canvas/3/page/1/2",
               "type": "Annotation",
               "motivation": "supplementing",
               "body": {
@@ -387,7 +387,7 @@
                   ]
                 }
               },
-              "target": "http://localhost:3003/dev/lunchroom_manners/canvas/3"
+              "target": "http://localhost:3003/dev/cross-canvas-range/canvas/3"
             }
           ]
         }
@@ -396,7 +396,7 @@
   ],
   "structures": [
     {
-      "id": "http://localhost:3003/dev/lunchroom_manners/range/0",
+      "id": "http://localhost:3003/dev/cross-canvas-range/range/0",
       "type": "Range",
       "label": {
         "en": [
@@ -405,7 +405,7 @@
       },
       "items": [
         {
-          "id": "http://localhost:3003/dev/lunchroom_manners/range/1",
+          "id": "http://localhost:3003/dev/cross-canvas-range/range/1",
           "type": "Range",
           "label": {
             "en": [
@@ -414,7 +414,7 @@
           },
           "items": [
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/range/1-1",
+              "id": "http://localhost:3003/dev/cross-canvas-range/range/1-1",
               "type": "Range",
               "label": {
                 "en": [
@@ -423,7 +423,7 @@
               },
               "items": [
                 {
-                  "id": "http://localhost:3003/dev/lunchroom_manners/range/1-1-1",
+                  "id": "http://localhost:3003/dev/cross-canvas-range/range/1-1-1",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -432,13 +432,13 @@
                   },
                   "items": [
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=157,160",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=157,160",
                       "type": "Canvas"
                     }
                   ]
                 },
                 {
-                  "id": "http://localhost:3003/dev/lunchroom_manners/range/1-1-3",
+                  "id": "http://localhost:3003/dev/cross-canvas-range/range/1-1-3",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -447,13 +447,13 @@
                   },
                   "items": [
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=165,170",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=165,170",
                       "type": "Canvas"
                     }
                   ]
                 },
                 {
-                  "id": "http://localhost:3003/dev/lunchroom_manners/range/1-2",
+                  "id": "http://localhost:3003/dev/cross-canvas-range/range/1-2",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -462,7 +462,7 @@
                   },
                   "items": [
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/1-2-1",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/1-2-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -471,13 +471,13 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=170,180",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=170,180",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/1-2-2",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/1-2-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -486,7 +486,7 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=180,190",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=180,190",
                           "type": "Canvas"
                         }
                       ]
@@ -496,7 +496,7 @@
               ]
             },
             {
-              "id": "http://localhost:3003/dev/lunchroom_manners/range/2",
+              "id": "http://localhost:3003/dev/cross-canvas-range/range/2",
               "type": "Range",
               "label": {
                 "en": [
@@ -505,7 +505,7 @@
               },
               "items": [
                 {
-                  "id": "http://localhost:3003/dev/lunchroom_manners/range/2-1",
+                  "id": "http://localhost:3003/dev/cross-canvas-range/range/2-1",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -514,7 +514,7 @@
                   },
                   "items": [
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-1-1",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-1-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -523,13 +523,13 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=227,245",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=227,245",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-1-2",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-1-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -538,13 +538,13 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=258,288",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=258,288",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-1-3",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-1-3",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -553,7 +553,7 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/2#t=301,308",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/2#t=290,320",
                           "type": "Canvas"
                         }
                       ]
@@ -561,7 +561,7 @@
                   ]
                 },
                 {
-                  "id": "http://localhost:3003/dev/lunchroom_manners/range/2-2",
+                  "id": "http://localhost:3003/dev/cross-canvas-range/range/2-2",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -570,7 +570,7 @@
                   },
                   "items": [
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-2-1",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-2-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -579,13 +579,13 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=323,333",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=323,333",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-2-2",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-2-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -594,7 +594,7 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=362,378",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=362,378",
                           "type": "Canvas"
                         }
                       ]
@@ -602,7 +602,7 @@
                   ]
                 },
                 {
-                  "id": "http://localhost:3003/dev/lunchroom_manners/range/2-3",
+                  "id": "http://localhost:3003/dev/cross-canvas-range/range/2-3",
                   "type": "Range",
                   "label": {
                     "en": [
@@ -611,7 +611,7 @@
                   },
                   "items": [
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-3-1",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-3-1",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -620,13 +620,13 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=448,492",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=448,492",
                           "type": "Canvas"
                         }
                       ]
                     },
                     {
-                      "id": "http://localhost:3003/dev/lunchroom_manners/range/2-3-2",
+                      "id": "http://localhost:3003/dev/cross-canvas-range/range/2-3-2",
                       "type": "Range",
                       "label": {
                         "en": [
@@ -635,11 +635,11 @@
                       },
                       "items": [
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/1#t=550,572",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/1#t=550,572",
                           "type": "Canvas"
                         },
                         {
-                          "id": "http://localhost:3003/dev/lunchroom_manners/canvas/3#t=80,100",
+                          "id": "http://localhost:3003/dev/cross-canvas-range/canvas/3#t=80,100",
                           "type": "Canvas"
                         }
                       ]
