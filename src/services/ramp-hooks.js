@@ -812,7 +812,7 @@ export const useVideoJSPlayer = ({
     programmatic calculations which is done in this function
     - 'structureOnlyPlayback' is disabled because, this state honors the default order of
     Canvases in the in the 'items' array in the Manifest  */
-    if (clickedUrl != '' || !structureOnlyPlayback) return;
+    if (clickedUrl != '' || !structureOnlyPlayback) return { index: canvasIndex, time: playerTime };
 
     const prevSegment = canvasSegments.find((c) => c.id === activeId);
     if (prevSegment?.times?.end > 0 && !prevSegment.isCanvas && playerTime >= prevSegment.times.end) {
@@ -831,7 +831,7 @@ export const useVideoJSPlayer = ({
         });
         playerDispatch({ currentTime: nextPossibleTimespan.times.start, type: 'setCurrentTime' });
         manifestDispatch({ item: nextPossibleTimespan, type: 'switchItem' });
-        return;
+        return { index: nextTimespanCIndex, time: nextPossibleTimespan.times.start };
       } else {
         /* When the next timespan doesn't cross the Canvas boundary, simply skip the gap between
         the activeSegment and the next timespan by setting the player's currentTime to the start
@@ -839,7 +839,7 @@ export const useVideoJSPlayer = ({
         if (nextPossibleTimespan && nextTimespanCIndex === canvasIndex
           && nextPossibleTimespan.times.start > prevSegment.times.end) {
           playerRef.current.currentTime(nextPossibleTimespan.times.start);
-          return;
+          return { index: canvasIndex, time: nextPossibleTimespan.times.start };
         } else if (!nextPossibleTimespan) {
           // Pause playback when there are no more timespans when 'strutureOnlyPlayback' is enabled
           playerRef.current.pause();
