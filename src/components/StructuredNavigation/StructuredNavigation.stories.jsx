@@ -19,7 +19,7 @@ export default {
 const defaultState = {
   showAllSectionsButton: false,
   sectionsHeading: 'Sections',
-  structurePlayback: true,
+  structurePlayback: false,
 };
 
 export const Default = {

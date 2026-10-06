@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useStructurePlayback } from '@Services//hooks/useStructurePlayback';
-import { ExclamationSVGIcon } from '@Services//svg-icons';
+import { useStructurePlayback } from '@Services/hooks/useStructurePlayback';
+import { ExclamationSVGIcon } from '@Services/svg-icons';
 import { timeToHHmmss } from '@Services/utility-helpers';
 import './StructureOnlyToggle.scss';
 
