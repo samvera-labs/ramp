@@ -184,6 +184,9 @@ function VideoJSPlayer({
   // Flag to track whether the player was playing during a fallback for source selection
   const wasPlayingRef = useRef();
 
+  // Flag set on seeks on progress-bar to adjust next timespan calculation for structure-only playback
+  const seekedRef = useRef(false);
+
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -303,7 +306,9 @@ function VideoJSPlayer({
     player.on('play', () => {
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
     });
-    player.on('timeupdate', () => {
+    player.on('timeupdate', (e) => {
+      // Set the seek fla on progress-bar scrub actions by the user
+      if (e?.manuallyTriggered) seekedRef.current = true;
       handleTimeUpdate();
     });
     player.on('resize', () => {
@@ -387,6 +392,7 @@ function VideoJSPlayer({
       // Block player while quality is being changed when requests take time
       player.addClass('vjs-disabled');
     });
+    player.on('seeking', () => { seekedRef.current = true; });
     player.on('seeked', (e) => {
       /**
        * Once the player is fully loaded this event is triggered automatically by VideoJS, because
@@ -1000,6 +1006,7 @@ function VideoJSPlayer({
         : (IS_IOS ? currentTimeRef.current : Math.max(currentTimeRef.current, player.currentTime()));
       player.currentTime(targetTime);
 
+
       // Update control-bar width on player reload
       setControlBar(player);
 
@@ -1108,7 +1115,7 @@ function VideoJSPlayer({
   };
 
   const {
-    activeId, getActiveSegment, fragmentMarker, isReadyRef, playerRef,
+    activeId, getActiveSegment, getNextTimespan, fragmentMarker, isReadyRef, playerRef,
     setActiveId, setFragmentMarker, setIsReady, updateMenuDirection
   } = useVideoJSPlayer({
     audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
@@ -1122,6 +1129,9 @@ function VideoJSPlayer({
 
   const getActiveSegmentRef = useRef();
   getActiveSegmentRef.current = getActiveSegment;
+
+  const getNextTimespanRef = useRef();
+  getNextTimespanRef.current = getNextTimespan;
 
   /**
    * Remove any VideoJS modals instances in the DOM. Call close() to restore
@@ -1382,33 +1392,6 @@ function VideoJSPlayer({
         playerRef.current.markers.removeAll();
       }
 
-      /* When the timespan at the end is one part of a Range spanning multiple Canvases,
-      the next sibling in the timespan has the same rangeId. Since these parts can be
-      used to refer any Canvas in the Manifest, look up the parts by 'rangeId' and use the
-      next sibling part's Canvas index for the switch. To find the timespan at the end of
-      the current Canvas, use the current Canvas index, and the canvasDuration on canvasSegments
-      array. */
-      const endedItem = canvasSegments.find(
-        (t) => t.canvasIndex === cIndexRef.current + 1 && t.times.end >= t.canvasDuration - 0.1
-      );
-      const rangeParts = endedItem?.isMultiRange
-        ? canvasSegments.filter((t) => t.rangeId === endedItem.rangeId)
-        : [];
-      const endedPartIndex = rangeParts.findIndex((t) => t.id === endedItem.id);
-      const nextRangePart = endedPartIndex > -1 ? rangeParts[endedPartIndex + 1] : undefined;
-
-      if (nextRangePart) {
-        manifestDispatch({ canvasIndex: nextRangePart.canvasIndex - 1, type: 'switchCanvas' });
-        playerDispatch({ startTime: 0, type: 'setTimeFragment' });
-        playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
-        manifestDispatch({ item: nextRangePart, type: 'switchItem' });
-        if (!nextRangePart.isEmpty) {
-          playerRef.current.currentTime(nextRangePart.times.start);
-          playerRef.current.play();
-        }
-        return;
-      }
-
       if (hasMultiItems) {
         // When there are multiple sources in a single canvas advance to next source
         if (srcIndexRef.current + 1 < targets.length) {
@@ -1492,6 +1475,15 @@ function VideoJSPlayer({
       const isHelpfulResume = playerTime > 5 && playerTime < canvasDurationRef.current - 5;
       if (manifestURLRef.current && canvasURLRef.current && isHelpfulResume) {
         savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
+      }
+
+      /* Update state based on the next timespan in the 'structures' to adjust playback. Skip
+      this on the first update after a seek since the user action takes priority over the
+      programmatic updates to the player. */
+      if (seekedRef.current) {
+        seekedRef.current = false;
+      } else {
+        getNextTimespanRef.current(playerTime);
       }
 
       const activeSegment = getActiveSegmentRef.current(playerTime);
@@ -1604,6 +1596,9 @@ function VideoJSPlayer({
 
     // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
     pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
+
+    // Set hasResume to true so that StructureNavigation can show the structure-only playback notice
+    manifestDispatch({ type: 'setHasResume', hasResume: true });
   };
 
   /**

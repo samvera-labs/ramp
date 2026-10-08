@@ -10,6 +10,7 @@ import singleCanvasManifest from '@TestData/single-canvas';
 import authManifest from '@TestData/auth-manifest';
 import waveformManifest from '@TestData/waveform-example';
 import multiSourceManifest from '@TestData/multi-source-manifest';
+import { crossRangeWithSwitchBack } from '@TestData/multi-part-ranges';
 
 // Mock 'requestLogout' from auth-service module
 jest.mock('@Services/auth-service', () => ({
@@ -48,10 +49,10 @@ describe('VideoJSPlayer component', () => {
   });
 
   // Helper function to render the MediaPlayer with necessary context providers and props
-  const renderPlayer = async ({ manifest, canvasIndex, manifestOverrides = {}, props = {} }) => {
+  const renderPlayer = async ({ manifest, canvasIndex, manifestOverrides = {}, playerOverrides = {}, props = {} }) => {
     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
       initialManifestState: { ...manifestState(manifest, canvasIndex), ...manifestOverrides },
-      initialPlayerState: {},
+      initialPlayerState: { ...playerOverrides },
       ...props,
     });
     await act(async () => render(
@@ -1009,6 +1010,163 @@ describe('VideoJSPlayer component', () => {
         expect(nextItemClickedSpy).toHaveBeenCalledWith(1, 381.1);
         // Seeks to the offset 381.1s within the second source
         expect(currentTimeSpy).toHaveBeenCalledWith(381.1);
+      });
+    });
+  });
+
+  describe('feature: structure-only playback', () => {
+    // Two timespans on Canvas 1 with a gap in-between
+    const CANVAS_ID = 'https://example.com/manifest/lunchroom_manners/canvas/1';
+    const canvasSegments = [
+      { id: `${CANVAS_ID}#t=157,160`, label: 'Using Soap', canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 157, end: 160 } },
+      { id: `${CANVAS_ID}#t=301,308`, label: 'Rinsing Well', canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 301, end: 308 } },
+    ];
+    // Alternating timespans between Canvas 1 & 2, followed by a timespan back on Canvas 1
+    const CANVAS_ID_1 = 'http://example.com/multi-part-ranges/canvas/1';
+    const CANVAS_ID_2 = 'http://example.com/multi-part-ranges/canvas/2';
+    const altCanvasSegments = [
+      { id: `${CANVAS_ID_1}#t=550,575`, label: 'Track spanning both sides', canvasIndex: 1, isCanvas: false, canvasDuration: 600, times: { start: 550, end: 575 } },
+      { id: `${CANVAS_ID_2}#t=80,150`, label: 'Track spanning both sides', canvasIndex: 2, isCanvas: false, canvasDuration: 400, times: { start: 80, end: 150 } },
+      { id: `${CANVAS_ID_1}#t=575,600`, label: 'Track within Side A after Side B', canvasIndex: 2, isCanvas: false, canvasDuration: 600, times: { start: 575, end: 600 } },
+    ];
+
+    // Playhead time returned by the stubbed player.currentTime()
+    let playerTime = 0;
+
+    // Trigger a 'timeupdate' event at a given time, and wait out the throttle on 'timpupdate' handler
+    const timeUpdateAt = async (player, time, event = 'timeupdate') => {
+      playerTime = time;
+      act(() => { player.trigger(event); });
+      await act(async () => new Promise((r) => setTimeout(r, 20)));
+    };
+
+    // Helper function to set up the player with 'structureOnlyPlayback' enabled
+    const setupPlayer = async ({
+      manifest, canvasIndex = 0, canvasSegments, structureOnlyPlayback = true, initTime = 0,
+      elementTestId = 'videojs-video-element',
+    }) => {
+      await renderPlayer({
+        manifest, canvasIndex,
+        manifestOverrides: { canvasSegments, structureOnlyPlayback },
+        playerOverrides: { clickedUrl: '', searchMarkers: [] }
+      });
+      const player = await triggerLoadedMetadata(elementTestId);
+
+      // Stub player.currentTime() and player.pause() functions
+      player.currentTime = jest.fn((t) => (t !== undefined ? undefined : playerTime));
+      player.pause = jest.fn();
+
+      // 'loadeddata' marks the player as ready and enables the 'timeupdate' handler
+      act(() => { player.trigger('loadeddata'); });
+
+      // Move the playhead into the first timespan
+      await timeUpdateAt(player, initTime);
+
+      return player;
+    };
+
+    describe('is turned ON', () => {
+      describe('with two timespans with a gap in-between on one Canvas', () => {
+        let player;
+        beforeEach(async () => {
+          player = await setupPlayer({ manifest: videoManifest, canvasSegments, initTime: 158 });
+        });
+
+        test('skips the gap to the next timespan past the active timespan', async () => {
+          await timeUpdateAt(player, 160);
+          expect(player.currentTime).toHaveBeenCalledWith(301);
+        });
+
+        describe('does not jump to the next timespan when', () => {
+          test('programatically seeked into a timestamp not in structures', async () => {
+            act(() => { player.trigger('seeking'); });
+            await timeUpdateAt(player, 200);
+
+            expect(player.currentTime).not.toHaveBeenCalledWith(301);
+          });
+
+          test('manually seeked onto a timestamp not in structures', async () => {
+            await timeUpdateAt(player, 200, { type: 'timeupdate', manuallyTriggered: true });
+            expect(player.currentTime).not.toHaveBeenCalledWith(301);
+          });
+        });
+
+        test('pauses player when the end of the last timespan is reached', async () => {
+          // Play into the last timespan
+          await timeUpdateAt(player, 305);
+          expect(player.pause).not.toHaveBeenCalled();
+
+          await timeUpdateAt(player, 308);
+          expect(player.pause).toHaveBeenCalledTimes(1);
+        });
+      });
+
+      describe('with timespans in alternating Canvases, switches the Canvas from', () => {
+        test('1 -> 2 when active timespan on Canvas 1 ends', async () => {
+          const player = await setupPlayer({
+            manifest: crossRangeWithSwitchBack, canvasSegments: altCanvasSegments,
+            initTime: 551, elementTestId: 'videojs-audio-element',
+          });
+          await timeUpdateAt(player, 575);
+          await waitFor(() => {
+            expect(player.canvasIndex).toBe(1);
+          });
+
+          // Canvas 2 loads from 0
+          playerTime = 0;
+          act(() => { player.trigger('loadedmetadata'); });
+          // Then the structure-only playback advances the playhead to the next timespan
+          expect(player.currentTime).toHaveBeenCalledWith(80);
+        });
+
+        test('2 -> 1 when active timespan on Canvas 2 ends', async () => {
+          // Load player with Canvas 2 with playhead inside the timespan
+          const player = await setupPlayer({
+            manifest: crossRangeWithSwitchBack, canvasSegments: altCanvasSegments, canvasIndex: 1,
+            initTime: 81, elementTestId: 'videojs-audio-element',
+          });
+
+          // Move playhead to the end of the active times on Canvas 2
+          await timeUpdateAt(player, 150);
+          await waitFor(() => {
+            expect(player.canvasIndex).toBe(0);
+          });
+
+          // Canvas 1 loads from 0
+          playerTime = 0;
+          act(() => { player.trigger('loadedmetadata'); });
+          // Then the structure-only playback advances the playhead to the next timespan
+          expect(player.currentTime).toHaveBeenCalledWith(575);
+        });
+      });
+    });
+
+    describe('is turned OFF', () => {
+      describe('with two timespans with a gap in-between on one Canvas', () => {
+        test('does not skip the gap to the next timespan past the active timespan', async () => {
+          const player = await setupPlayer({
+            manifest: videoManifest, canvasSegments, initTime: 158,
+            structureOnlyPlayback: false
+          });
+
+          await timeUpdateAt(player, 160);
+          expect(player.currentTime).not.toHaveBeenCalledWith(301);
+        });
+      });
+
+      describe('with timespans in alternating Canvases', () => {
+        test('does not switch Canvas from 1 -> 2 when active timespan on Canvas 1 ends', async () => {
+          const player = await setupPlayer({
+            manifest: crossRangeWithSwitchBack, canvasSegments, initTime: 551, elementTestId: 'videojs-audio-element',
+            structureOnlyPlayback: false,
+          });
+
+          await timeUpdateAt(player, 575);
+
+          // Playback continues on Canvas 1 without moving the playhead
+          expect(player.canvasIndex).toBe(0);
+          expect(player.currentTime).not.toHaveBeenCalledWith(expect.any(Number));
+        });
       });
     });
   });

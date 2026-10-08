@@ -1,0 +1,120 @@
+@use '../../../styles/vars';
+
+.ramp--structure-only-playback {
+  &__toggle-row {
+    border: 0.05rem solid vars.$primaryLight;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75em 0.5em;
+    background: vars.$primaryLighter;
+    border-bottom: none;
+
+    div {
+      display: grid;
+      gap: 3px;
+    }
+
+    span {
+      font-size: 0.75em;
+      color: vars.$primaryDarker;
+    }
+
+    .slider {
+      position: relative;
+      border-radius: 34px;
+      height: 34px;
+      width: 60px;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+
+      span {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        display: inline-block;
+        border: 2px solid white;
+        border-radius: 34px;
+        height: 26px;
+        width: 26px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+    }
+  }
+
+  &__toggle-row[aria-checked="true"] .slider {
+    background: vars.$primaryGreenDark;
+    span {
+      left: 28px;
+    }
+  }
+
+  &__notice {
+    border: 0.05rem solid vars.$primaryLight;
+  }
+
+  &__icon {
+    padding-top: 1px;
+    color: vars.$primaryGreenDark;
+  }
+
+  &__content {
+    display: grid;
+    min-width: 0;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1em;
+    margin-top: 0.4em;
+
+    button {
+      border-radius: 0.25em;
+      padding: 0.5em 0.75em;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .start-over {
+      border: 0.1em solid vars.$primaryGreenDark;
+      color: white;
+      background: vars.$primaryGreenDark;
+    }
+
+    .turn-off {
+      border: 0.1em solid vars.$primaryDarker;
+      color: vars.$primaryDarker;
+      background: white;
+    }
+
+    .start-over:hover,
+    .turn-off:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__banner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.5em;
+    margin: 0.75em;
+    padding: 0.75em;
+    border: 0.1em solid vars.$primaryDark;
+    border-left: 0.4em solid vars.$primaryGreenDark;
+    border-radius: 0.25em;
+    color: vars.$primaryDarker;
+    background: rgba(vars.$primaryGreenDark, 0.1);
+  }
+
+  &__dismiss {
+    align-self: start;
+    border: 0;
+    background: transparent;
+    font-size: 1.25em;
+    line-height: 1;
+  }
+}

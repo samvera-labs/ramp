@@ -72,7 +72,7 @@ const App = ({ manifestURL, DEMO_MANIFEST_OPTIONS }) => {
             <div className='components-row'>
               <div className='nav'>
                 <AutoAdvanceToggle />
-                <StructuredNavigation showAllSectionsButton={true} />
+                <StructuredNavigation showAllSectionsButton={true} structurePlayback />
               </div>
               <Tabs tabValues={tabValues} manifestUrl={manifestUrl} />
             </div>
