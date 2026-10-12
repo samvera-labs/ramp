@@ -25,101 +25,131 @@ describe('StructureOnlyToggle', () => {
 
   // Helper function to load StructureOnlyToggle with state
   const renderToggle = ({ manifestOverrides = {}, props = {} }) => {
+    const allProps = { label: 'Play structure only', initStatus: false, show: true, ...props };
     const ToggleWithState = withManifestAndPlayerProvider(StructureOnlyToggle, {
       initialManifestState: {
-        ...manifestState(crossRangeWithSwitchBack), canvasSegments, hasResume: false, structureOnlyPlayback: false,
+        ...manifestState(crossRangeWithSwitchBack), canvasSegments,
         ...manifestOverrides,
       },
       initialPlayerState: { player, isClicked: false },
-      ...props,
+      ...allProps,
     });
     render(<ToggleWithState />);
   };
 
-  describe('with "structureOnlyPlayback" in state OFF', () => {
-    test('renders the toggle with the default label', () => {
-      renderToggle({});
-      expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
-      expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Play structure only');
-      expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
-    });
-
-    test('renders the toggle with a custom label', () => {
-      renderToggle({ props: { label: 'Auto-play structure' } });
-      expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Auto-play structure');
-    });
-
-    test('is unchecked and does not show the structure notice', () => {
-      renderToggle({});
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    });
-
-    describe('can be toggled ON by', () => {
-      test('click', () => {
+  describe('with initStatus="false"', () => {
+    describe('with show="true" renders the toggle ', () => {
+      test('with default label', () => {
         renderToggle({});
-        fireEvent.click(screen.getByRole('switch'));
-        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Play structure only');
+        expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
       });
 
-      test('Space keypress', () => {
-        renderToggle({});
-        fireEvent.keyDown(screen.getByRole('switch'), { key: ' ', keyCode: 32 });
-        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+      test('with a custom label', () => {
+        renderToggle({ props: { label: 'Auto-play structure' } });
+        expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Auto-play structure');
+        expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
       });
 
-      test('Enter keypress', () => {
+      test('toggled OFF without the structure notice', () => {
         renderToggle({});
-        fireEvent.keyDown(screen.getByRole('switch'), { key: 'Enter', keyCode: 13 });
-        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+        expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Play structure only');
+        expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
+        expect(screen.queryByText('Structure-only playback is turned on')).not.toBeInTheDocument();
+      });
+
+      test('without the structure notice when an alt start time exists', () => {
+        renderToggle({ manifestOverrides: { hasResume: true } });
+        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
+
+      describe('and can be toggled ON by', () => {
+        beforeEach(() => {
+          renderToggle({});
+        });
+
+        test('click', () => {
+          fireEvent.click(screen.getByRole('switch'));
+          expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        });
+
+        test('Space keypress', () => {
+          fireEvent.keyDown(screen.getByRole('switch'), { key: ' ', keyCode: 32 });
+          expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        });
+
+        test('Enter keypress', () => {
+          fireEvent.keyDown(screen.getByRole('switch'), { key: 'Enter', keyCode: 13 });
+          expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        });
+      });
+
+      test('and cannot be toggled on using other keypresses', () => {
+        renderToggle({});
+        fireEvent.keyDown(screen.getByRole('switch'), { key: 'a', keyCode: 65 });
+        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
       });
     });
 
-    test('cannot be toggled on using other keypresses', () => {
-      renderToggle({});
-      fireEvent.keyDown(screen.getByRole('switch'), { key: 'a', keyCode: 65 });
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+    test('doesn\'t render the toggle when show="false"', () => {
+      renderToggle({ props: { show: false } });
+      expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
     });
   });
 
-  describe('with "structureOnlyPlayback" in state ON', () => {
-    test('renders the toggle with the default label', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
-      expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
-      expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Play structure only');
-      expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
+  describe('with initStatus="true"', () => {
+    describe('when show="true" renders the toggle', () => {
+      test('with the default label', () => {
+        renderToggle({ props: { initStatus: true } });
+        expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Play structure only');
+        expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
+      });
+
+      test('with a custom label', () => {
+        renderToggle({ props: { initStatus: true, label: 'Auto-play structure' } });
+        expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Auto-play structure');
+        expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
+      });
+
+      test('toggled ON and has the first timespan info in notice', () => {
+        renderToggle({ props: { initStatus: true } });
+        expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
+        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Play structure only');
+        expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
+        expect(screen.queryByText('Structure-only playback is turned on')).toBeInTheDocument();
+      });
+
+      test('without the notice when an alt start time exists', () => {
+        renderToggle({ manifestOverrides: { hasResume: true }, props: { initStatus: true } });
+        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
+
+      test('and can be toggled OFF on click and dismisses the notice', () => {
+        renderToggle({ props: { initStatus: true } });
+        fireEvent.click(screen.getByRole('switch'));
+        expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+        expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      });
     });
 
-    test('renders the toggle with a custom label', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true }, props: { label: 'Auto-play structure' } });
-      expect(screen.getByTestId('structure-only-playback')).toBeInTheDocument();
-      expect(screen.getByTestId('structure-only-playback-label')).toHaveTextContent('Auto-play structure');
-      expect(screen.getByText('Skip unstructured portions of the media')).toBeInTheDocument();
-    });
-
-    test('is checked and shows the notice for the first timespan', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
-      expect(screen.getByRole('status')).toBeInTheDocument();
-      expect(screen.getByText('Structure-only playback is turned on')).toBeInTheDocument();
-      expect(screen.getByText('Playback will begin at 09:10 with "Track spanning both sides"')).toBeInTheDocument();
-    });
-
-    test('does not show the notice when an alt start time exists', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true, hasResume: true } });
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    });
-
-    test('can be toggled OFF on click and dismisses the notice', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
-      fireEvent.click(screen.getByRole('switch'));
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    test('doesn\'t render the toggle when show="false"', () => {
+      renderToggle({ props: { initStatus: true, show: false } });
+      expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
     });
 
     test('\'Play from beginning\' action dismisses the notice and plays the media', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
+      renderToggle({ props: { initStatus: true } });
+      expect(screen.queryByRole('status')).toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: 'Play from beginning' }));
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
       expect(player.play).toHaveBeenCalledTimes(1);
@@ -128,7 +158,9 @@ describe('StructureOnlyToggle', () => {
     });
 
     test('\'Turn off\' action dismisses the notice and turns structure-only playback OFF', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
+      renderToggle({ props: { initStatus: true } });
+      expect(screen.queryByRole('status')).toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: 'Turn off' }));
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
       expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
