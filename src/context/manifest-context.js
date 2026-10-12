@@ -88,8 +88,6 @@ function manifestReducer(state = defaultState, action) {
         iiifVersion: iiifVersion,
         allCanvases: canvases,
         autoAdvance: manifestBehavior,
-        // Use Manifest's 'behavior' as default value for structure-only playback
-        structureOnlyPlayback: manifestBehavior,
         playlist: {
           ...state.playlist,
           isPlaylist: isPlaylist,

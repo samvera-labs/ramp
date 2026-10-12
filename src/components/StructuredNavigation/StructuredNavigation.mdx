@@ -6,12 +6,20 @@ import * as StructuredNavigationStories from './StructuredNavigation.stories';
 # StructuredNavigation
 
 StructuredNavigation component, renders any available structural navigation information (table of contents) in a given IIIF manifest. 
-This component reads data from state provided through Contexts, therefore it should be wrapped by the context providers (both Manifest and Player as seen below) with [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs).
+This component reads data from state provided through Contexts, therefore it should be wrapped by the context providers (both Manifest and Player as seen below)
+with [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs).
 
-When the Manifest has `structures`, StructuredNavigation can also render a toggle, which enables/disables structure-only playback (skipping the gaps in-between structure timespans).
-This can be turned ON with the `structurePlayback` prop, 
-- as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` 
-- as an Object to customize the label -> `<StructuredNavigation structurePlayback={{ enable: true, label: 'Play structure only' }} />`
+When a regular Manifest (not playlist) has `structures`, StructuredNavigation component can render a toggle via `structurePlayback` prop.
+This prop accepts the either a Boolean or a JS Object as its value as follows;
+- as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` -> turns structure-only playback in the background (no toggle button)
+- as an Object 
+  - `<StructuredNavigation structurePlayback={{ toggleOn: false, label: 'Play structure only' }} />` -> displays the toggle button in UI with it
+  toggled OFF (takes the value of `toggleOn` property)
+  -  `<StructuredNavigation structurePlayback={{ label: 'Play structure only' }} />` -> use the value of `'behavior'` property in the Manifest for the
+  toggle button (`behavior='auto-advance'` turns ON the toggle and OFF otherwise)
+
+When the toggle is turned ON, the media player plays the Canvas parts referenced in the Ranges in the Manifest's `structures` property in the order
+they are presented (skipping the gaps in-between them).
 
 ## Usage
 
