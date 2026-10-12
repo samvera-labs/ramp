@@ -1390,7 +1390,7 @@ describe('StructuredNavigation component', () => {
 
       test('with structurePlayback turned ON and no structures (ToC)', () => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {}, structurePlayback: true,
+          initialState: {}, structurePlayback: { toggleOn: true },
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
           initialState: { ...manifestState(manifestWoStructure) },
@@ -1409,10 +1409,8 @@ describe('StructuredNavigation component', () => {
         expect(sections[0]).toHaveTextContent('1.Lunchroom Manners11:00');
         expect(sections[1]).toHaveTextContent('2.Sample Audio Example33:05');
       });
-    });
 
-    describe('renders when structures are present and', () => {
-      test('structurePlayback is turned ON via Boolean shorthand', () => {
+      test('with structurePlayback turned ON in the background', () => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
           initialState: {}, structurePlayback: true,
         });
@@ -1425,13 +1423,14 @@ describe('StructuredNavigation component', () => {
           </ErrorBoundary>
         );
 
-        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
-        expect(screen.getByText('Play structure only')).toBeInTheDocument();
+        expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
       });
+    });
 
-      test('structurePlayback turned ON via structurePlayback={{ enable: true }}', () => {
+    describe('renders when structures are present and', () => {
+      test('structurePlayback turned ON via structurePlayback={{ toggleOn: true }}', () => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {}, structurePlayback: { enable: true },
+          initialState: {}, structurePlayback: { toggleOn: true },
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
           initialState: { ...manifestState(manifest) },
@@ -1446,9 +1445,9 @@ describe('StructuredNavigation component', () => {
         expect(screen.getByText('Play structure only')).toBeInTheDocument();
       });
 
-      test('structurePlayback turned ON via structurePlayback={{ enable: true, label: "Auto-play structure" }}', () => {
+      test('structurePlayback turned ON via structurePlayback={{ toggleOn: true, label: "Auto-play structure" }}', () => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {}, structurePlayback: { enable: true, label: "Auto-play structure" },
+          initialState: {}, structurePlayback: { toggleOn: true, label: "Auto-play structure" },
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
           initialState: { ...manifestState(manifest) },

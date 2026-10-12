@@ -16,10 +16,17 @@ in the Manifest's `items` list. Following are scenarios that Ramp considers as i
 according to the [IIIF Presentation 3.0 spec](https://iiif.io/api/presentation/3.0/#behavior) should not be displayed in structure
 navigation
 
-When the Manifest has `structures`, StructuredNavigation can also render a toggle, which enables/disables structure-only playback (skipping the gaps in-between structure timespans).
-This can be turned ON with the `structurePlayback` prop, 
-- as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` 
-- as an Object to customize the label -> `<StructuredNavigation structurePlayback={{ enable: true, label: 'Play structure only' }} />`
+When a regular Manifest (not playlist) has `structures`, StructuredNavigation component can render a toggle via `structurePlayback` prop.
+This prop accepts the either a Boolean or a JS Object as its value as follows;
+- as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` -> turns structure-only playback in the background (no toggle button)
+- as an Object 
+  - `<StructuredNavigation structurePlayback={{ toggleOn: false, label: 'Play structure only' }} />` -> displays the toggle button in UI with it
+  toggled OFF (takes the value of `toggleOn` property)
+  -  `<StructuredNavigation structurePlayback={{ label: 'Play structure only' }} />` -> use the value of `'behavior'` property in the Manifest for the
+  toggle button (`behavior='auto-advance'` turns ON the toggle and OFF otherwise)
+
+When the toggle is turned ON, the media player plays the Canvas parts referenced in the Ranges in the Manifest's `structures` property in the order
+they are presented (skipping the gaps in-between them).
 
 ## Usage
 

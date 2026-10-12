@@ -2011,12 +2011,18 @@ describe('util helper', () => {
   describe('getNextStructureTimespan()', () => {
     let canvasSegments;
 
+    let originalLogger;
     beforeAll(() => {
+      // Mock console.log function
+      originalLogger = console.log;
+      console.log = jest.fn();
       ({ timespans: canvasSegments } = iiifParser.getStructureRanges(
         crossRangeManifest,
         iiifParser.canvasesInManifest(crossRangeManifest),
       ));
     });
+
+    afterAll(() => console.log = originalLogger);
 
     it('resolves the next timespan within a Range spanning across Canvases', () => {
       const timespan = canvasSegments.find(
