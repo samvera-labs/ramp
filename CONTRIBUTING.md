@@ -6,8 +6,8 @@ We follow the [Samvera Community Code of Conduct](https://samvera.atlassian.net/
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) >= 20.x
-- [yarn](https://yarnpkg.com/) or [npm](https://docs.npmjs.com/)
+- [Node.js](https://nodejs.org/) `^20.19`, `22.12`, or `>=24`. Recommended: the exact version in `.nvmrc` (run `nvm use`) which matches the CI and releases.
+- [yarn](https://classic.yarnpkg.com/) `1.22.2`, the version set in `packageManager` in `package.json`. Dependencies are locked in `yarn.lock`, so use `yarn` instead of `npm` to install the library.
 
 ## Installation
 

@@ -21,7 +21,7 @@ For React applications using a build tool (Webpack, Vite, etc.).
 #### Prerequisites
 
 Please ensure you have the following installed:
-- Node.js (>= 20.x)
+- Node.js `^20.19`, `22.12`, or `>=24`
 - `react` and `react-dom` (version compatibility with each Ramp version listed below)
 - NPM or Yarn
 
