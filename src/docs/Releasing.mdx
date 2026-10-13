@@ -10,7 +10,10 @@ This document describes how to cut a release of `@samvera/ramp` component librar
 
 - Publish access to `@samvera/ramp` on [npmjs.com](https://www.npmjs.com/), with 2FA enabled which is required to approve a staged publish - see step 3 below.
 - Write access to the `samvera-labs/ramp` GitHub repository
-- A [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) configured on [`@samvera/ramp`](https://www.npmjs.com/package/@samvera/ramp)'s "Settings" page, pointing at `samvera-labs/ramp` and workflow file `publish-and-release.yml` (this is a one-time setup)
+- A [Trusted Publisher](https://docs.npmjs.com/trusted-publishers/) configured on [`@samvera/ramp`](https://www.npmjs.com/package/@samvera/ramp)'s "Settings" page, pointing at `samvera-labs/ramp` and workflow file `publish-and-release.yml`.
+  - As of October 2, 2026, a newly created, unvalidated npm trusted publishing configurations expire 48 hours (2 days) after creation if a successful publish has not occurred
+  - If this happens, delete the existing config and set up a new config
+  - A configuration becomes permanently validated and exempt from expiration immediately after its first successful publish. This initial publish permanently binds the configuration to the repository’s immutable numeric identity.
 - GitHub CLI installed and setup (https://cli.github.com/) - required by `scripts/update-changelog.sh` to look up merged PRs and release timestamps
 
 ## Steps
@@ -83,23 +86,23 @@ The release build uses the following pinned tool versions so that the published 
   </tbody>
 </table>
 
-The release workflow publishes with the npm that ships with Node, so `.nvmrc` pins both `Node` and`npm`. This works because every Node release always bundles the same npm version. For this to hold,
+The release workflow publishes with the `npm` that ships with `Node`, so `.nvmrc` pins both `Node` and`npm`. This works because every `Node` release always bundles the same `npm` version. For this to hold,
 `.nvmrc` must contain an exact version such as `24.21.0`. A partial version or alias such as `24` or `lts/*` would let the CI pick up a different `Node` version with its bundled `npm` silently, which
 changes the build code at different times for the same `Node` and `npm` versions on the surface.
 
 `npm stage publish` needs npm `>=11.15.0`. The first `Node 24` release that bundles a new enough `npm` is `24.18.0`. The [publish and release](https://github.com/samvera-labs/ramp/actions/workflows/publish-and-release.yml)
-workflow checks the npm version before building and fails if it is too old.
+workflow checks the `npm` version before building and fails if it is too old.
 
 ### Bumping Node
 
-If/when the need arises to bump the `Node` version, do the following. If the `Node` bump is targeting a specific release this bump should be done prior to the final release work.
+If/when the need arises to bump the `Node` version, do the following. If the `Node` bump is targeting a specific release, this bump should be done prior to the final release work.
 
 1. Pick an exact version and check whether the `npm` it bundles in [nodejs.org/dist/index.json](https://nodejs.org/dist/index.json) is `>=11.15.0`.
 2. Update `.nvmrc` and the table above in a separate PR.
 3. Once the changes are reviewed and merged, check both Storybook and Netlify sites.
 
-Since `npm` updates arrive through `Node` bumps, `npm` only changes when `Node` changes after this change. Therefore, `npm` fixes needed for Ramp requires bumping `Node` version to an appropriate version. This shouldn't be
+Since `npm` updates arrive through `Node` bumps with this change, `npm` only updates when `Node` is bumped. Therefore, `npm` fixes needed for Ramp requires bumping `Node` version to an appropriate version. This shouldn't be
 a huge headache since `Node` versions are frequently released together with `npm` for security fixes (Related: [`Node` security blog](https://nodejs.org/en/blog/vulnerability)).
 For `Node` following the [`Node` release schedule](https://nodejs.org/en/about/previous-releases) helps to bump `Node` before the current major version reaches end-of-life.
 
-To test locally with the same `Node` and `npm` used for releases, run `nvm use` in the repository root.
+To test things locally with the same `Node` and `npm` used for releases, run `nvm use` in the repository root.
