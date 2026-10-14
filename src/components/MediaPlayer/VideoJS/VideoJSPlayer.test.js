@@ -51,7 +51,7 @@ describe('VideoJSPlayer component', () => {
   const renderPlayer = async ({ manifest, canvasIndex, manifestOverrides = {}, props = {} }) => {
     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
       initialManifestState: { ...manifestState(manifest, canvasIndex), ...manifestOverrides },
-      initialPlayerState: {},
+      initialPlayerState: { searchMarkers: [] },
       ...props,
     });
     await act(async () => render(
@@ -1009,6 +1009,92 @@ describe('VideoJSPlayer component', () => {
         expect(nextItemClickedSpy).toHaveBeenCalledWith(1, 381.1);
         // Seeks to the offset 381.1s within the second source
         expect(currentTimeSpy).toHaveBeenCalledWith(381.1);
+      });
+    });
+  });
+
+  describe('feature: saved playback position', () => {
+    // Playhead time returned by the stubbed player.currentTime()
+    let playerTime = 0;
+
+    // Trigger a 'timeupdate' event at a given time, and wait out the throttle on 'timpupdate' handler
+    const seekedAt = async (player, time) => {
+      playerTime = time;
+      act(() => { player.trigger('timeupdate'); });
+      await act(async () => new Promise((r) => setTimeout(r, 20)));
+    };
+
+    // Helper function to render player with resume cache enabled
+    const playerWithResumeCache = async ({
+      manifest = videoManifest, canvasIndex = 0, manifestOverrides = {},
+      props = { resumeCache: { enable: true } } } = {}) => {
+
+      localStorage.setItem(
+        'playbackPositions',
+        JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 120, savedAt: Date.now() } }])
+      );
+
+      await renderPlayer({ manifest, canvasIndex, manifestOverrides, props });
+      await triggerLoadedMetadata('videojs-video-element');
+
+      const player = screen.getAllByTestId('videojs-video-element')[0].player;
+
+      // Stub player.currentTime()
+      player.currentTime = jest.fn((t) => (t !== undefined ? undefined : playerTime));
+
+      act(() => {
+        // 'loadeddata' marks the player as ready and enables the 'timeupdate' handler
+        player.trigger('loadeddata');
+        // Initial load 'seeked', which enables the player without updating the cache
+        player.trigger('seeked');
+      });
+
+      return player;
+    };
+
+    const getCacheEntry = () => JSON.parse(localStorage.getItem('playbackPositions'))
+      .find((e) => e.key === MANIFEST_URL);
+
+    test('is updated when seeked time is not near-start or near-end', async () => {
+      const player = await playerWithResumeCache();
+
+      await seekedAt(player, 300);
+      expect(getCacheEntry().value).toMatchObject({ canvasURL: CANVAS_URL, time: 300 });
+    });
+
+    describe('is cleared when', () => {
+      test('"No, start from beginning" on resume modal is clicked', async () => {
+        await playerWithResumeCache();
+        expect(screen.queryByText('No, start from beginning')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText('No, start from beginning'));
+
+        expect(getCacheEntry()).toBeUndefined();
+      });
+
+      test('seeked to zero', async () => {
+        const player = await playerWithResumeCache();
+
+        await seekedAt(player, 0);
+        expect(getCacheEntry()).toBeUndefined();
+      });
+
+      test('seeked into the last 5 seconds', async () => {
+        const player = await playerWithResumeCache();
+
+        await seekedAt(player, 657);
+        await waitFor(() => { expect(getCacheEntry()).toBeUndefined(); });
+      });
+
+      test('Replay button is clicked in the first Canvas', async () => {
+        const player = await playerWithResumeCache();
+
+        expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId('videojs-previous-button'));
+
+        expect(player.currentTime).toHaveBeenCalledWith(0);
+        await waitFor(() => { expect(getCacheEntry()).toBeUndefined(); });
       });
     });
   });

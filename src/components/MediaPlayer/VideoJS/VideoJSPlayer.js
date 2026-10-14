@@ -178,6 +178,9 @@ function VideoJSPlayer({
   const savePositionRef = useRef();
   savePositionRef.current = savePosition;
 
+  const clearPositionRef = useRef();
+  clearPositionRef.current = clearPosition;
+
   // Flag to track whether srcIndex has changed since last load
   const srcIndexChangedRef = useRef();
 
@@ -1492,6 +1495,9 @@ function VideoJSPlayer({
       const isHelpfulResume = playerTime > 5 && playerTime < canvasDurationRef.current - 5;
       if (manifestURLRef.current && canvasURLRef.current && isHelpfulResume) {
         savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
+      } else {
+        // Clear the saved position otherwise
+        clearPositionRef.current(manifestURLRef.current);
       }
 
       const activeSegment = getActiveSegmentRef.current(playerTime);
