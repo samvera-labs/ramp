@@ -538,8 +538,11 @@ export function parseAutoAdvance(behavior) {
 }
 
 /**
- * Parse 'structures' into an array of nested JSON objects with
- * required information for structured navigation UI rendering.
+ * Parse 'structures' into an array of nested JSON objects with required information for
+ * structured navigation UI rendering.
+ * When a given Manifest has no Range items in 'structures' that are intended to be displayed
+ * in structure navigation (without a 'no-nav' or 'thumbnail-nav' behavior) a default table of
+ * contents with one section per Canvas in the Manifest's `items` list is built.
  * IMPORTANT: Ramp only displays Ranges with Canvas references to canvases in the current
  * Manifest in the current implementation.
  * @param {Object} manifest
@@ -685,8 +688,8 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         }
       }
 
-      // Parse start and end times from media-fragment URI
-      // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
+      /* Parse start and end times from media-fragment URI. For Canvas-level section style
+      timespans, set times to { start: 0, end: 0 } to avoid full time-rail highligting. */
       let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
 
       // A timespan is only clickable when its start/end falls within the Canvas' duration
@@ -719,36 +722,45 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
 
   try {
     const allRanges = parseManifest(manifest).getAllRanges();
-    if (allRanges?.length === 0) {
-      return { structures: [], timespans: [], markRoot: false, hasCollapsibleStructure };
-    } else {
-      const rootNode = allRanges[0];
-      let structures = [];
-      const rootBehavior = rootNode.getBehavior();
-      if (rootBehavior && NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(rootBehavior)) {
-        return { structures: [], timespans: [], hasCollapsibleStructure };
-      } else {
-        if (isPlaylist || rootBehavior === 'top') {
-          let canvasRanges = rootNode.getRanges();
-          if (canvasRanges?.length > 0) {
-            canvasRanges.map((range, index) => {
-              const behavior = range.getBehavior();
-              if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
-                // Reset the index for timespans in structure for each Canvas
-                subIndex = 0;
-                cIndex = index + 1;
-                structures.push(parseItem(range, rootNode));
-              }
-            });
-          }
-        } else {
-          hasRoot = true;
-          // Total duration for all resources in the Manifest
-          manifestDuration = canvasesInfo.reduce(
-            (duration, canvas) => duration + canvas.range.end, 0
-          );
-          structures.push(parseItem(rootNode, rootNode, cIndex));
+    const topRanges = parseManifest(manifest).getTopRanges();
+    let validRanges = [];
+    if (topRanges?.length > 0) {
+      validRanges = topRanges[0].items.filter(r => {
+        const behavior = r.getBehavior();
+        if (behavior == null || !NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
+          return r;
         }
+      }).filter(id => id != undefined);
+    }
+
+    const rootNode = validRanges?.length > 0 ? validRanges[0] : null;
+    const rootBehavior = rootNode ? rootNode.getBehavior() : '';
+
+    if (allRanges?.length === 0 || validRanges?.length === 0) {
+      const structures = getTableOfContent(canvasesInfo);
+      return { structures, timespans: [...structures], markRoot: false, hasCollapsibleStructure };
+    } else {
+      let structures = [];
+      if (isPlaylist || rootBehavior === 'top') {
+        let canvasRanges = rootNode.getRanges();
+        if (canvasRanges?.length > 0) {
+          canvasRanges.map((range, index) => {
+            const behavior = range.getBehavior();
+            if (!NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(behavior)) {
+              // Reset the index for timespans in structure for each Canvas
+              subIndex = 0;
+              cIndex = index + 1;
+              structures.push(parseItem(range, rootNode));
+            }
+          });
+        }
+      } else {
+        hasRoot = true;
+        // Total duration for all resources in the Manifest
+        manifestDuration = canvasesInfo.reduce(
+          (duration, canvas) => duration + canvas.range.end, 0
+        );
+        structures.push(parseItem(rootNode, rootNode, cIndex));
       }
       // Mark root Range for a single-canvased Manifest
       const markRoot = hasRoot && canvasesInfo?.length > 1;
@@ -961,4 +973,36 @@ export function getAccompanyingResource(annotation, version = '3') {
   } catch (error) {
     throw error;
   }
+}
+
+/**
+ * Build Canvas-level navigation items from the Canvases in a Manifest, used as a defualt
+ * table of contents when the Manifest has no valid structure Ranges.
+ * Each structure item is built identical to a Canvas-level items built by parseItems() in
+ * getStructureRanges(), so that they are handled the same way as sections in StructuredNavigation
+ * component.
+ * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
+ * @returns {Array}
+ */
+function getTableOfContent(canvasesInfo) {
+  if (canvasesInfo?.length == 0) return [];
+
+  let content = [];
+
+  // Build table-of-content from information extracted from 'items' in the Manifest
+  canvasesInfo.forEach(canvas => {
+    const { canvasURL, canvasIndex, duration, isEmpty, homepage, label, range, summary } = canvas;
+    const canvasDuration = range != undefined ? range.end - range.start : Number(duration);
+    // Set times { start: 0, end: 0 } to avoid full time-rail highligting for each section
+    const times = { start: 0, end: 0 };
+    const item = {
+      label, summary, isRoot: false, homepage, canvasDuration,
+      id: `${canvasURL}#t=0,`, times, metadata: [], isTitle: false, rangeId: canvasURL, isEmpty, isCanvas: true,
+      itemIndex: canvasIndex + 1, canvasIndex: canvasIndex + 1, items: [], duration: timeToHHmmss(duration),
+      isClickable: checkSrcRange(times, { end: canvasDuration })
+    };
+    content.push(item);
+  });
+
+  return content;
 }
