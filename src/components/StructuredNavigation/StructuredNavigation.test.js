@@ -238,10 +238,11 @@ describe('StructuredNavigation component', () => {
       });
     });
 
-    describe('with structures with behavior=thumbnail-nav in the root Range', () => {
+    describe('with structures with behavior="thumbnail-nav" in the root Range', () => {
       beforeEach(() => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
           initialState: {},
+          showAllSectionsButton: true
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
           initialState: { ...manifestState(thumbnailNavStructure) },
@@ -257,14 +258,30 @@ describe('StructuredNavigation component', () => {
         expect(screen.queryByTestId('structured-nav')).toBeInTheDocument();
       });
 
-      test('does not render any structure elements', () => {
-        expect(screen.queryByTestId('nested-tree')).toBeNull();
-        expect(screen.queryByText(/There are no structures in the manifest/)).toBeInTheDocument();
+      test('renders a section for each Canvas in the Manifest (ToC)', () => {
+        expect(screen.queryByTestId('nested-tree')).toBeInTheDocument();
+        expect(screen.queryByText(/There are no structures in the Manifest/)).not.toBeInTheDocument();
+
+        const sections = screen.getAllByTestId('treeitem-section-button');
+        expect(sections).toHaveLength(2);
+        expect(sections[0]).toHaveTextContent('1.Section 109:32');
+        expect(sections[1]).toHaveTextContent('2.Section 209:32');
+      });
+
+      test('renders the sections heading without collapse/expand all buttons', () => {
+        expect(screen.getByTestId('sections-heading-text')).toHaveTextContent('2 Sections');
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
       });
     });
 
     describe('without structures', () => {
-      test('renders no list items and a message when structures are not present in manifest', () => {
+      const handleClickMock = jest.fn();
+
+      beforeEach(() => {
+        jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+          handleClick: handleClickMock
+        }));
+
         let manifestWithoutStructures = JSON.parse(JSON.stringify(manifest));
         delete manifestWithoutStructures.structures;
 
@@ -274,6 +291,7 @@ describe('StructuredNavigation component', () => {
           {
             initialManifestState: { ...manifestState(manifestWithoutStructures) },
             initialPlayerState: {},
+            showAllSectionsButton: true
           }
         );
         render(
@@ -281,8 +299,47 @@ describe('StructuredNavigation component', () => {
             <NavWithPlayerAndManifest />
           </ErrorBoundary>);
 
-        expect(screen.queryByTestId('nested-tree')).toBeNull();
-        expect(screen.getByText(/There are no structures in the manifest/));
+      });
+
+      afterEach(() => handleClickMock.mockClear());
+      afterAll(() => jest.spyOn(hooks, 'useActiveStructure').mockRestore());
+
+      test('renders a section for each Canvas in the Manifest (ToC)', () => {
+        expect(screen.queryByTestId('nested-tree')).toBeInTheDocument();
+        expect(screen.queryByText(/There are no structures in the Manifest/)).not.toBeInTheDocument();
+
+        const sections = screen.getAllByTestId('treeitem-section-button');
+        expect(sections).toHaveLength(2);
+        expect(sections[0]).toHaveTextContent('1.Lunchroom Manners11:00');
+        expect(sections[1]).toHaveTextContent('2.Lunchroom Manners 211:00');
+      });
+
+      test('renders the sections heading without collapse/expand all buttons', () => {
+        expect(screen.getByTestId('sections-heading-text')).toHaveTextContent('2 Sections');
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+      });
+
+      test('loads the relevant Canvas on click', () => {
+        fireEvent.click(screen.getAllByTestId('treeitem-section-button')[1]);
+        expect(handleClickMock).toHaveBeenCalledTimes(1);
+      });
+
+      test('moves focus to next section on "ArrowDown" keypress and loads Canvas on "Enter"', () => {
+        const structuredNav = screen.getByTestId('structured-nav');
+
+        // Set focus to structure nav container
+        structuredNav.focus();
+
+        // Move focus to the second section in structure by pressing 'ArrowDown' twice
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+
+        const secondSection = screen.getAllByTestId('treeitem-section-button')[1];
+        expect(secondSection).toHaveFocus();
+
+        // Press 'Enter' once when focus is on second section
+        fireEvent.keyDown(secondSection, { key: 'Enter', keyCode: 13 });
+        expect(handleClickMock).toHaveBeenCalledTimes(1);
       });
     });
   });
