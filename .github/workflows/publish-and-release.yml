@@ -23,8 +23,18 @@ jobs:
           node-version-file: '.nvmrc'
           registry-url: 'https://registry.npmjs.org'
           package-manager-cache: false # Never use caching in release builds
-      - name: Ensure npm CLI supports "npm stage publish" and trusted publishing
-        run: npm install -g npm@latest # Staged publishing needs npm >=11.15.0
+      # Check if the bundled npm version in Node is >=11.15.0 to support 'npm stage'
+      - name: Verify bundled npm version >=11.15.0
+        run: |
+          NPM_CLI_VERSION="$(npm --version)"
+          echo "Node $(node --version), npm ${NPM_CLI_VERSION}"
+          node -e '
+            const [major, minor] = process.argv[1].split(".").map(Number);
+            if (major < 11 || (major === 11 && minor < 15)) {
+              console.error(`npm ${process.argv[1]} is too old for "npm stage publish" (needs >=11.15.0). Bump .nvmrc to a Node release bundling a newer npm.`);
+              process.exit(1);
+            }
+          ' "${NPM_CLI_VERSION}"
       # Pins Yarn to the "packageManager" version in package.json
       - name: Enable Corepack
         run: corepack enable
