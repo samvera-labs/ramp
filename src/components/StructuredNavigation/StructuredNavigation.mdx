@@ -9,10 +9,10 @@ StructuredNavigation component, renders any available structural navigation info
 This component reads data from state provided through Contexts, therefore it should be wrapped by the context providers (both Manifest
 and Player as seen below) with [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs).
 
-When a given Manifest does not have valid `strucutres`, the component displays a default table of contents with one section per Canvas
-in the Manifest's `items` list. Following are scenarios that Ramp considers as invalid `structures`;
+When a given Manifest does not have valid `structures`, the component displays a default table of contents with one section per Canvas
+in the Manifest's `items` list. Following are scenarios that Ramp considers as invalid `structures`:
 - Manifest does not have a defined `structures` property with Ranges
-- Manifest has a `structures` property but, `behavior` in the top-level Ranges are set to either `"thumbnail-nav"` or `"no-nav"`, which
+- Manifest has a `structures` property, but the top-level Ranges have `behavior` set to either `"thumbnail-nav"` or `"no-nav"`, which
 according to the [IIIF Presentation 3.0 spec](https://iiif.io/api/presentation/3.0/#behavior) should not be displayed in structure
 navigation
 
