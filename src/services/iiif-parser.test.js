@@ -1212,7 +1212,7 @@ tempor incididunt ut labore et dolore magna aliqua',
         });
       });
 
-      it('returns a single sectionfor the only Canvas in Manifest (ToC) ', () => {
+      it('returns a single section for the only Canvas in Manifest (ToC) ', () => {
         const singleCanvasWoStructure = cloneDeep(singleCanvasManifest);
         delete singleCanvasWoStructure.structures;
 
@@ -1255,21 +1255,21 @@ tempor incididunt ut labore et dolore magna aliqua',
           canvasDuration: NaN, canvasIndex: 1, duration: "", isCanvas: true, isClickable: true,
           isEmpty: true, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: "Restricted Item", metadata: [],
           homepage: "https://example.com/playlists/1?position=1", id: "http://example.com/playlists/1/canvas/1#t=0,",
-          rangeId: "http://example.com/playlists/1/canvas/1", times: { end: 0, start: 0 },
+          rangeId: "http://example.com/playlists/1/canvas/1", times: { end: NaN, start: 0 },
           summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
         });
 
         expect(structures[4]).toEqual({
-          canvasDuration: 5, canvasIndex: 5, duration: "11:02", isCanvas: true, isClickable: true,
+          canvasDuration: 5, canvasIndex: 5, duration: "00:05", isCanvas: true, isClickable: true,
           isEmpty: false, isRoot: false, isTitle: false, itemIndex: 5, items: [], label: "Volleyball for boys", metadata: [],
-          homepage: "https://example.com/playlists/1?position=5", id: "http://example.com/playlists/1/canvas/5#t=0,",
-          rangeId: "http://example.com/playlists/1/canvas/5", times: { end: 0, start: 0 },
+          homepage: "https://example.com/playlists/1?position=5", id: "http://example.com/playlists/1/canvas/5#t=35,",
+          rangeId: "http://example.com/playlists/1/canvas/5", times: { end: 5, start: 35 },
           summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
         });
       });
     });
 
-    describe('when structures with behavior', () => {
+    describe('when structures have behavior', () => {
       it('"no-nav" is present returns a Canvas-level section (ToC)', () => {
         const { structures, timespans, markRoot, hasCollapsibleStructure } =
           iiifParser.getStructureRanges(

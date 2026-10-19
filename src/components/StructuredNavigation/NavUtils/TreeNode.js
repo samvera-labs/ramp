@@ -139,9 +139,8 @@ const TreeNode = ({
   const ariaLabel = useMemo(() => {
     if (isPlaylist) {
       return isEmpty
-        ? `Restricted playlist item ${itemIndex}${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} 
-          second timer to auto-advance to next playlist item`
-        : `Playlist item ${itemIndex}${label} ${duration} starting at ${screenReaderTime}`;
+        ? `Restricted playlist item ${itemIndex}. ${label} starts a ${CANVAS_MESSAGE_TIMEOUT / 1000} second timer to auto-advance to next playlist item`
+        : `Playlist item ${itemIndex}. ${label} ${duration} starting at ${screenReaderTime}`;
     } else if (isSection) {
       return id != undefined
         ? `Load media for Canvas ${itemIndex},${label},${duration}`
