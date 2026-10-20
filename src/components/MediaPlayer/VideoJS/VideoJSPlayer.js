@@ -307,7 +307,7 @@ function VideoJSPlayer({
       playerDispatch({ isPlaying: true, type: 'setPlayingStatus' });
     });
     player.on('timeupdate', (e) => {
-      // Set the seek fla on progress-bar scrub actions by the user
+      // Set the seek flag on progress-bar scrub actions by the user
       if (e?.manuallyTriggered) seekedRef.current = true;
       handleTimeUpdate();
     });

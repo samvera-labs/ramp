@@ -811,7 +811,7 @@ export const useVideoJSPlayer = ({
     - a clickedUrl exists because, user initiated interactions always takes priority over the
     programmatic calculations which is done in this function
     - 'structureOnlyPlayback' is disabled because, this state honors the default order of
-    Canvases in the in the 'items' array in the Manifest  */
+    Canvases in the 'items' array in the Manifest  */
     if (clickedUrl != '' || !structureOnlyPlayback) return { index: canvasIndex, time: playerTime };
 
     const prevSegment = canvasSegments.find((c) => c.id === activeId);
