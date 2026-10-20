@@ -8,6 +8,11 @@ import * as StructuredNavigationStories from './StructuredNavigation.stories';
 StructuredNavigation component, renders any available structural navigation information (table of contents) in a given IIIF manifest. 
 This component reads data from state provided through Contexts, therefore it should be wrapped by the context providers (both Manifest and Player as seen below) with [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs).
 
+When the Manifest has `structures`, StructuredNavigation can also render a toggle, which enables/disables structure-only playback (skipping the gaps in-between structure timespans).
+This can be turned ON with the `structurePlayback` prop, 
+- as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` 
+- as an Object to customize the label -> `<StructuredNavigation structurePlayback={{ enable: true, label: 'Play structure only' }} />`
+
 ## Usage
 
 ```js
