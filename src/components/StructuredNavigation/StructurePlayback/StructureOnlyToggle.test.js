@@ -118,11 +118,10 @@ describe('StructureOnlyToggle', () => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
 
-    test('\'Play from beginning\' action dismisses the notice and plays the media', () => {
+    test('\'Got it\' action dismisses the notice and keeps structure-only playback ON', () => {
       renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
-      fireEvent.click(screen.getByRole('button', { name: 'Play from beginning' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
-      expect(player.play).toHaveBeenCalledTimes(1);
       // Structure-only playback stays ON
       expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
     });
@@ -134,5 +133,14 @@ describe('StructureOnlyToggle', () => {
       expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
       expect(player.play).not.toHaveBeenCalled();
     });
+
+    test('dismiss "×" button click dismisses the notice and keeps structure-only playback ON', () => {
+      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
+      fireEvent.click(screen.getByRole('button', { name: '×' }));
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      // Structure-only playback stays ON
+      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+    });
+
   });
 });

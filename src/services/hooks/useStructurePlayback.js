@@ -51,15 +51,12 @@ export const useStructurePlayback = ({ dismissNotice }) => {
   }, [canvasIndex, structureOnlyPlayback, hasResume]);
 
   /**
-   * Callback to handle 'Play from beginning' button click in the structure-only playback notice.
-   * This will ignore the first timespan and start playback from zero time mark. Once the first
-   * timespan is encountered, the playback will switch over to structure-only playback unless the
-   * user turns off structure-only playback.
+   * Callback to handle 'Got it' button click in the structure-only playback notice.
+   * This will dismiss the structure-only playback notice while keeping the
+   * structure-only playback toggle ON.
    */
-  const onPlayFromBeginning = () => {
-    playbackFromFirstTimespanRef.current = false;
+  const onAcknowledge = () => {
     dismissNotice();
-    player.play();
   };
 
   /**
@@ -121,5 +118,5 @@ export const useStructurePlayback = ({ dismissNotice }) => {
     manifestDispatch({ structureOnlyPlayback: !structureOnlyPlayback, type: 'setStructureOnlyPlayback' });
   });
 
-  return { firstTimespan, handleChange, onPlayFromBeginning, onTurnOff, structureOnlyPlayback };
+  return { firstTimespan, handleChange, onAcknowledge, onTurnOff, structureOnlyPlayback };
 };

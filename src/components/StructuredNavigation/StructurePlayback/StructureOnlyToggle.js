@@ -37,7 +37,7 @@ const StructureOnlyToggle = ({ label = 'Play structure only' }) => {
     }
   };
 
-  const { firstTimespan, handleChange, structureOnlyPlayback, onPlayFromBeginning, onTurnOff }
+  const { firstTimespan, handleChange, structureOnlyPlayback, onAcknowledge, onTurnOff }
     = useStructurePlayback({ dismissNotice });
 
   const startTime = useMemo(() => {
@@ -80,11 +80,11 @@ const StructureOnlyToggle = ({ label = 'Play structure only' }) => {
             <strong>Structure-only playback is turned on</strong>
             <span>{`Playback will begin at ${startTime} with "${startLabel}"`}</span>
             <div className='ramp--structure-only-playback__actions'>
-              <button className='start-over' onClick={onPlayFromBeginning}>Play from beginning</button>
+              <button className='start-over' onClick={onAcknowledge}>Got it</button>
               <button className='turn-off' onClick={onTurnOff}>Turn off</button>
             </div>
           </div>
-          <button className='ramp--structure-only-playback__dismiss'>×</button>
+          <button className='ramp--structure-only-playback__dismiss' onClick={dismissNotice}>×</button>
         </div>
       </div>
     </div>
