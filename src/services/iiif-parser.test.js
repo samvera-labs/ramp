@@ -1021,168 +1021,161 @@ tempor incididunt ut labore et dolore magna aliqua',
       console.log = originalLogger;
     });
 
-    it('returns parsed structures and timespans when structure is defined in manifest', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          manifest,
-          iiifParser.canvasesInManifest(manifest),
-        );
-      expect(structures).toHaveLength(2);
-      expect(timespans).toHaveLength(12);
-      expect(markRoot).toBeFalsy();
-      expect(hasCollapsibleStructure).toBeTruthy();
+    describe('when "structures" is present', () => {
+      describe('in a regular Manifest', () => {
+        it('returns parsed structures and timespans', () => {
+          const { structures, timespans, markRoot, hasCollapsibleStructure } =
+            iiifParser.getStructureRanges(
+              manifest,
+              iiifParser.canvasesInManifest(manifest),
+            );
+          expect(structures).toHaveLength(2);
+          expect(timespans).toHaveLength(12);
+          expect(markRoot).toBeFalsy();
+          expect(hasCollapsibleStructure).toBeTruthy();
 
-      const firstStructCanvas = structures[0];
-      expect(firstStructCanvas.label).toEqual('CD1 - Mahler, Symphony No.3');
-      expect(firstStructCanvas.items).toHaveLength(3);
-      expect(firstStructCanvas.isCanvas).toBeTruthy();
-      expect(firstStructCanvas.isEmpty).toBeFalsy();
-      expect(firstStructCanvas.isTitle).toBeTruthy();
-      expect(firstStructCanvas.rangeId).toEqual(
-        'https://example.com/sample/transcript-annotation/range/1',
-      );
+          const firstStructCanvas = structures[0];
+          expect(firstStructCanvas.label).toEqual('CD1 - Mahler, Symphony No.3');
+          expect(firstStructCanvas.items).toHaveLength(3);
+          expect(firstStructCanvas.isCanvas).toBeTruthy();
+          expect(firstStructCanvas.isEmpty).toBeFalsy();
+          expect(firstStructCanvas.isTitle).toBeTruthy();
+          expect(firstStructCanvas.rangeId).toEqual(
+            'https://example.com/sample/transcript-annotation/range/1',
+          );
 
-      expect(firstStructCanvas.id).toEqual(undefined);
-      expect(firstStructCanvas.isClickable).toBeFalsy();
-      expect(firstStructCanvas.duration).toEqual('09:32');
-      expect(firstStructCanvas.canvasDuration).toEqual(572.034);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
+          expect(firstStructCanvas.id).toEqual(undefined);
+          expect(firstStructCanvas.isClickable).toBeFalsy();
+          expect(firstStructCanvas.duration).toEqual('09:32');
+          expect(firstStructCanvas.canvasDuration).toEqual(572.034);
+          expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
 
-      const firstTimespan = timespans[0];
-      expect(firstTimespan.label).toEqual('Track 1. I. Kraftig');
-      expect(firstTimespan.items).toHaveLength(0);
-      expect(firstTimespan.isCanvas).toBeFalsy();
-      expect(firstTimespan.isEmpty).toBeFalsy();
-      expect(firstTimespan.isTitle).toBeFalsy();
-      expect(firstTimespan.rangeId).toEqual(
-        'https://example.com/sample/transcript-annotation/range/1-1',
-      );
-      expect(firstTimespan.id).toEqual(
-        'https://example.com/sample/transcript-annotation/canvas/1#t=0,374',
-      );
-      expect(firstTimespan.isClickable).toBeTruthy();
-      expect(firstTimespan.duration).toEqual('06:14');
-      expect(firstTimespan.canvasDuration).toEqual(572.034);
-      expect(firstTimespan.times).toEqual({ start: 0, end: 374 });
+          const firstTimespan = timespans[0];
+          expect(firstTimespan).toEqual({
+            canvasDuration: 572.034, canvasIndex: 1, duration: "06:14", isCanvas: false, isClickable: true,
+            isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: "Track 1. I. Kraftig", metadata: [],
+            homepage: "", id: "https://example.com/sample/transcript-annotation/canvas/1#t=0,374",
+            rangeId: "https://example.com/sample/transcript-annotation/range/1-1", times: { end: 374, start: 0 },
+            summary: undefined
+          });
+        });
+
+        it('returns identical structures and timespans when there are no nested children', () => {
+          const { structures, timespans, markRoot, hasCollapsibleStructure } =
+            iiifParser.getStructureRanges(
+              autoAdvanceManifest,
+              iiifParser.canvasesInManifest(autoAdvanceManifest),
+            );
+          expect(structures).toHaveLength(1);
+          expect(structures[0].items).toHaveLength(2);
+          expect(timespans).toHaveLength(2);
+          expect(markRoot).toBeTruthy();
+          expect(hasCollapsibleStructure).toBeFalsy();
+
+          const firstStructCanvas = structures[0].items[0];
+          expect(firstStructCanvas).toEqual({
+            canvasDuration: 3971.24, canvasIndex: 1, duration: "01:06:11", isCanvas: true, isClickable: true,
+            isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: "Atto Primo", metadata: [],
+            homepage: "", id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,",
+            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2", times: { end: 3971.24, start: 0 },
+            summary: undefined
+          });
+          const firstTimespan = timespans[0];
+          expect(firstTimespan).toEqual(firstStructCanvas);
+        });
+
+        it('returns a section item for a Range with Canvas reference without a mediafragment', () => {
+          const { structures, timespans, markRoot, hasCollapsibleStructure } =
+            iiifParser.getStructureRanges(
+              autoAdvanceManifest,
+              iiifParser.canvasesInManifest(autoAdvanceManifest),
+            );
+          expect(structures).toHaveLength(1);
+          expect(timespans).toHaveLength(2);
+          expect(markRoot).toBeTruthy();
+          expect(hasCollapsibleStructure).toBeFalsy();
+
+          const secondStructCanvas = structures[0].items[1];
+          expect(secondStructCanvas.isClickable).toBeTruthy();
+          expect(secondStructCanvas).toEqual({
+            canvasDuration: 3307.22, canvasIndex: 2, duration: "55:07", isCanvas: true, isClickable: true,
+            isEmpty: false, isRoot: false, isTitle: false, itemIndex: 2, items: [], label: "Atto Secondo", metadata: [],
+            homepage: "", id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,",
+            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3", times: { end: 3307.22, start: 0 },
+            summary: undefined
+          });
+        });
+
+        it('returns "id" as a mediafragment with only start time for section items', () => {
+          const { structures, timespans, markRoot, hasCollapsibleStructure } =
+            iiifParser.getStructureRanges(
+              lunchroomManifest,
+              iiifParser.canvasesInManifest(lunchroomManifest),
+            );
+          expect(structures).toHaveLength(1);
+          expect(timespans).toHaveLength(13);
+          expect(markRoot).toBeTruthy();
+          expect(hasCollapsibleStructure).toBeTruthy();
+
+          const firstStructCanvas = structures[0].items[0];
+          expect(firstStructCanvas.label).toEqual('Lunchroom Manners');
+          expect(firstStructCanvas.isCanvas).toBeTruthy();
+          expect(firstStructCanvas.id).toEqual(
+            'https://example.com/manifest/lunchroom_manners/canvas/1#t=0,',
+          );
+          expect(firstStructCanvas.isClickable).toBeTruthy();
+          expect(firstStructCanvas.canvasDuration).toEqual(660);
+          expect(firstStructCanvas.times).toEqual({ start: 0, end: 660 });
+        });
+
+        it('returns structure with root for a single canvas manifest', () => {
+          const { structures, timespans, markRoot, hasCollapsibleStructure } =
+            iiifParser.getStructureRanges(
+              singleCanvasManifest,
+              iiifParser.canvasesInManifest(singleCanvasManifest),
+            );
+          expect(structures).toHaveLength(1);
+          expect(timespans).toHaveLength(3);
+          expect(markRoot).toBeFalsy();
+          expect(hasCollapsibleStructure).toBeFalsy();
+
+          expect(structures[0].items).toHaveLength(2);
+          // First item in structures is the root
+          expect(structures[0].isRoot).toBeTruthy();
+        });
+      });
+
+      describe('in a playlist Manifest', () => {
+        it('returns full Canvas duration for clipped playlist items', () => {
+          const { structures } = iiifParser.getStructureRanges(
+            playlistManifest, iiifParser.canvasesInManifest(playlistManifest), true
+          );
+          const clippedItem = structures[4];
+          expect(clippedItem).toEqual({
+            canvasDuration: 662.037, canvasIndex: 5, duration: '00:05', homepage: 'https://example.com/playlists/1?position=5',
+            id: 'http://example.com/playlists/1/canvas/5#t=35.0,', isCanvas: true, isClickable: true,
+            isEmpty: false, isRoot: false, isTitle: false, itemIndex: 5, items: [], label: 'Playlist Item 3',
+            metadata: [], rangeId: 'http://example.com/playlists/1/range/4', times: { start: 35, end: 40 },
+            summary: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'
+
+          });
+        });
+
+        it('returns structure without a root', () => {
+          const { structures, markRoot, hasCollapsibleStructure } =
+            iiifParser.getStructureRanges(
+              playlistManifest, iiifParser.canvasesInManifest(playlistManifest), true
+            );
+          expect(structures).toHaveLength(6);
+          expect(markRoot).toBeFalsy();
+          expect(hasCollapsibleStructure).toBeFalsy();
+          // First item in structures is not the root
+          expect(structures[0].isRoot).toBeFalsy();
+        });
+      });
     });
 
-    it('returns identical structures and timespans when structure is childless', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          autoAdvanceManifest,
-          iiifParser.canvasesInManifest(autoAdvanceManifest),
-        );
-      expect(structures).toHaveLength(1);
-      expect(timespans).toHaveLength(2);
-      expect(markRoot).toBeTruthy();
-      expect(hasCollapsibleStructure).toBeFalsy();
-
-      const firstStructCanvas = structures[0].items[0];
-      expect(firstStructCanvas.label).toEqual('Atto Primo');
-      expect(firstStructCanvas.items).toHaveLength(0);
-      expect(firstStructCanvas.isCanvas).toBeTruthy();
-      expect(firstStructCanvas.isEmpty).toBeFalsy();
-      expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual(
-        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2',
-      );
-      expect(firstStructCanvas.id).toEqual(
-        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,',
-      );
-      expect(firstStructCanvas.isClickable).toBeTruthy();
-      expect(firstStructCanvas.duration).toEqual('01:06:11');
-      expect(firstStructCanvas.canvasDuration).toEqual(3971.24);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 3971.24 });
-
-      const firstTimespan = timespans[0];
-      expect(firstTimespan).toEqual(firstStructCanvas);
-    });
-
-    it('returns identical structures when Canvas id is not a mediafragment', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          autoAdvanceManifest,
-          iiifParser.canvasesInManifest(autoAdvanceManifest),
-        );
-      expect(structures).toHaveLength(1);
-      expect(timespans).toHaveLength(2);
-      expect(markRoot).toBeTruthy();
-      expect(hasCollapsibleStructure).toBeFalsy();
-
-      const secondStructCanvas = structures[0].items[1];
-      expect(secondStructCanvas.label).toEqual('Atto Secondo');
-      expect(secondStructCanvas.items).toHaveLength(0);
-      expect(secondStructCanvas.isCanvas).toBeTruthy();
-      expect(secondStructCanvas.isEmpty).toBeFalsy();
-      expect(secondStructCanvas.isTitle).toBeFalsy();
-      expect(secondStructCanvas.rangeId).toEqual(
-        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3',
-      );
-      expect(secondStructCanvas.id).toEqual(
-        'https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,',
-      );
-      expect(secondStructCanvas.isClickable).toBeTruthy();
-      expect(secondStructCanvas.duration).toEqual('55:07');
-      expect(secondStructCanvas.canvasDuration).toEqual(3307.22);
-      expect(secondStructCanvas.times).toEqual({ start: 0, end: 3307.22 });
-    });
-
-    it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          lunchroomManifest,
-          iiifParser.canvasesInManifest(lunchroomManifest),
-        );
-      expect(structures).toHaveLength(1);
-      expect(timespans).toHaveLength(13);
-      expect(markRoot).toBeTruthy();
-      expect(hasCollapsibleStructure).toBeTruthy();
-
-      const firstStructCanvas = structures[0].items[0];
-      expect(firstStructCanvas.label).toEqual('Lunchroom Manners');
-      expect(firstStructCanvas.items).toHaveLength(3);
-      expect(firstStructCanvas.isCanvas).toBeTruthy();
-      expect(firstStructCanvas.isEmpty).toBeFalsy();
-      expect(firstStructCanvas.isTitle).toBeFalsy();
-      expect(firstStructCanvas.rangeId).toEqual(
-        'https://example.com/manifest/lunchroom_manners/range/1',
-      );
-      expect(firstStructCanvas.id).toEqual(
-        'https://example.com/manifest/lunchroom_manners/canvas/1#t=0,',
-      );
-      expect(firstStructCanvas.isClickable).toBeTruthy();
-      expect(firstStructCanvas.duration).toEqual('11:00');
-      expect(firstStructCanvas.canvasDuration).toEqual(660);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 660 });
-    });
-
-    it('returns structure with root for a single canvas manifest', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          singleCanvasManifest,
-          iiifParser.canvasesInManifest(singleCanvasManifest),
-        );
-      expect(structures).toHaveLength(1);
-      expect(timespans).toHaveLength(3);
-      expect(markRoot).toBeFalsy();
-      expect(hasCollapsibleStructure).toBeFalsy();
-
-      const firstStructCanvas = structures[0].items[0];
-      expect(firstStructCanvas.label).toEqual('Atto Primo');
-      expect(firstStructCanvas.items).toHaveLength(2);
-      expect(firstStructCanvas.isCanvas).toBeFalsy();
-      expect(firstStructCanvas.isEmpty).toBeFalsy();
-      expect(firstStructCanvas.isTitle).toBeTruthy();
-      expect(firstStructCanvas.rangeId).toEqual(
-        'http://example.com/single-canvas-manifest/range/2',
-      );
-      expect(firstStructCanvas.id).toBeUndefined();
-      expect(firstStructCanvas.isClickable).toBeFalsy();
-      expect(firstStructCanvas.canvasDuration).toEqual(7278.422);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
-    });
-
-    describe('when structures is not present', () => {
+    describe('when "structures" is not valid', () => {
       it('returns a Canvas-level section for each Canvas in Manifest (ToC)', () => {
         const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
           adManifest, iiifParser.canvasesInManifest(adManifest)
@@ -1260,16 +1253,16 @@ tempor incididunt ut labore et dolore magna aliqua',
         });
 
         expect(structures[4]).toEqual({
-          canvasDuration: 5, canvasIndex: 5, duration: "00:05", isCanvas: true, isClickable: true,
+          canvasDuration: 662.037, canvasIndex: 5, duration: "00:05", isCanvas: true, isClickable: true,
           isEmpty: false, isRoot: false, isTitle: false, itemIndex: 5, items: [], label: "Volleyball for boys", metadata: [],
           homepage: "https://example.com/playlists/1?position=5", id: "http://example.com/playlists/1/canvas/5#t=35,",
-          rangeId: "http://example.com/playlists/1/canvas/5", times: { end: 5, start: 35 },
+          rangeId: "http://example.com/playlists/1/canvas/5", times: { end: 40, start: 35 },
           summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
         });
       });
     });
 
-    describe('when structures have behavior', () => {
+    describe('when "structures" have behavior', () => {
       it('"no-nav" is present returns a Canvas-level section (ToC)', () => {
         const { structures, timespans, markRoot, hasCollapsibleStructure } =
           iiifParser.getStructureRanges(
@@ -1339,7 +1332,7 @@ tempor incididunt ut labore et dolore magna aliqua',
       );
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('00:32');
-      expect(firstStructCanvas.canvasDuration).toEqual(32);
+      expect(firstStructCanvas.canvasDuration).toEqual(572.034);
       expect(firstStructCanvas.times).toEqual({ start: 0, end: 32 });
     });
 

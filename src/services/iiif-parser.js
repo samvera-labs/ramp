@@ -683,14 +683,18 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         homepage = canvasInfo.homepage;
         if (canvasInfo.range != undefined) {
           const { start, end } = canvasInfo.range;
-          canvasDuration = end - start;
+          // Use the full Canvas duration instead of clipped range for duration display
+          canvasDuration = canvasInfo.duration;
           if (isCanvas) { duration = end - start; }
         }
       }
 
-      /* Parse start and end times from media-fragment URI. For Canvas-level section style
-      timespans, set times to { start: 0, end: 0 } to avoid full time-rail highligting. */
-      let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
+      /* Parse start and end times from mediafragment URI. Canvas-level item 'id' property only keeps the
+      start time, so read the end time from the Canvas reference when it has a mediafragment.
+      And Canvas-level items without a Canvas reference get  { start: 0, end: 0 } to avoid full
+      time-rail highlighting. */
+      const fragmentURI = isCanvas && canvases[0]?.includes('#t=') ? canvases[0] : id;
+      let times = fragmentURI ? getMediaFragment(fragmentURI, canvasDuration) : { start: 0, end: 0 };
 
       // A timespan is only clickable when its start/end falls within the Canvas' duration
       if (canvases.length > 0 && canvasesInfo?.length > 0) {
@@ -995,18 +999,20 @@ function getTableOfContents(canvasesInfo, isPlaylist = false) {
   canvasesInfo.forEach(canvas => {
     const { canvasURL, canvasIndex, duration, isEmpty, homepage, label, range, summary } = canvas;
 
-    /* Build 'id' from 'canvasURL' as a partial mediafragment using the range start time for
-    playlist items and defaulting to zero for regular items presented as sections. */
-    let id = isPlaylist ? `${canvasURL}#t=${range?.start ?? 0},` : `${canvasURL}#t=0,`;
-    const canvasDuration = range != undefined ? range.end - range.start : Number(duration);
-    /* For regular section items set times { start: 0, end: 0 } to avoid full
-    time-rail highlighting for each section. For playlist items, since the canvasDuration
-    is set to the clipped playlist item's duration */
-    const times = isPlaylist ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
+    // Read the full Canvas duration from Canvas info
+    const canvasDuration = Number(duration);
+    // If the Canvas is a clip of the full media file read its time range
+    const clippedDuration = range != undefined ? range.end - range.start : canvasDuration;
+    /* In playlist Manifests, use the Canvas range for the playlist item 'times' if it is a clip of media
+    resource, otherwise set times { start: 0, end: 0 } to avoid full time-rail highlighting for both
+    playlist and regular Manifests. */
+    const times = isPlaylist && range != undefined ? { ...range } : { start: 0, end: 0 };
+    // Build 'id' identical to Canvas-level 'id' in parseItem()
+    const id = `${canvasURL}#t=${times.start},`;
     const item = {
       label, summary, isRoot: false, homepage, canvasDuration, id, times, metadata: [], isTitle: false,
       rangeId: canvasURL, isEmpty, isCanvas: true, itemIndex: canvasIndex + 1, canvasIndex: canvasIndex + 1, items: [],
-      duration: timeToHHmmss(canvasDuration), isClickable: checkSrcRange(times, { end: duration })
+      duration: timeToHHmmss(clippedDuration), isClickable: checkSrcRange(times, { end: duration })
     };
     content.push(item);
   });
