@@ -441,6 +441,15 @@ describe('StructuredNavigation component', () => {
           expect(screen.queryAllByTestId('tree-item')[2]).toHaveTextContent('Playlist Item 1');
         });
 
+        test('a clickable playlist item for a clipped item', () => {
+          const screenReaderElement = screen.getByTestId('structured-nav')
+            .querySelector('[aria-live="assertive"');
+          const playlistItem = screen.getAllByTestId('tree-item')[4];
+          expect(playlistItem).toHaveTextContent('5.Playlist Item 3 (00:05)');
+          fireEvent.click(playlistItem.children[1]);
+          expect(screenReaderElement).toHaveTextContent('Player seeked to 35 seconds in Canvas 5');
+        });
+
         test('lock icon for inaccessible items', () => {
           expect(screen.queryAllByTestId('tree-item')[0]).toHaveTextContent('Restricted Item');
           // SVG icon with class is displayed
@@ -556,6 +565,15 @@ describe('StructuredNavigation component', () => {
           expect(playlistItems[1]).toHaveTextContent('2.Restricted Item 2');
           expect(playlistItems[2]).toHaveTextContent('3.Volleyball for boys (00:32)');
           expect(playlistItems[3]).toHaveTextContent('4.Lunchroom Manners (09:32)');
+        });
+
+        test('a clickable playlist item for a clipped item', () => {
+          const screenReaderElement = screen.getByTestId('structured-nav')
+            .querySelector('[aria-live="assertive"');
+          const playlistItem = screen.getAllByTestId('tree-item')[4];
+          expect(playlistItem).toHaveTextContent('5.Volleyball for boys (00:05)');
+          fireEvent.click(playlistItem.children[1]);
+          expect(screenReaderElement).toHaveTextContent('Player seeked to 35 seconds in Canvas 5');
         });
 
         test('playlist items with related aria-labels', () => {
