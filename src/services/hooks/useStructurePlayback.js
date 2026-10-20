@@ -12,7 +12,7 @@ import { parseAutoAdvance } from '@Services/iiif-parser';
  * @returns {
  * firstTimespan: obj,
  * handleChange: func,
- * onPlayFromBeginning: func,
+ * onAcknowledge: func,
  * onTurnOff: func,
  * showNotice: bool,
  * showStaticStructNotice: bool,

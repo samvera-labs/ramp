@@ -452,21 +452,18 @@ describe('useStructurePlayback', () => {
     });
   });
 
-  test('onPlayFromBeginning() dismisses the notice and plays from the beginning', () => {
+  test('onAcknowledge() dismisses the notice and keeps structure-only playback on', () => {
     const CustomComponent = withManifestAndPlayerProvider(renderHook({ toggleState: true }), {
       initialManifestState: { ...manifestState(lunchroomManners), canvasSegments },
       initialPlayerState: { player },
     });
     render(<CustomComponent />);
 
-    act(() => { resultRef.current.onPlayFromBeginning(); });
+    act(() => { resultRef.current.onAcknowledge(); });
 
     expect(resultRef.current.showNotice).toBeFalsy();
-    expect(player.play).toHaveBeenCalled();
+    expect(player.play).not.toHaveBeenCalled();
     expect(resultRef.current.structureOnlyPlayback).toBeTruthy();
-
-    // Doesn't perform the initial seek
-    expect(player.currentTime).not.toHaveBeenCalled();
   });
 
   test('onTurnOff() dismisses the notice and turns off structure-only playback', () => {
