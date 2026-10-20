@@ -7,6 +7,8 @@ import singleCanvasManifest from '@TestData/single-canvas';
 import invalidStructure from '@TestData/invalid-structure';
 import thumbnailNavStructure from '@TestData/transcript-multiple-canvas';
 import playlist from '@TestData/playlist';
+import emptyPlaylist from '@TestData/empty-playlist';
+import emptyManifest from '@TestData/empty-manifest';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
 import crossRangeManifest from '@TestData/multi-part-ranges';
@@ -18,6 +20,7 @@ import {
 } from '../../services/testing-helpers';
 import { ErrorBoundary } from 'react-error-boundary';
 import * as hooks from '@Services/ramp-hooks';
+import cloneDeep from 'lodash/cloneDeep';
 
 describe('StructuredNavigation component', () => {
   // Jest does not support the ResizeObserver API so mock it here to allow tests to run.
@@ -238,10 +241,11 @@ describe('StructuredNavigation component', () => {
       });
     });
 
-    describe('with structures with behavior=thumbnail-nav in the root Range', () => {
+    describe('with structures with behavior="thumbnail-nav" in the root Range', () => {
       beforeEach(() => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
           initialState: {},
+          showAllSectionsButton: true
         });
         const NavWithManifest = withManifestProvider(NavWithPlayer, {
           initialState: { ...manifestState(thumbnailNavStructure) },
@@ -257,15 +261,31 @@ describe('StructuredNavigation component', () => {
         expect(screen.queryByTestId('structured-nav')).toBeInTheDocument();
       });
 
-      test('does not render any structure elements', () => {
-        expect(screen.queryByTestId('nested-tree')).toBeNull();
-        expect(screen.queryByText(/There are no structures in the manifest/)).toBeInTheDocument();
+      test('renders a section for each Canvas in the Manifest (ToC)', () => {
+        expect(screen.queryByTestId('nested-tree')).toBeInTheDocument();
+        expect(screen.queryByText(/There are no structures in the Manifest/)).not.toBeInTheDocument();
+
+        const sections = screen.getAllByTestId('treeitem-section-button');
+        expect(sections).toHaveLength(2);
+        expect(sections[0]).toHaveTextContent('1.Section 109:32');
+        expect(sections[1]).toHaveTextContent('2.Section 209:32');
+      });
+
+      test('renders the sections heading without collapse/expand all buttons', () => {
+        expect(screen.getByTestId('sections-heading-text')).toHaveTextContent('2 Sections');
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
       });
     });
 
     describe('without structures', () => {
-      test('renders no list items and a message when structures are not present in manifest', () => {
-        let manifestWithoutStructures = JSON.parse(JSON.stringify(manifest));
+      const handleClickMock = jest.fn();
+
+      beforeEach(() => {
+        jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+          handleClick: handleClickMock
+        }));
+
+        let manifestWithoutStructures = cloneDeep(manifest);
         delete manifestWithoutStructures.structures;
 
         // Example of how to wrap tests with a "combo Provider" helper
@@ -274,6 +294,7 @@ describe('StructuredNavigation component', () => {
           {
             initialManifestState: { ...manifestState(manifestWithoutStructures) },
             initialPlayerState: {},
+            showAllSectionsButton: true
           }
         );
         render(
@@ -281,9 +302,63 @@ describe('StructuredNavigation component', () => {
             <NavWithPlayerAndManifest />
           </ErrorBoundary>);
 
-        expect(screen.queryByTestId('nested-tree')).toBeNull();
-        expect(screen.getByText(/There are no structures in the manifest/));
       });
+
+      afterEach(() => handleClickMock.mockClear());
+      afterAll(() => jest.spyOn(hooks, 'useActiveStructure').mockRestore());
+
+      test('renders a section for each Canvas in the Manifest (ToC)', () => {
+        expect(screen.queryByTestId('nested-tree')).toBeInTheDocument();
+        expect(screen.queryByText(/There are no structures in the Manifest/)).not.toBeInTheDocument();
+
+        const sections = screen.getAllByTestId('treeitem-section-button');
+        expect(sections).toHaveLength(2);
+        expect(sections[0]).toHaveTextContent('1.Lunchroom Manners11:00');
+        expect(sections[1]).toHaveTextContent('2.Lunchroom Manners 211:00');
+      });
+
+      test('renders the sections heading without collapse/expand all buttons', () => {
+        expect(screen.getByTestId('sections-heading-text')).toHaveTextContent('2 Sections');
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+      });
+
+      test('loads the relevant Canvas on click', () => {
+        fireEvent.click(screen.getAllByTestId('treeitem-section-button')[1]);
+        expect(handleClickMock).toHaveBeenCalledTimes(1);
+      });
+
+      test('moves focus to next section on "ArrowDown" keypress and loads Canvas on "Enter"', () => {
+        const structuredNav = screen.getByTestId('structured-nav');
+
+        // Set focus to structure nav container
+        structuredNav.focus();
+
+        // Move focus to the second section in structure by pressing 'ArrowDown' twice
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+        fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+
+        const secondSection = screen.getAllByTestId('treeitem-section-button')[1];
+        expect(secondSection).toHaveFocus();
+
+        // Press 'Enter' once when focus is on second section
+        fireEvent.keyDown(secondSection, { key: 'Enter', keyCode: 13 });
+        expect(handleClickMock).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    test('without Canvases renders the no structures message', () => {
+      const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+        initialManifestState: { ...manifestState(emptyManifest, 0) },
+        initialPlayerState: {},
+      });
+      render(
+        <ErrorBoundary>
+          <NavWithPlayerAndManifest />
+        </ErrorBoundary>
+      );
+
+      expect(screen.queryByTestId('nested-tree')).not.toBeInTheDocument();
+      expect(screen.queryByText(/There are no structures in the Manifest/)).toBeInTheDocument();
     });
   });
 
@@ -337,43 +412,256 @@ describe('StructuredNavigation component', () => {
   });
 
   describe('with a playlist manifest', () => {
-    beforeEach(() => {
-      const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
-        initialManifestState: { ...manifestState(playlist, 0, true), canvasIsEmpty: true },
-        initialPlayerState: {},
+    describe('with structures', () => {
+      describe('renders', () => {
+        beforeEach(() => {
+          const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(playlist, 0, true), canvasIsEmpty: true },
+            initialPlayerState: {},
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithPlayerAndManifest />
+            </ErrorBoundary>
+          );
+        });
+
+        test('successfully', () => {
+          expect(screen.queryByTestId('structured-nav'));
+          expect(screen.getByTestId('structured-nav')).toHaveClass(
+            'ramp--structured-nav__content playlist-items'
+          );
+        });
+
+        test('all playlist items', () => {
+          // No nested items
+          expect(screen.queryAllByTestId('tree-group').length).toBe(0);
+          // Has linked leaf nodes for each playlist item
+          expect(screen.queryAllByTestId('tree-item')).toHaveLength(6);
+          expect(screen.queryAllByTestId('tree-item')[2]).toHaveTextContent('Playlist Item 1');
+        });
+
+        test('lock icon for inaccessible items', () => {
+          expect(screen.queryAllByTestId('tree-item')[0]).toHaveTextContent('Restricted Item');
+          // SVG icon with class is displayed
+          expect(screen.queryAllByTestId('tree-item')[0].children[1].children[0])
+            .toHaveClass('structure-item-locked');
+        });
+
+        test('no root Range', () => {
+          expect(screen.queryByText('Playlist Manifest')).toBeNull();
+        });
+
+        test('playlist items with related aria-labels', () => {
+          const playlistItems = screen.getAllByTestId('tree-item');
+
+          expect(playlistItems[0].children[1]).toHaveAttribute('aria-label',
+            'Restricted playlist item 1. Restricted Item starts a 10 second timer to auto-advance to next playlist item');
+          expect(playlistItems[2].children[1]).toHaveAttribute('aria-label',
+            'Playlist item 3. Playlist Item 1 00:32 starting at 0 seconds');
+        });
       });
-      render(
-        <ErrorBoundary>
-          <NavWithPlayerAndManifest />
-        </ErrorBoundary>
-      );
+
+      describe('handles Canvas switches', () => {
+        const handleClickMock = jest.fn();
+
+        beforeEach(() => {
+          jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+            handleClick: handleClickMock,
+            isPlaylist: true,
+          }));
+
+          let playlistWoStructures = cloneDeep(playlist);
+          delete playlistWoStructures.structures;
+
+          const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(playlistWoStructures, 0, true), canvasIsEmpty: true },
+            initialPlayerState: {},
+            showAllSectionsButton: true
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithPlayerAndManifest />
+            </ErrorBoundary>
+          );
+        });
+
+        afterEach(() => handleClickMock.mockClear());
+        afterAll(() => jest.spyOn(hooks, 'useActiveStructure').mockRestore());
+
+        test('on click', () => {
+          fireEvent.click(screen.getAllByTestId('tree-item')[3].children[1]);
+          expect(handleClickMock).toHaveBeenCalledTimes(1);
+        });
+
+        test('on "ArrowDown" and "Space" keypress respectively', () => {
+          const structuredNav = screen.getByTestId('structured-nav');
+
+          // Set focus to structure nav container
+          structuredNav.focus();
+
+          // Move focus to the fourth playlist item in structure by pressing 'ArrowDown' 4x to reach 4th item
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+
+          const fourthPlaylistItem = screen.getAllByTestId('tree-item')[3].children[1];
+          expect(fourthPlaylistItem).toHaveFocus();
+
+          // Press 'Space' once when focus is on 4th playlist item
+          fireEvent.keyDown(fourthPlaylistItem, { key: 'Enter', keyCode: 32 });
+          expect(handleClickMock).toHaveBeenCalledTimes(1);
+        });
+      });
     });
 
-    test('renders successfully', () => {
-      expect(screen.queryByTestId('structured-nav'));
-      expect(screen.getByTestId('structured-nav')).toHaveClass(
-        'ramp--structured-nav__content playlist-items'
-      );
-    });
+    describe('without structures', () => {
+      describe('renders', () => {
+        beforeEach(() => {
+          let playlistWoStructures = cloneDeep(playlist);
+          delete playlistWoStructures.structures;
 
-    test('renders all playlist items', () => {
-      // No nested items
-      expect(screen.queryAllByTestId('tree-group').length).toBe(0);
-      // Has linked leaf nodes for each playlist item
-      expect(screen.queryAllByTestId('tree-item')).toHaveLength(6);
-      expect(screen.queryAllByTestId('tree-item')[2]).toHaveTextContent('Playlist Item 1');
-    });
+          const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(playlistWoStructures, 0, true), canvasIsEmpty: true },
+            initialPlayerState: {},
+            showAllSectionsButton: true
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithPlayerAndManifest />
+            </ErrorBoundary>
+          );
+        });
 
-    test('renders lock icon for inaccessible items', () => {
-      expect(screen.queryAllByTestId('tree-item')[0]).toHaveTextContent('Restricted Item');
-      // SVG icon with class is displayed
-      expect(screen.queryAllByTestId('tree-item')[0].children[1].children[0])
-        .toHaveClass('structure-item-locked');
-    });
+        test('successfully', () => {
+          expect(screen.queryByTestId('structured-nav'));
+          expect(screen.getByTestId('structured-nav')).toHaveClass(
+            'ramp--structured-nav__content playlist-items'
+          );
+        });
 
-    test('does not render root Range', () => {
-      expect(screen.queryByText('Playlist Manifest')).toBeNull();
+        test('a playlist item for each Canvas in the Manifest (ToC)', () => {
+          expect(screen.queryByTestId('nested-tree')).toBeInTheDocument();
+          expect(screen.queryByText(/There are no structures in the Manifest/)).not.toBeInTheDocument();
+
+          // No nested items
+          expect(screen.queryAllByTestId('tree-group').length).toBe(0);
+          // Has linked leaf nodes for each playlist item
+          expect(screen.queryAllByTestId('tree-item')).toHaveLength(6);
+
+          const playlistItems = screen.getAllByTestId('tree-item');
+          expect(playlistItems).toHaveLength(6);
+          expect(playlistItems[0]).toHaveTextContent('1.Restricted Item');
+          expect(playlistItems[1]).toHaveTextContent('2.Restricted Item 2');
+          expect(playlistItems[2]).toHaveTextContent('3.Volleyball for boys (00:32)');
+          expect(playlistItems[3]).toHaveTextContent('4.Lunchroom Manners (09:32)');
+        });
+
+        test('playlist items with related aria-labels', () => {
+          const playlistItems = screen.getAllByTestId('tree-item');
+
+          expect(playlistItems[0].children[1]).toHaveAttribute('aria-label',
+            'Restricted playlist item 1. Restricted Item starts a 10 second timer to auto-advance to next playlist item');
+          expect(playlistItems[2].children[1]).toHaveAttribute('aria-label',
+            'Playlist item 3. Volleyball for boys 00:32 starting at 0 seconds');
+        });
+
+        test('the clipped duration for playlist items with mediafragment', () => {
+          const playlistItems = screen.getAllByTestId('tree-item');
+
+          expect(playlistItems[2]).toHaveTextContent('3.Volleyball for boys (00:32)');
+          expect(playlistItems[4]).toHaveTextContent('5.Volleyball for boys (00:05)');
+        });
+
+        test('lock icon for inaccessible items', () => {
+          const playlistItems = screen.getAllByTestId('tree-item');
+
+          expect(playlistItems[0]).toHaveTextContent('Restricted Item');
+          // SVG icon with class is displayed
+          expect(playlistItems[0].children[1].children[0])
+            .toHaveClass('structure-item-locked');
+
+          expect(playlistItems[5]).toHaveTextContent('Restricted Item');
+          // SVG icon with class is displayed
+          expect(playlistItems[5].children[1].children[0])
+            .toHaveClass('structure-item-locked');
+        });
+
+        test('playlist items without a sections heading', () => {
+          expect(screen.queryByTestId('sections-heading-text')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+        });
+      });
+
+      describe('handles Canvas switches', () => {
+        const handleClickMock = jest.fn();
+
+        beforeEach(() => {
+          jest.spyOn(hooks, 'useActiveStructure').mockImplementation(() => ({
+            handleClick: handleClickMock,
+            isPlaylist: true,
+          }));
+
+          let playlistWoStructures = cloneDeep(playlist);
+          delete playlistWoStructures.structures;
+
+          const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+            initialManifestState: { ...manifestState(playlistWoStructures, 0, true), canvasIsEmpty: true },
+            initialPlayerState: {},
+            showAllSectionsButton: true
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithPlayerAndManifest />
+            </ErrorBoundary>
+          );
+        });
+
+        afterEach(() => handleClickMock.mockClear());
+        afterAll(() => jest.spyOn(hooks, 'useActiveStructure').mockRestore());
+
+        test('on click', () => {
+          fireEvent.click(screen.getAllByTestId('tree-item')[3].children[1]);
+          expect(handleClickMock).toHaveBeenCalledTimes(1);
+        });
+
+        test('on "ArrowDown" and "Space" keypress respectively', () => {
+          const structuredNav = screen.getByTestId('structured-nav');
+
+          // Set focus to structure nav container
+          structuredNav.focus();
+
+          // Move focus to the fourth playlist item in structure by pressing 'ArrowDown' 4x to reach 4th item
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+          fireEvent.keyDown(structuredNav, { key: 'ArrowDown', keyCode: 40 });
+
+          const fourthPlaylistItem = screen.getAllByTestId('tree-item')[3].children[1];
+          expect(fourthPlaylistItem).toHaveFocus();
+
+          // Press 'Space' once when focus is on 4th playlist item
+          fireEvent.keyDown(fourthPlaylistItem, { key: 'Enter', keyCode: 32 });
+          expect(handleClickMock).toHaveBeenCalledTimes(1);
+        });
+      });
     });
+  });
+
+  test('without Canvases renders the no structures message', () => {
+    const NavWithPlayerAndManifest = withManifestAndPlayerProvider(StructuredNavigation, {
+      initialManifestState: { ...manifestState(emptyPlaylist, 0, true) },
+      initialPlayerState: {},
+    });
+    render(
+      <ErrorBoundary>
+        <NavWithPlayerAndManifest />
+      </ErrorBoundary>
+    );
+
+    expect(screen.queryByTestId('nested-tree')).not.toBeInTheDocument();
+    expect(screen.queryByText(/There are no structures in the Manifest/)).toBeInTheDocument();
   });
 
   test('renders scroll to see more', () => {

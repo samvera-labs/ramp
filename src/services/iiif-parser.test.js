@@ -148,7 +148,7 @@ describe('iiif-parser', () => {
         expect(canvases[4].isEmpty).toBeFalsy();
         expect(canvases[4].summary).toEqual(
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod \
-          tempor incididunt ut labore et dolore magna aliqua',
+tempor incididunt ut labore et dolore magna aliqua',
         );
         expect(canvases[4].homepage).toEqual(
           'https://example.com/playlists/1?position=5',
@@ -1066,18 +1066,6 @@ describe('iiif-parser', () => {
       expect(firstTimespan.times).toEqual({ start: 0, end: 374 });
     });
 
-    it('returns empty structures and timespans when behavior is set to no-nav', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          volleyballManifest,
-          iiifParser.canvasesInManifest(volleyballManifest),
-        );
-      expect(structures).toHaveLength(0);
-      expect(timespans).toHaveLength(0);
-      expect(markRoot).toBeFalsy();
-      expect(hasCollapsibleStructure).toBeFalsy();
-    });
-
     it('returns identical structures and timespans when structure is childless', () => {
       const { structures, timespans, markRoot, hasCollapsibleStructure } =
         iiifParser.getStructureRanges(
@@ -1194,16 +1182,132 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
     });
 
-    it('returns [] when structure is not present', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          manifestWoStructure,
-          iiifParser.canvasesInManifest(manifestWoStructure),
+    describe('when structures is not present', () => {
+      it('returns a Canvas-level section for each Canvas in Manifest (ToC)', () => {
+        const { structures, timespans, markRoot, hasCollapsibleStructure } = iiifParser.getStructureRanges(
+          adManifest, iiifParser.canvasesInManifest(adManifest)
         );
-      expect(structures).toEqual([]);
-      expect(timespans).toEqual([]);
-      expect(markRoot).toBeFalsy();
-      expect(hasCollapsibleStructure).toBeFalsy();
+
+        expect(structures.length).toEqual(3);
+        expect(timespans).toEqual(structures);
+        expect(markRoot).toBeFalsy();
+        expect(hasCollapsibleStructure).toBeFalsy();
+
+        const firstSection = structures[0];
+        expect(firstSection).toEqual({
+          canvasDuration: 660, canvasIndex: 1, duration: '11:00', homepage: '',
+          id: 'https://example.com/manifest/ad-annotation/canvas/1#t=0,', isCanvas: true, isClickable: true,
+          isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: 'Lunchroom Manners',
+          metadata: [], rangeId: 'https://example.com/manifest/ad-annotation/canvas/1', summary: undefined,
+          times: { start: 0, end: 0 }
+        });
+
+        const lastSection = structures[2];
+        expect(lastSection).toEqual({
+          canvasDuration: 572.034, canvasIndex: 3, duration: '09:32', homepage: '',
+          id: 'https://example.com/manifest/ad-annotation/canvas/3#t=0,', isCanvas: true, isClickable: true,
+          isEmpty: false, isRoot: false, isTitle: false, itemIndex: 3, items: [], label: 'Sample Video Example',
+          metadata: [], rangeId: 'https://example.com/manifest/ad-annotation/canvas/3', summary: undefined,
+          times: { start: 0, end: 0 }
+        });
+      });
+
+      it('returns a single section for the only Canvas in Manifest (ToC) ', () => {
+        const singleCanvasWoStructure = cloneDeep(singleCanvasManifest);
+        delete singleCanvasWoStructure.structures;
+
+        const { structures } = iiifParser.getStructureRanges(
+          singleCanvasWoStructure, iiifParser.canvasesInManifest(singleCanvasWoStructure)
+        );
+
+        expect(structures.length).toEqual(1);
+        expect(structures[0].isCanvas).toBeTruthy();
+        expect(structures[0].label).toEqual('Section 1');
+        expect(structures[0].isRoot).toBeFalsy();
+        expect(structures[0].isClickable).toBeTruthy();
+        expect(structures[0].times).toEqual({ start: 0, end: 0 });
+        expect(structures[0].duration).toEqual('02:01:18');
+      });
+
+      it('marks empty sections for inaccessible Canvases as empty', () => {
+        const manifestWoStructure = cloneDeep(manifest);
+        delete manifestWoStructure.structures;
+
+        const { structures } = iiifParser.getStructureRanges(
+          manifestWoStructure, iiifParser.canvasesInManifest(manifestWoStructure)
+        );
+
+        expect(structures.length).toEqual(2);
+        expect(structures[0].isEmpty).toBeFalsy();
+        expect(structures[1].isEmpty).toBeTruthy();
+      });
+
+      it('returns a Canvas-level playlist item for each Canvas in playlist Manifest (ToC)', () => {
+        const playlistWoStructure = cloneDeep(playlistManifest);
+        delete playlistWoStructure.structures;
+
+        const { structures } = iiifParser.getStructureRanges(
+          playlistWoStructure, iiifParser.canvasesInManifest(playlistWoStructure), true
+        );
+
+        expect(structures).toHaveLength(6);
+        expect(structures[0]).toEqual({
+          canvasDuration: NaN, canvasIndex: 1, duration: "", isCanvas: true, isClickable: true,
+          isEmpty: true, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: "Restricted Item", metadata: [],
+          homepage: "https://example.com/playlists/1?position=1", id: "http://example.com/playlists/1/canvas/1#t=0,",
+          rangeId: "http://example.com/playlists/1/canvas/1", times: { end: NaN, start: 0 },
+          summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+        });
+
+        expect(structures[4]).toEqual({
+          canvasDuration: 5, canvasIndex: 5, duration: "00:05", isCanvas: true, isClickable: true,
+          isEmpty: false, isRoot: false, isTitle: false, itemIndex: 5, items: [], label: "Volleyball for boys", metadata: [],
+          homepage: "https://example.com/playlists/1?position=5", id: "http://example.com/playlists/1/canvas/5#t=35,",
+          rangeId: "http://example.com/playlists/1/canvas/5", times: { end: 5, start: 35 },
+          summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+        });
+      });
+    });
+
+    describe('when structures have behavior', () => {
+      it('"no-nav" is present returns a Canvas-level section (ToC)', () => {
+        const { structures, timespans, markRoot, hasCollapsibleStructure } =
+          iiifParser.getStructureRanges(
+            volleyballManifest,
+            iiifParser.canvasesInManifest(volleyballManifest),
+          );
+        expect(structures).toHaveLength(1);
+        expect(timespans).toHaveLength(1);
+        expect(markRoot).toBeFalsy();
+        expect(hasCollapsibleStructure).toBeFalsy();
+        expect(structures[0]).toEqual({
+          canvasDuration: 662.037, canvasIndex: 1, duration: '11:02', homepage: '',
+          id: 'http://example.com/volleyball-for-boys/manifest/canvas/1#t=0,', isCanvas: true, isClickable: true,
+          isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: 'Section 1',
+          metadata: [], rangeId: 'http://example.com/volleyball-for-boys/manifest/canvas/1', summary: undefined,
+          times: { start: 0, end: 0 }
+        });
+      });
+
+      it('"thumbnail-nav" is present returns Canvas-level section (ToC)', () => {
+        const { structures, timespans, markRoot, hasCollapsibleStructure } =
+          iiifParser.getStructureRanges(
+            singleSrcManifest,
+            iiifParser.canvasesInManifest(singleSrcManifest),
+          );
+        expect(structures).toHaveLength(2);
+        expect(timespans).toHaveLength(2);
+        expect(markRoot).toBeFalsy();
+        expect(hasCollapsibleStructure).toBeFalsy();
+
+        expect(structures[0]).toEqual({
+          canvasDuration: 572.034, canvasIndex: 1, duration: '09:32', homepage: '',
+          id: 'https://example.com/sample/canvas/1#t=0,', isCanvas: true, isClickable: true,
+          isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: 'Section 1',
+          metadata: [], rangeId: 'https://example.com/sample/canvas/1', summary: undefined,
+          times: { start: 0, end: 0 }
+        });
+      });
     });
 
     it('returns canvas summary with structure for playlist manifests', () => {
@@ -1258,18 +1362,6 @@ describe('iiif-parser', () => {
       expect(outOfRangeTimespan.times).toEqual({ start: 670, end: 700 });
       expect(outOfRangeTimespan.canvasDuration).toEqual(660);
       expect(outOfRangeTimespan.isClickable).toBeFalsy();
-    });
-
-    it('return empty structures and timespans when behavior is set to thumbnail-nav', () => {
-      const { structures, timespans, markRoot, hasCollapsibleStructure } =
-        iiifParser.getStructureRanges(
-          singleSrcManifest,
-          iiifParser.canvasesInManifest(singleSrcManifest),
-        );
-      expect(structures).toHaveLength(0);
-      expect(timespans).toHaveLength(0);
-      expect(markRoot).toBeFalsy();
-      expect(hasCollapsibleStructure).toBeFalsy();
     });
 
     describe('when mediafragment has times in hh:mm:ss format', () => {
