@@ -187,6 +187,9 @@ function VideoJSPlayer({
   // Flag to track whether the player was playing during a fallback for source selection
   const wasPlayingRef = useRef();
 
+  // Number seconds near the start/end of the Manifest where saving playback time is omitted
+  const RESUME_EDGE = 5;
+
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -1120,6 +1123,9 @@ function VideoJSPlayer({
   let cIndexRef = useRef();
   cIndexRef.current = useMemo(() => { return canvasIndex; }, [canvasIndex]);
 
+  const lastCanvasIndexRef = useRef();
+  lastCanvasIndexRef.current = lastCanvasIndex;
+
   const activeIdRef = useRef();
   activeIdRef.current = useMemo(() => { return activeId; }, [activeId]);
 
@@ -1491,8 +1497,12 @@ function VideoJSPlayer({
         playerTime = playerTime + targets[srcIndexRef.current].altStart;
       }
 
-      // Persist playback position, skip near-start and near-end to avoid unhelpful resumes
-      const isHelpfulResume = playerTime > 5 && playerTime < canvasDurationRef.current - 5;
+      /* Persist playback position on 'timeupdate' event. Clear it only near the start of the first Canvas
+      or near the end of the last Canvas, as inner Canvas boundaries are still mid-Manifest positions. */
+      const isNearStart = cIndexRef.current === 0 && playerTime <= RESUME_EDGE;
+      const isNearEnd = cIndexRef.current === lastCanvasIndexRef.current
+        && playerTime >= canvasDurationRef.current - RESUME_EDGE;
+      const isHelpfulResume = !isNearStart && !isNearEnd;
       if (manifestURLRef.current && canvasURLRef.current && isHelpfulResume) {
         savePositionRef.current(manifestURLRef.current, canvasURLRef.current, playerTime);
       } else {
@@ -1593,6 +1603,12 @@ function VideoJSPlayer({
 
     const { canvasURL: savedCanvasURL, time: savedTime } = savedPosition;
 
+    /* Decide whether to show/hide the modal based on the saved time. If the savedTime is not
+    near the start of a Canvas, only switch the Canvas without showing the resume modal because,
+    when the resume time is near the start of the media showing the resume modal creates an
+    unnecessary extra click to UX causing more interaction friction. */
+    const showModal = savedTime > RESUME_EDGE;
+
     const manifestURL = manifestURLRef.current;
     if (savedCanvasURL !== canvasURLRef.current) {
       // When saved position is on a different Canvas load the saved Canvas first
@@ -1603,13 +1619,15 @@ function VideoJSPlayer({
         return;
       }
       // Store pending resume info so 'loadedmetadata' can show the modal after the switch
-      pendingResumeRef.current = { time: savedTime, manifestURL };
+      if (showModal) pendingResumeRef.current = { time: savedTime, manifestURL };
       manifestDispatch({ type: 'switchCanvas', canvasIndex: savedCanvasIndex });
       return;
     }
 
     // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
-    pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
+    if (showModal) {
+      pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
+    }
   };
 
   /**
