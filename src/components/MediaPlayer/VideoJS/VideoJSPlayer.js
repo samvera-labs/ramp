@@ -801,6 +801,19 @@ function VideoJSPlayer({
     // Remove any existing VideoJS modals instances in the DOM
     cleanupExistingModals();
 
+    /* A cross-Canvas resume modal waits for this switch to the saved Canvas, so that
+    the resume modal is not shown on the starting Canvas and then removed above. Once
+    the switch takes place, clean the ref. This especially helps to overcome the race
+    condition between 'timeupdate' and 'loadedmetadata' event handlers in Firefox when
+    accessing the 'pendingResumeRef'.  */
+    if (pendingResumeRef.current?.awaitingSwitch) {
+      if (pendingResumeRef.current.canvasIndex === cIndexRef.current) {
+        pendingResumeRef.current.awaitingSwitch = false;
+      } else {
+        pendingResumeRef.current = null;
+      }
+    }
+
     player.duration(canvasDuration);
     player.src(options.sources);
     player.poster(options.poster);
@@ -1104,7 +1117,7 @@ function VideoJSPlayer({
       }
 
       // After a Canvas switch for resume playback, show the modal on the new Canvas
-      if (pendingResumeRef.current) {
+      if (pendingResumeRef.current && !pendingResumeRef.current.awaitingSwitch) {
         const { time, manifestURL, isSameCanvas } = pendingResumeRef.current;
         pendingResumeRef.current = null;
         cleanupExistingModals();
@@ -1619,7 +1632,12 @@ function VideoJSPlayer({
         return;
       }
       // Store pending resume info so 'loadedmetadata' can show the modal after the switch
-      if (showModal) pendingResumeRef.current = { time: savedTime, manifestURL };
+      if (showModal) {
+        pendingResumeRef.current = {
+          time: savedTime, manifestURL, canvasIndex: savedCanvasIndex,
+          awaitingSwitch: true
+        };
+      }
       manifestDispatch({ type: 'switchCanvas', canvasIndex: savedCanvasIndex });
       return;
     }
