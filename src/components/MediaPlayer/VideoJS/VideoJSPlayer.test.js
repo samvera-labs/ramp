@@ -51,7 +51,7 @@ describe('VideoJSPlayer component', () => {
   const renderPlayer = async ({ manifest, canvasIndex, manifestOverrides = {}, props = {} }) => {
     const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
       initialManifestState: { ...manifestState(manifest, canvasIndex), ...manifestOverrides },
-      initialPlayerState: {},
+      initialPlayerState: { searchMarkers: [] },
       ...props,
     });
     await act(async () => render(
@@ -84,221 +84,203 @@ describe('VideoJSPlayer component', () => {
       await triggerLoadedMetadata('videojs-video-element');
     };
 
-    test('doesn\'t render resume modal with default props', async () => {
-      // Insert a saved playback position at 120s for the Canvas into localStorage cache
-      localStorage.setItem(
-        'playbackPositions',
-        JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 120, savedAt: Date.now() } }])
-      );
-
-      // Override the helper function's props to mimic the default props where resumeCache is disabled
-      await playerWithResumeCache({ props: { resumeCache: { enable: false } } });
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
-      });
-    });
-
-    test('doesn\'t render resume modal for a playlist', async () => {
-      /* Insert a saved playback position at 10s for the playlist Manifest into localStorage cache.
-      IRL this would not be saved since playlist context is avoided, but this is to ensure the resume modal is not. */
-      localStorage.setItem(
-        'playbackPositions',
-        JSON.stringify([{ key: 'http://example.com/playlists/1', value: { canvasURL: 'http://example.com/playlists/1/canvas/3', time: 10, savedAt: Date.now() } }])
-      );
-
-      await playerWithResumeCache({ manifest: playlistManifest, canvasIndex: 2, manifestOverrides: { playlist: { isPlaylist: true } } });
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
-      });
-    });
-
-    describe('when a saved playback position exists for the first Canvas', () => {
-      beforeEach(async () => {
+    describe('doesn\'t render', () => {
+      test('with default props', async () => {
         // Insert a saved playback position at 120s for the Canvas into localStorage cache
         localStorage.setItem(
           'playbackPositions',
           JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 120, savedAt: Date.now() } }])
         );
 
-        await playerWithResumeCache();
-      });
+        // Override the helper function's props to mimic the default props where resumeCache is disabled
+        await playerWithResumeCache({ props: { resumeCache: { enable: false } } });
 
-      test('shows the resume modal on \'loadedmetadata\' event', async () => {
         await waitFor(() => {
-          expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+          expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
         });
       });
 
-      test('resume modal contains the saved timestamp in the text', async () => {
-        await waitFor(() => {
-          expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-        });
-        expect(screen.getByText(/Resume playback from 02:00?/i)).toBeInTheDocument();
-      });
-
-      test('resume modal contains action buttons', async () => {
-        await waitFor(() => {
-          expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-        });
-        expect(screen.getByText('Yes')).toBeInTheDocument();
-        expect(screen.getByText('No, start from beginning')).toBeInTheDocument();
-      });
-
-      describe('clicking \'Yes\'', () => {
-        beforeEach(async () => {
-          await playerWithResumeCache();
-        });
-
-        test('closes the modal and play media', async () => {
-          await waitFor(() => {
-            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-          });
-          act(() => { fireEvent.click(screen.getByText('Yes')); });
-          await waitFor(() => {
-            expect(screen.queryByTestId('resume-playback-modal')).toHaveClass('vjs-hidden');
-            expect(playMock).toHaveBeenCalled();
-          });
-        });
-
-        test('clears the saved playback position from localStorage', async () => {
-          await waitFor(() => {
-            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-          });
-          act(() => { fireEvent.click(screen.getByText('Yes')); });
-          await waitFor(() => {
-            const cache = JSON.parse(localStorage.getItem('playbackPositions'));
-            expect(cache.find((e) => e.key === MANIFEST_URL)).toBeUndefined();
-          });
-        });
-      });
-
-      describe('clicking \'No, start from beginning\'', () => {
-        beforeEach(async () => {
-          await playerWithResumeCache();
-        });
-
-        test('closes the modal and play media', async () => {
-          await waitFor(() => {
-            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-          });
-          act(() => { fireEvent.click(screen.getByText('No, start from beginning')); });
-          await waitFor(() => {
-            expect(screen.queryByTestId('resume-playback-modal')).toHaveClass('vjs-hidden');
-            expect(playMock).toHaveBeenCalled();
-          });
-        });
-
-
-        test('clears the saved playback position from localStorage', async () => {
-          await waitFor(() => {
-            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-          });
-          act(() => { fireEvent.click(screen.getByText('No, start from beginning')); });
-          await waitFor(() => {
-            const cache = JSON.parse(localStorage.getItem('playbackPositions'));
-            expect(cache.find((e) => e.key === MANIFEST_URL)).toBeUndefined();
-          });
-        });
-      });
-    });
-
-    test('doesn\'t show a resume modal when a saved playback position doesn\'t exist', async () => {
-      await playerWithResumeCache();
-      // Wait for modal to render
-      await act(async () => new Promise((r) => setTimeout(r, 50)));
-      expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
-    });
-
-    describe('when the player loads', () => {
-      describe('with a startCanvasId', () => {
-        describe('and a respective saved playback position', () => {
-          beforeEach(async () => {
-            // Seed with one manifest entry pointing to the second Canvas at 60s
-            localStorage.setItem(
-              'playbackPositions',
-              JSON.stringify([
-                { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_2, time: 60, savedAt: Date.now() } }
-              ])
-            );
-            // Load the page already on the second Canvas to simulate post-switch Canvas state
-            await playerWithResumeCache({ canvasIndex: 1, manifestOverrides: { customStart: { startIndex: 1, startTime: 0 } } });
-          });
-
-          test('shows resume modal', async () => {
-            await waitFor(() => {
-              expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-              expect(screen.getByText(/Resume playback from 01:00?/i)).toBeInTheDocument();
-              expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
-              expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
-            });
-          });
-
-          test('doesn\'t persist resume modal after Canvas switch', async () => {
-            act(() => { fireEvent.click(screen.getByText('No, start from beginning')); });
-
-            await waitFor(() => {
-              expect(screen.queryByTestId('resume-playback-modal')).toHaveClass('vjs-hidden');
-              expect(playMock).toHaveBeenCalled();
-            });
-
-            act(() => { fireEvent.click(screen.getByTestId('videojs-previous-button')); });
-
-            await waitFor(() => {
-              expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
-            });
-          });
-        });
-
-        describe('and a saved playback position for a different Canvas', () => {
-          test('the first Canvas, doesn\'t show resume modal', async () => {
-            // 'startCanvasId' points to second Canvas, but saved position is on first Canvas
-            localStorage.setItem(
-              'playbackPositions',
-              JSON.stringify([
-                { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 30, savedAt: Date.now() } }
-              ])
-            );
-            await playerWithResumeCache({
-              manifestOverrides: { customStart: { startIndex: 1, startTime: 0 } }
-            });
-
-            await act(async () => new Promise((r) => setTimeout(r, 50)));
-            expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
-          });
-
-          test('a non-first, non-startCanvasId Canvas, doesn\'t show resume modal', async () => {
-            const CANVAS_URL_3 = 'https://example.com/manifest/lunchroom_manners/canvas/3';
-            // 'startCanvasId' points to second Canvas, but saved position is on the third Canvas
-            localStorage.setItem(
-              'playbackPositions',
-              JSON.stringify([
-                { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_3, time: 90, savedAt: Date.now() } }
-              ])
-            );
-            await playerWithResumeCache({
-              manifestOverrides: { customStart: { startIndex: 1, startTime: 0 } }
-            });
-            await act(async () => new Promise((r) => setTimeout(r, 50)));
-            expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
-          });
-        });
-      });
-
-      test('with a custom start, deosn\'t display resume modal for a saved playback position', async () => {
+      test('for a playlist', async () => {
+        /* Insert a saved playback position at 10s for the playlist Manifest into localStorage cache.
+        IRL this would not be saved since playlist context is avoided, but this is to ensure the resume modal is not. */
         localStorage.setItem(
           'playbackPositions',
-          JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 120, savedAt: Date.now() } }])
+          JSON.stringify([{ key: 'http://example.com/playlists/1', value: { canvasURL: 'http://example.com/playlists/1/canvas/3', time: 10, savedAt: Date.now() } }])
         );
-        // Load the page with a custom start time
-        await playerWithResumeCache({ manifestOverrides: { customStart: { startIndex: 0, startTime: 30 } } });
 
+        await playerWithResumeCache({ manifest: playlistManifest, canvasIndex: 2, manifestOverrides: { playlist: { isPlaylist: true } } });
+
+        await waitFor(() => {
+          expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+        });
+      });
+
+      test('when a saved playback position doesn\'t exist', async () => {
+        await playerWithResumeCache();
+        // Wait for modal to render
         await act(async () => new Promise((r) => setTimeout(r, 50)));
         expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
       });
 
-      describe('without a startCanvasId, saved playback position is for a non-first Canvas', () => {
+      describe('when the saved playback position < 5 secs', () => {
+        test('within the first Canvas', async () => {
+          // Saved position is on the first Canvas
+          localStorage.setItem(
+            'playbackPositions',
+            JSON.stringify([
+              { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 4, savedAt: Date.now() } }
+            ])
+          );
+          await playerWithResumeCache();
+
+          // Give time for modal to render
+          await act(async () => new Promise((r) => setTimeout(r, 50)));
+          expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+        });
+
+        test('within the second Canvas', async () => {
+          // Saved position is on the second Canvas
+          localStorage.setItem(
+            'playbackPositions',
+            JSON.stringify([
+              { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_2, time: 4, savedAt: Date.now() } }
+            ])
+          );
+          await playerWithResumeCache();
+
+          // Give time for modal to render
+          await act(async () => new Promise((r) => setTimeout(r, 50)));
+          expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+          expect(screen.queryAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+
+          // Switches the Canvas without showing the modal
+          expect(screen.getAllByTestId('videojs-video-element')[0]).toHaveAttribute('data-canvasindex', '1');
+        });
+      });
+
+      test('when the saved playback position is in the last 5 secs of the last Canvas', async () => {
+        // Saved position is within the last 5 seconds in the second Canvas
+        localStorage.setItem(
+          'playbackPositions',
+          JSON.stringify([
+            { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_2, time: 659.56, savedAt: Date.now() } }
+          ])
+        );
+        await playerWithResumeCache();
+
+        // Give time for modal to render
+        await act(async () => new Promise((r) => setTimeout(r, 50)));
+        expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+        expect(screen.queryAllByTestId('videojs-video-element').length).toBeGreaterThan(0);
+
+        // Switches the Canvas without showing the modal
+        expect(screen.getAllByTestId('videojs-video-element')[0]).toHaveAttribute('data-canvasindex', '1');
+      });
+
+      test('when the saved playback position is near-start in a mid-Manifest Canvas', async () => {
+        localStorage.setItem(
+          'playbackPositions',
+          JSON.stringify([
+            { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_2, time: 2.5, savedAt: Date.now() } }
+          ])
+        );
+        await playerWithResumeCache();
+
+        // Switches to the saved Canvas without showing the modal
+        await waitFor(() => {
+          expect(screen.getAllByTestId('videojs-video-element')[0]).toHaveAttribute('data-canvasindex', '1');
+        });
+
+        expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+        const playbackPositions = JSON.parse(localStorage.getItem('playbackPositions'));
+        expect(playbackPositions[0].value).toMatchObject({ canvasURL: CANVAS_URL_2, time: 2.5 });
+      });
+    });
+
+    describe('renders', () => {
+      describe('for the first Canvas', () => {
+        beforeEach(async () => {
+          // Insert a saved playback position at 120s for the Canvas into localStorage cache
+          localStorage.setItem(
+            'playbackPositions',
+            JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 120, savedAt: Date.now() } }])
+          );
+
+          await playerWithResumeCache();
+        });
+
+        test('on \'loadedmetadata\' event', async () => {
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+          });
+        });
+
+        test('with the saved timestamp info', async () => {
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+          });
+          expect(screen.getByText(/Resume playback from 02:00?/i)).toBeInTheDocument();
+        });
+
+        test('with action buttons', async () => {
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+          });
+          expect(screen.getByText('Yes')).toBeInTheDocument();
+          expect(screen.getByText('No, start from beginning')).toBeInTheDocument();
+        });
+
+        describe('and clicking \'Yes\'', () => {
+          test('closes the modal and play media', async () => {
+            await waitFor(() => {
+              expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+            });
+            act(() => { fireEvent.click(screen.getByText('Yes')); });
+            await waitFor(() => {
+              expect(screen.queryByTestId('resume-playback-modal')).toHaveClass('vjs-hidden');
+              expect(playMock).toHaveBeenCalled();
+            });
+          });
+
+          test('clears the saved playback position from localStorage', async () => {
+            await waitFor(() => {
+              expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+            });
+            act(() => { fireEvent.click(screen.getByText('Yes')); });
+            await waitFor(() => {
+              const cache = JSON.parse(localStorage.getItem('playbackPositions'));
+              expect(cache.find((e) => e.key === MANIFEST_URL)).toBeUndefined();
+            });
+          });
+        });
+
+        describe('and clicking \'No, start from beginning\'', () => {
+          test('closes the modal and play media', async () => {
+            await waitFor(() => {
+              expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+            });
+            act(() => { fireEvent.click(screen.getByText('No, start from beginning')); });
+            await waitFor(() => {
+              expect(screen.queryByTestId('resume-playback-modal')).toHaveClass('vjs-hidden');
+              expect(playMock).toHaveBeenCalled();
+            });
+          });
+
+
+          test('clears the saved playback position from localStorage', async () => {
+            await waitFor(() => {
+              expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+            });
+            act(() => { fireEvent.click(screen.getByText('No, start from beginning')); });
+            await waitFor(() => {
+              const cache = JSON.parse(localStorage.getItem('playbackPositions'));
+              expect(cache.find((e) => e.key === MANIFEST_URL)).toBeUndefined();
+            });
+          });
+        });
+      });
+
+      describe('for a mid-Manifest Canvas', () => {
         beforeEach(async () => {
           // Saved position is on the second Canvas
           localStorage.setItem(
@@ -308,19 +290,116 @@ describe('VideoJSPlayer component', () => {
             ])
           );
           // Simulate post-switch state, player is now on Canvas 1
-          await playerWithResumeCache({
-            canvasIndex: 1,
-            manifestOverrides: { customStart: { startIndex: 0, startTime: 0 } }
+          await playerWithResumeCache({ canvasIndex: 1 });
+        });
+
+        test('on \'loadedmetadata\' event', async () => {
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
           });
         });
 
-        test('shows resume modal for the saved Canvas', async () => {
+        test('with the saved timestamp info', async () => {
           await waitFor(() => {
             expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
-            expect(screen.getByText(/Resume playback from 00:45?/i)).toBeInTheDocument();
+          });
+          expect(screen.getByText(/Resume playback from 00:45?/i)).toBeInTheDocument();
+        });
+
+        test('with action buttons', async () => {
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+          });
+          expect(screen.getByText('Yes')).toBeInTheDocument();
+          expect(screen.getByText('No, start from beginning')).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe('with a "startCanvasId" pointing to 2nd Canvas', () => {
+      describe('doesn\'t render the resume modal when a saved playback position in', () => {
+        test('the first Canvas, doesn\'t show resume modal', async () => {
+          // 'startCanvasId' points to second Canvas, but saved position is on first Canvas
+          localStorage.setItem(
+            'playbackPositions',
+            JSON.stringify([
+              { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 30, savedAt: Date.now() } }
+            ])
+          );
+          await playerWithResumeCache({
+            manifestOverrides: { customStart: { startIndex: 1, startTime: 0 } }
+          });
+
+          await act(async () => new Promise((r) => setTimeout(r, 50)));
+          expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+        });
+
+        test('a mid-Manifest, non-startCanvasId Canvas, doesn\'t show resume modal', async () => {
+          const CANVAS_URL_3 = 'https://example.com/manifest/lunchroom_manners/canvas/3';
+          // 'startCanvasId' points to second Canvas, but saved position is on the third Canvas
+          localStorage.setItem(
+            'playbackPositions',
+            JSON.stringify([
+              { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_3, time: 90, savedAt: Date.now() } }
+            ])
+          );
+          await playerWithResumeCache({
+            manifestOverrides: { customStart: { startIndex: 1, startTime: 0 } }
+          });
+          await act(async () => new Promise((r) => setTimeout(r, 50)));
+          expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
+        });
+      });
+
+      describe('renders when a saved playback position in the same Canvas', () => {
+        beforeEach(async () => {
+          // Seed with one manifest entry pointing to the second Canvas at 60s
+          localStorage.setItem(
+            'playbackPositions',
+            JSON.stringify([
+              { key: MANIFEST_URL, value: { canvasURL: CANVAS_URL_2, time: 60, savedAt: Date.now() } }
+            ])
+          );
+          // Load the page already on the second Canvas to simulate post-switch Canvas state
+          await playerWithResumeCache({ canvasIndex: 1, manifestOverrides: { customStart: { startIndex: 1, startTime: 0 } } });
+        });
+
+        test('successfully', async () => {
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toBeInTheDocument();
+            expect(screen.getByText(/Resume playback from 01:00?/i)).toBeInTheDocument();
+            expect(screen.queryByTestId('videojs-next-button')).toBeInTheDocument();
+            expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+          });
+        });
+
+        test('and doesn\'t persist resume modal after Canvas switch', async () => {
+          act(() => { fireEvent.click(screen.getByText('No, start from beginning')); });
+
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).toHaveClass('vjs-hidden');
+            expect(playMock).toHaveBeenCalled();
+          });
+
+          act(() => { fireEvent.click(screen.getByTestId('videojs-previous-button')); });
+
+          await waitFor(() => {
+            expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
           });
         });
       });
+    });
+
+    test('with a "startCanvasTime", doesn\'t render resume modal for a saved playback position', async () => {
+      localStorage.setItem(
+        'playbackPositions',
+        JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: CANVAS_URL, time: 120, savedAt: Date.now() } }])
+      );
+      // Load the page with a custom start time
+      await playerWithResumeCache({ manifestOverrides: { customStart: { startIndex: 0, startTime: 30 } } });
+
+      await act(async () => new Promise((r) => setTimeout(r, 50)));
+      expect(screen.queryByTestId('resume-playback-modal')).not.toBeInTheDocument();
     });
   });
 
@@ -761,7 +840,7 @@ describe('VideoJSPlayer component', () => {
         const fetchSpy = jest.spyOn(global, 'fetch');
 
         /* The 4th Canvas in this Manifest has a .xml with format 'text/xml' attached in 'seeAlso',
-        which is not a vali waveform format. Therefore, it gets filtered out during parsing. */
+        which is not a valid waveform format. Therefore, it gets filtered out during parsing. */
         await renderPlayer({
           manifest: waveformManifest, canvasIndex: 3,
           props: { ...props, showWaveform: true },
@@ -816,7 +895,7 @@ describe('VideoJSPlayer component', () => {
         expect(panel.querySelector('canvas.vjs-waveform-canvas')).toBeInTheDocument();
       });
 
-      test('with a waveform visualization a an image for a waveform image', async () => {
+      test('with a waveform visualization as an image for a waveform image', async () => {
         await renderPlayer({
           manifest: waveformManifest, canvasIndex: 1,
           props: { ...props, showWaveform: true },
@@ -1009,6 +1088,112 @@ describe('VideoJSPlayer component', () => {
         expect(nextItemClickedSpy).toHaveBeenCalledWith(1, 381.1);
         // Seeks to the offset 381.1s within the second source
         expect(currentTimeSpy).toHaveBeenCalledWith(381.1);
+      });
+    });
+  });
+
+  describe('feature: saved playback position', () => {
+    // Playhead time returned by the stubbed player.currentTime()
+    let playerTime = 0;
+
+    // Trigger a 'timeupdate' event at a given time, and wait out the throttle on 'timeupdate' handler
+    const seekedAt = async (player, time) => {
+      playerTime = time;
+      act(() => { player.trigger('timeupdate'); });
+      await act(async () => new Promise((r) => setTimeout(r, 20)));
+    };
+
+    // Helper function to render player with resume cache enabled
+    const playerWithResumeCache = async ({
+      manifest = videoManifest, canvasIndex = 0, savedCanvasURL = CANVAS_URL, manifestOverrides = {},
+      props = { resumeCache: { enable: true } } } = {}) => {
+
+      localStorage.setItem(
+        'playbackPositions',
+        JSON.stringify([{ key: MANIFEST_URL, value: { canvasURL: savedCanvasURL, time: 120, savedAt: Date.now() } }])
+      );
+
+      await renderPlayer({ manifest, canvasIndex, manifestOverrides, props });
+      await triggerLoadedMetadata('videojs-video-element');
+
+      const player = screen.getAllByTestId('videojs-video-element')[0].player;
+
+      // Stub player.currentTime() as both a setter and a getter for the current time of the player
+      playerTime = 0;
+      player.currentTime = jest.fn((t) => {
+        if (t === undefined) return playerTime;
+        playerTime = t;
+      });
+
+      act(() => {
+        // 'loadeddata' marks the player as ready and enables the 'timeupdate' handler
+        player.trigger('loadeddata');
+        // Initial load 'seeked', which enables the player without updating the cache
+        player.trigger('seeked');
+      });
+
+      return player;
+    };
+
+    const getCacheEntry = () => JSON.parse(localStorage.getItem('playbackPositions'))
+      .find((e) => e.key === MANIFEST_URL);
+
+    describe('is updated when seeked to a time that is', () => {
+      test('not near-start or near-end in the first Canvas', async () => {
+        const player = await playerWithResumeCache();
+
+        await seekedAt(player, 300);
+        expect(getCacheEntry().value).toMatchObject({ canvasURL: CANVAS_URL, time: 300 });
+      });
+
+      test('in the last 5 seconds of a non-last Canvas in the Manifest', async () => {
+        const player = await playerWithResumeCache();
+
+        await seekedAt(player, 659.56);
+        expect(getCacheEntry().value).toMatchObject({ canvasURL: CANVAS_URL, time: 659.56 });
+      });
+
+      test('in the first 5 seconds of a mid-Manifest Canvas', async () => {
+        const player = await playerWithResumeCache({ canvasIndex: 1, savedCanvasURL: CANVAS_URL_2 });
+
+        await seekedAt(player, 2);
+        expect(getCacheEntry().value).toMatchObject({ canvasURL: CANVAS_URL_2, time: 2 });
+      });
+    });
+
+    describe('is cleared when', () => {
+      test('"No, start from beginning" on resume modal is clicked', async () => {
+        await playerWithResumeCache();
+        expect(screen.queryByText('No, start from beginning')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText('No, start from beginning'));
+
+        expect(getCacheEntry()).toBeUndefined();
+      });
+
+      test('seeked to zero', async () => {
+        const player = await playerWithResumeCache();
+
+        await seekedAt(player, 0);
+        expect(getCacheEntry()).toBeUndefined();
+      });
+
+      test('seeked into the last 5 secs of the last Canvas', async () => {
+        const player = await playerWithResumeCache({ canvasIndex: 1, savedCanvasURL: CANVAS_URL_2 });
+
+        await seekedAt(player, 657);
+        await waitFor(() => { expect(getCacheEntry()).toBeUndefined(); });
+      });
+
+      test('Replay button is clicked in the first Canvas', async () => {
+        const player = await playerWithResumeCache();
+
+        expect(screen.queryByTestId('videojs-previous-button')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId('videojs-previous-button'));
+
+        expect(player.currentTime).toHaveBeenCalledWith(0);
+        await waitFor(() => { expect(getCacheEntry()).toBeUndefined(); });
       });
     });
   });
