@@ -1,5 +1,6 @@
 import { useContext } from 'react';
-import { ManifestStateContext } from '../../context/manifest-context'
+import { useManifestState } from '../../context/manifest-context';
+
 
 /**
  * Returns index of the Canvas currently loaded in Ramp.
@@ -9,6 +10,6 @@ import { ManifestStateContext } from '../../context/manifest-context'
  * @returns {{ canvasIndex: number }} index of the current Canvas (zero-based)
  */
 export const useCanvasIndex = () => {
-    const { canvasIndex } = useContext(ManifestStateContext);
+    const { canvasIndex } = useManifestState();
     return { canvasIndex };
 };

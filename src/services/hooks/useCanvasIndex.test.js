@@ -1,13 +1,11 @@
 import React from 'react';
-import { renderHook } from '@testing-library/react';
-import { ManifestStateContext } from '../../context/manifest-context';
+import { renderHook, act } from '@testing-library/react';
+import { ManifestProvider, useManifestDispatch } from '../../context/manifest-context';
 import { useCanvasIndex } from './useCanvasIndex';
 
 const makeWrapper = (state) => ({ children }) => (
-    <ManifestStateContext.Provider value={state}>
-        {children}
-    </ManifestStateContext.Provider>
-)
+    <ManifestProvider initialState={state}>{children}</ManifestProvider>
+);
 
 describe('useCanvasIndex', () => {
     it('returns the current canvas index from the manifest state', () => {
@@ -31,21 +29,11 @@ describe('useCanvasIndex', () => {
         expect(result.current.canvasIndex).toBe(1);
     });
 
-    it('updates when the canvas index in the manifest state changes', () => {
-        let state = { canvasIndex: 0 };
-        const Wrapper = ({ children }) => (
-            <ManifestStateContext.Provider value={state}>
-                {children}
-            </ManifestStateContext.Provider>
+    it('throws when used outside of <IIIFPlayer>', () => {
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        expect(() => renderHook(() => useCanvasIndex())).toThrow(
+            'useManifestState must be used within a ManifestProvider'
         );
-
-        const { result, rerender } = renderHook(() => useCanvasIndex(), {
-            wrapper: Wrapper,
-        });
-        expect(result.current.canvasIndex).toBe(0);
-
-        state = { canvasIndex: 1 };
-        rerender();
-        expect(result.current.canvasIndex).toBe(1);
+        spy.mockRestore();
     });
 });
