@@ -1,6 +1,6 @@
-import { resolve } from 'path';
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import { getCodeEditorStaticDirs } from 'storybook-addon-code-editor/getStaticDirs';
 
 const __filename = fileURLToPath(import.meta.url);
