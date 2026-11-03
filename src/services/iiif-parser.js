@@ -721,7 +721,6 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   };
 
   try {
-    const allRanges = parseManifest(manifest).getAllRanges();
     const topRanges = parseManifest(manifest).getTopRanges();
     let validRanges = [];
     if (topRanges?.length > 0) {
@@ -736,7 +735,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
     const rootNode = validRanges?.length > 0 ? validRanges[0] : null;
     const rootBehavior = rootNode ? rootNode.getBehavior() : '';
 
-    if (allRanges?.length === 0 || validRanges?.length === 0) {
+    if (validRanges?.length === 0) {
       const structures = getTableOfContents(canvasesInfo, isPlaylist);
       return { structures, timespans: [...structures], markRoot: false, hasCollapsibleStructure };
     } else {
