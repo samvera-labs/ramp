@@ -89,6 +89,33 @@ To test a branch's built output before it is published to NPM:
    yarn add /absolute/path/to/ramp/samvera-ramp-v3.0.0.tgz
    ```
 
+## Upgrading Storybook
+
+Storybook expects the `storybook` package and every `@storybook/*` package to be on the same version. Ramp's security upgrades
+automated via `Dependabot` often bumps only one of them, so these version bumps need to be handled manually to bump all
+Storybook-related packages instead of merging the automated PR with a single package bump.
+
+To do this, run the following command with its auto-migrations as needed,
+```
+npx storybook@latest upgrade
+```
+
+After upgrading,
+1. Check for version mismatches using `npx storybook@latest doctor`, which reports if all the Storybook packages are aligned
+2. Review any changes the updgrade made to the existing files such as `./storybook/main.js` because, the auto-migrations can sometimes
+introduce errors such as duplicated imports
+3. Run `yarn storybook` and check a couple of stories to confirm that the sample Manifests and resources load as expected
+4. Build and serve the static site locally to confirm the GitHub pages build works as expected after the upgrade,
+   ```
+   yarn storybook:build && npx http-server storybook-static
+   ```
+   Note: this command might ask to install `http-server`, this won't change Ramp's `package.json` or `yarn.lock` file as it is
+   stored in npx cache.
+   
+   Open http://127.0.0.1:8080 and again check a few stories to confirm everything works. Please note that, in this build the Manifests
+   and resources load from the live GitHub pages site, so this step only confirms that the build works.
+   Delete the `/stroybook-static` directory once testing is complete.
+
 ## Deployment
 
 Merging to `main` automatically triggers two deployments:
