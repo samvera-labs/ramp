@@ -43,6 +43,11 @@ const propControls = {
     description: 'Number of days a saved Manifest entry is retained before it is removed from localStorage due to LRU eviction or expiration.',
     table: { category: 'resumeCache' },
   },
+  maxItems: {
+    control: { type: 'number', min: 1 },
+    description: 'Maximum number of entries saved in localStorage. This is enforced by evicting the least-recently used entry when saving a new item.',
+    table: { category: 'resumeCache' },
+  },
 };
 
 /* Default state for the MediaPlayer component */

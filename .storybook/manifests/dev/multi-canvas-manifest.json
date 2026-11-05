@@ -385,7 +385,7 @@
                           },
                           "items": [
                             {
-                              "id": "http://localhost:6060/storybook-manifests/dev/multi-canvas-manifest/canvas/1#t=301,308",
+                              "id": "http://localhost:6060/storybook-manifests/dev/multi-canvas-manifest/canvas/2#t=301,308",
                               "type": "Canvas"
                             }
                           ]

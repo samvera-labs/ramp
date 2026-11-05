@@ -1106,6 +1106,9 @@ function VideoJSPlayer({
 
       // After a Canvas switch for resume playback, show the modal on the new Canvas
       if (pendingResumeRef.current) {
+        // Set hasResume to true so that StructureNavigation can show the structure-only playback notice
+        manifestDispatch({ type: 'setHasResume', hasResume: true });
+
         const { time, manifestURL, isSameCanvas } = pendingResumeRef.current;
         pendingResumeRef.current = null;
         cleanupExistingModals();
@@ -1596,9 +1599,6 @@ function VideoJSPlayer({
 
     // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
     pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
-
-    // Set hasResume to true so that StructureNavigation can show the structure-only playback notice
-    manifestDispatch({ type: 'setHasResume', hasResume: true });
   };
 
   /**
