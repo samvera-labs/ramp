@@ -672,9 +672,14 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         }
         if (isCanvas) { canvasDuration = duration; }
       }
+      let itemCanvasIndex = cIndex;
       if (canvases.length > 0 && canvasesInfo?.length > 0) {
         let canvasInfo = canvasesInfo
           .filter((c) => c.canvasId === getCanvasId(canvases[0]))[0];
+        /* Use the referenced Canvas's index for timespans, since a timespan can be nested under a
+        different Canvas's section in 'structures'. e.g. Range with multiple Canvas parts from
+        different Canvases. */
+        if (!isCanvas) itemCanvasIndex = canvasInfo.canvasIndex + 1;
         isEmpty = canvasInfo.isEmpty;
         summary = canvasInfo.summary;
         homepage = canvasInfo.homepage;
@@ -704,7 +709,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         isEmpty: isEmpty,
         isCanvas: isCanvas,
         itemIndex: isCanvas ? cIndex : subIndex,
-        canvasIndex: cIndex,
+        canvasIndex: itemCanvasIndex,
         items: range.getRanges()?.length > 0 ? range.getRanges().flatMap(r => parseItem(r, rootNode)) : [],
         duration: timeToHHmmss(duration),
         isClickable: isClickable,

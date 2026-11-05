@@ -1220,3 +1220,22 @@ export function getActiveRangeForCanvas(item, canvasIndex, canvasDuration) {
     canvasDuration: canvasDuration ?? item.canvasDuration,
   };
 }
+
+/**
+ * Get the next timespan for the given current timespan. This is in the order these
+ * timespans are defined in the 'structures' property in the Manifest.
+ * This calculation is used by structure-only playback in the 'timeupdate' event in
+ * VideoJSPlayer.
+ * @function Utils#getNextStructureTimespan
+ * @param {Object} currentTimespan current active timespan
+ * @param {Array} canvasSegments list of timespans in 'structures'
+ * @returns {Object | null} the next timespan, or null when there is none
+ */
+export function getNextStructureTimespan(currentTimespan, canvasSegments) {
+  if (!currentTimespan || !canvasSegments?.length) return null;
+
+  const currentIndex = canvasSegments.findIndex((c) => c.id === currentTimespan.id);
+  if (currentIndex === -1) return null;
+
+  return canvasSegments[currentIndex + 1] || null;
+}

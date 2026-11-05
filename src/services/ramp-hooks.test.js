@@ -1377,4 +1377,99 @@ describe('useVideoJSPlayer', () => {
     expect(removeWindowEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
     expect(removeWindowEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
   });
+
+  describe('getNextTimespan()', () => {
+    const CANVAS_1 = 'https://example.com/manifest/lunchroom_manners/canvas/1';
+    const CANVAS_2 = 'https://example.com/manifest/lunchroom_manners/canvas/2';
+    // A timespan on Canvas 1 followed by a timespan on Canvas 2 in 'structures'
+    const canvasSegments = [
+      { id: `${CANVAS_1}#t=258,288`, canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 258, end: 288 } },
+      { id: `${CANVAS_2}#t=301,308`, canvasIndex: 2, isCanvas: false, canvasDuration: 660, times: { start: 301, end: 308 } },
+    ];
+    // Two timespans on Canvas 1 with a gap in-between
+    const sameCanvasSegments = [
+      { id: `${CANVAS_1}#t=258,288`, canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 258, end: 288 } },
+      { id: `${CANVAS_1}#t=301,308`, canvasIndex: 1, isCanvas: false, canvasDuration: 660, times: { start: 301, end: 308 } },
+    ];
+
+    // Helper function setup and mock player related functions called inside the getNextTimespan()
+    const setUpHook = async ({
+      segments = canvasSegments, playerTime = 288.2, activeId = segments[0].id,
+      structureOnlyPlayback = true, clickedUrl = ''
+    }) => {
+      const CustomComponent = withManifestAndPlayerProvider(renderHook(), {
+        initialManifestState: { ...manifestState(lunchroomManners, 0), canvasSegments: segments, structureOnlyPlayback },
+        initialPlayerState: { clickedUrl },
+      });
+      render(<CustomComponent />);
+      await waitFor(() => {
+        expect(resultRef.current.playerRef.current).toBeTruthy();
+      });
+
+      // Mock the 2 player related calls inside the function
+      const player = resultRef.current.playerRef.current;
+      const currentTimeSpy = jest.spyOn(player, 'currentTime').mockImplementation(() => { });
+      const pauseSpy = jest.spyOn(player, 'pause').mockImplementation(() => { });
+
+      // Mark timespan on first Canvas as active
+      act(() => resultRef.current.setActiveId(activeId));
+
+      // Move past the active timespan boundary
+      let nextTimespan;
+      act(() => nextTimespan = resultRef.current.getNextTimespan(playerTime));
+
+      return { currentTimeSpy, pauseSpy, nextTimespan };
+    };
+
+    afterEach(() => { jest.restoreAllMocks(); });
+
+    describe('when structure-only playback is ON', () => {
+      test('with cross-Canvas segments switches to the next Canvas', async () => {
+        const { nextTimespan } = await setUpHook({});
+
+        expect(nextTimespan.index).toEqual(1);
+        expect(nextTimespan.time).toEqual(301);
+      });
+
+      describe('with same Canvas segments', () => {
+        test('skips the gap to the next timespan', async () => {
+          const { currentTimeSpy, nextTimespan } = await setUpHook({ segments: sameCanvasSegments });
+
+          expect(currentTimeSpy).toHaveBeenCalledWith(301);
+          expect(nextTimespan.index).toEqual(0);
+          expect(nextTimespan.time).toEqual(301);
+        });
+
+        test('pauses playback at the end of the last timespan', async () => {
+          const { currentTimeSpy, pauseSpy } = await setUpHook({
+            segments: sameCanvasSegments, activeId: sameCanvasSegments[1].id, playerTime: 308.2,
+          });
+          expect(pauseSpy).toHaveBeenCalledTimes(1);
+          expect(currentTimeSpy).not.toHaveBeenCalled();
+        });
+
+        test('does nothing insdie the boundaries of an active timespan', async () => {
+          const { currentTimeSpy, pauseSpy } = await setUpHook({
+            segments: sameCanvasSegments, playerTime: 270,
+          });
+          expect(currentTimeSpy).not.toHaveBeenCalled();
+          expect(pauseSpy).not.toHaveBeenCalled();
+        });
+
+        test('does nothing when a structure item was clicked', async () => {
+          const { currentTimeSpy } = await setUpHook({
+            segments: sameCanvasSegments, clickedUrl: `${CANVAS_1}#t=258,288`,
+          });
+          expect(currentTimeSpy).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    test('when structure-only playback is OFF with cross-Canvas segments stays on same Canvas', async () => {
+      const { nextTimespan } = await setUpHook({ structureOnlyPlayback: false });
+
+      expect(nextTimespan.index).toEqual(0);
+      expect(nextTimespan.time).toEqual(288.2);
+    });
+  });
 });
