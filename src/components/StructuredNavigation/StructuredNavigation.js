@@ -34,6 +34,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     playlist,
     canvasIsEmpty,
     canvasSegments,
+    sequences
   } = useManifestState();
 
   const { showBoundary } = useErrorBoundary();
@@ -56,11 +57,14 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
 
   const structureContentRef = useRef(null);
 
+  const activeSequence = sequences?.items?.[sequences?.activeIndex];
+  const activeSequenceId = activeSequence?.id;
+
   useEffect(() => {
     if (manifest) {
       try {
         let { structures, timespans, markRoot, hasCollapsibleStructure }
-          = getStructureRanges(manifest, allCanvases, playlist.isPlaylist);
+          = getStructureRanges(manifest, allCanvases, playlist.isPlaylist, activeSequenceId);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
@@ -287,6 +291,13 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       role='complementary'
       aria-label='structured navigation'
     >
+      {activeSequence && (
+        <div className='ramp--structured-nav__order' aria-live='polite'>
+          <span className='ramp--structured-nav__order-icon' aria-hidden='true'><ReorderIcon /></span>
+          <span className='ramp--structured-nav__order-text'>Playing in</span>
+          <span className='ramp--structured-nav__order-label'>{activeSequence.label}</span>
+        </div>
+      )}
       {showAllSectionsButton && !playlist.isPlaylist &&
         <div className='ramp--structured-nav__sections'>
           <span

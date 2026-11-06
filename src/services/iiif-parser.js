@@ -308,7 +308,7 @@ export function getCustomStart(manifest, startCanvasId, startCanvasTime) {
   let currentCanvasIndex = 0;
   // When none of the variable are set, return default values all set to zero
   if (!manifestStartProp && startCanvasId === undefined && startCanvasTime === undefined) {
-    return { type: 'C', canvas: currentCanvasIndex, time: 0 };
+    return { type: 'C', canvas: currentCanvasIndex, time: 0, isDefault: true };
   } else if (startCanvasId != undefined || startCanvasTime != undefined) {
     // Read user specified props from IIIFPlayer component
     startProp = {
@@ -545,6 +545,7 @@ export function parseAutoAdvance(behavior) {
  * @param {Object} manifest
  * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
  * @param {Boolean} isPlaylist
+ * @param {String} activeSequenceId id of the selected 'sequence' Range
  * @returns {Object}
  *  obj.structures: a nested json object structure derived from
  *    'structures' property in the given Manifest
@@ -960,5 +961,74 @@ export function getAccompanyingResource(annotation, version = '3') {
     }
   } catch (error) {
     throw error;
+  }
+}
+
+/**
+ * Check whether a particular Range has the 'sequence' behavior
+ * @param {Object} range
+ * @returns {Boolean}
+ */
+function isSequenceRange(range) {
+  const behavior = range?.getProperty ? range.getProperty('behavior') : range?.behavior;
+  return [].concat(behavior || []).includes('sequence');
+}
+
+/**
+ * Parse Ranges with behavior='sequence' in 'structures'. These sequences
+ * are used in the MediaPlayer to determine the order of playback when
+ * switching between Canvases using previous/next buttons and auto-advancing
+ * from a Canvas to the next when auto-advance is turned ON.
+ *  * @function IIIFParser#getSequences
+ * @param {Object} manifest given IIIF Manifest
+ * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
+ * @returns {Array}
+ */
+export function getSequences(manifest, canvasesInfo) {
+  try {
+    const topRanges = parseManifest(manifest).getTopRanges();
+    let sequenceRanges = [];
+    if (topRanges?.length > 0) {
+      sequenceRanges = topRanges[0].items.filter(r => {
+        const behavior = r.getBehavior();
+        if (isSequenceRange(r)) {
+          return r;
+        }
+      }).filter(id => id != undefined);
+    }
+    if (sequenceRanges?.length === 0 || canvasesInfo?.length === 0) {
+      return [];
+    }
+
+    const manifestOrder = canvasesInfo.map((c) => c.canvasIndex);
+    const sequences = [];
+    sequenceRanges.forEach((range) => {
+      const canvasOrder = [];
+      let label = getLabelValue(range.getLabel().getValue());
+      const sequenceCanvases = range.getCanvasIds();
+      sequenceCanvases.forEach((canvasId) => {
+        const canvasIndex = canvasesInfo.findIndex((c) => c.canvasId === getCanvasId(canvasId));
+        if (canvasIndex < 0) {
+          console.warn('iiif-parser -> getSequences() -> Canvas not found in Manifest, ', canvasId);
+        } else {
+          canvasOrder.push(canvasIndex);
+        }
+      });
+
+      const isManifestOrder = canvasOrder.every((c, i) => c === manifestOrder[i]);
+
+      if (canvasOrder?.length > 0) {
+        sequences.push({
+          id: range.id, label: `${label}${isManifestOrder ? ' (Manifest order)' : ''}`,
+          canvasOrder
+        });
+      }
+    });
+
+    if (sequences?.length === 0) return [];
+    return sequences;
+  } catch (error) {
+    console.error('iiif-parser -> getSequences() -> error parsing sequences, ', error);
+    return [];
   }
 }

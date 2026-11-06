@@ -1,4 +1,5 @@
 import videojs from 'video.js';
+import { getAdjacentCanvasIndex } from '@Services/utility-helpers';
 import '../styles/VideoJSSectionButtons.scss';
 
 const Button = videojs.getComponent('Button');
@@ -10,6 +11,7 @@ const Button = videojs.getComponent('Button');
  * @param {Object} props.player VideoJS player instance
  * @param {Object} props.options
  * @param {Number} props.options.canvasIndex current Canvas index
+ * @param {Array} props.options.canvasLabels Canvas labels of all the Canvases in Manifest
  * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
  */
 class VideoJSPreviousButton extends Button {
@@ -24,7 +26,7 @@ class VideoJSPreviousButton extends Button {
     this.cIndex = options.canvasIndex;
 
     // Handle player reload or source change events
-    this.player.on('loadstart', () => {
+    this.player.on(['loadstart', 'sequencechange'], () => {
       this.updateComponent();
     });
   }
@@ -40,7 +42,28 @@ class VideoJSPreviousButton extends Button {
         this.cIndex = player.canvasIndex;
       }
     }
-    this.controlText(this.cIndex == 0 ? 'Replay' : 'Previous');
+
+    const previousIndex = this.getPreviousIndex();
+    let controlText = 'Previous Canvas';
+    if (previousIndex === undefined) {
+      // Set the control text to 'Replay' when on first Canvas
+      controlText = 'Replay';
+    } else if (this.options.canvasLabels?.[previousIndex]) {
+      controlText = `Previous: ${this.options.canvasLabels[previousIndex]}`;
+    }
+    this.controlText(controlText);
+  }
+
+  getPreviousIndex() {
+    const { canvasOrder } = this.player;
+    if (canvasOrder) {
+      return getAdjacentCanvasIndex(canvasOrder, this.cIndex, -1);
+    } else if (this.cIndex > 0) {
+      return this.cIndex + 1;
+    } else {
+      // Return nothing when first Canvas is reached
+      return;
+    }
   }
 
   handleClick() {
@@ -55,8 +78,9 @@ class VideoJSPreviousButton extends Button {
   }
 
   handlePreviousClick() {
-    if (this.cIndex > -1 && this.cIndex != 0) {
-      this.options.switchPlayer(this.cIndex - 1, true);
+    const previousIndex = this.getPreviousIndex();
+    if (previousIndex !== undefined) {
+      this.options.switchPlayer(previousIndex, true);
     } else if (this.cIndex == 0) {
       this.player.currentTime(0);
     }

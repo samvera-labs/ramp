@@ -234,6 +234,18 @@ export const MultiRangeSVGIcon = () => {
   );
 };
 
+/** SVG icon for the playback order menu in the player's control-bar and StructuredNavigation */
+export const ReorderIcon = () => {
+  return (
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ height: '1.25rem', width: '1.25rem' }}>
+      <g fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 6h11M3 12h11M3 18h11" />
+        <path d="M19 4v16M16.5 6.5 19 4l2.5 2.5M16.5 17.5 19 20l2.5-2.5" />
+      </g>
+    </svg>
+  );
+};
+
 /**
  * Convert a React SVG icon component into an SVG <symbol> markup string to be used in
  * custom VideoJS components.

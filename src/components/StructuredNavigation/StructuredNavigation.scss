@@ -372,3 +372,37 @@ ul.ramp--structured-nav__tree {
     }
   }
 }
+
+// Read-only display of the selected playback order from Ranges with 'sequence' behavior
+.ramp--structured-nav__order {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25em 0.5em;
+  margin-bottom: 0.25em;
+  padding: 0.35em 0.5em;
+  font-size: vars.$fontSizeMedium;
+  background-color: vars.$primaryLightest;
+  border: 1px solid vars.$primaryLight;
+  border-radius: 0.25em;
+
+  .ramp--structured-nav__order-icon {
+    display: inline-flex;
+    color: vars.$primaryDark;
+
+    svg {
+      height: 1.25em !important;
+      width: 1.25em !important;
+    }
+  }
+
+  .ramp--structured-nav__order-text {
+    color: vars.$primaryDark;
+  }
+
+  .ramp--structured-nav__order-label {
+    font-weight: bold;
+    color: vars.$primaryGreenDark;
+    overflow-wrap: anywhere;
+  }
+}
