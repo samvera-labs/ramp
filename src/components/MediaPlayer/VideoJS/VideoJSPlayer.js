@@ -11,7 +11,7 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { getMediaFragment, offsetTextTrackCues } from '@Services/utility-helpers';
+import { getMediaFragment, getAdjacentCanvasIndex, offsetTextTrackCues } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -1378,7 +1378,11 @@ function VideoJSPlayer({
    * (not the next item in list) when the current item is coming to its end.
    */
   const handleEnded = useMemo(() => throttle(() => {
+    // Next Canvas in the selected order, returns undefined for the last Canvas
+    const nextCanvasIndex = getAdjacentCanvasIndex(canvasOrderRef.current, cIndexRef.current, 1);
+
     const isLastCanvas = nextCanvasIndex === undefined;
+
     /* Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off
     OR current Canvas is the last Canvas in the Manifest.  */
     if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {

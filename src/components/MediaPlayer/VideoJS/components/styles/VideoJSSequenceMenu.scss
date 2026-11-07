@@ -30,6 +30,10 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    li.vjs-sequence-manifest-order {
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+    }
   }
 }
 

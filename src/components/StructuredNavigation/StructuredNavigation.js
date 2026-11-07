@@ -8,6 +8,7 @@ import { useManifestState, useManifestDispatch } from '../../context/manifest-co
 import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
+import { ReorderIcon } from '@Services/svg-icons';
 import './StructuredNavigation.scss';
 
 /**
@@ -60,11 +61,26 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
   const activeSequence = sequences?.items?.[sequences?.activeIndex];
   const activeSequenceId = activeSequence?.id;
 
+  // Memoise the parsed top-level Range for selected sequence for each Manifest
+  const parsedStructuresRef = useRef({ manifest: null, sequences: new Map() });
+
+  useEffect(() => {
+    if (manifest && parsedStructuresRef.current.manifest != manifest) {
+      parsedStructuresRef.current = { manifest, sequences: new Map() };
+    }
+  }, [manifest]);
+
   useEffect(() => {
     if (manifest) {
       try {
-        let { structures, timespans, markRoot, hasCollapsibleStructure }
-          = getStructureRanges(manifest, allCanvases, playlist.isPlaylist, activeSequenceId);
+        const { sequences } = parsedStructuresRef.current;
+        // Parse Range only when the sequence has not been saved before
+        if (!sequences.has(activeSequenceId)) {
+          const structureInfo = getStructureRanges(manifest, allCanvases, playlist.isPlaylist, activeSequenceId);
+          sequences.set(activeSequenceId, structureInfo);
+        }
+
+        let { structures, timespans, markRoot, hasCollapsibleStructure } = sequences.get(activeSequenceId);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
@@ -81,7 +97,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         showBoundary(error);
       }
     }
-  }, [manifest]);
+  }, [activeSequenceId]);
 
   // Set currentNavItem when current Canvas is an inaccessible/empty item
   useEffect(() => {
@@ -277,6 +293,9 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     return structureItemsRef.current?.length || 0;
   }, [structureItemsRef.current]);
 
+  const isSequenceTree = activeSequenceId != undefined
+    && structureItemsRef.current?.[0]?.rangeId === activeSequenceId;
+
   if (!manifest) {
     return (<p className='ramp--no-structure'>
       No manifest - Please provide a valid manifest.
@@ -293,8 +312,8 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     >
       {activeSequence && (
         <div className='ramp--structured-nav__order' aria-live='polite'>
-          <span className='ramp--structured-nav__order-icon' aria-hidden='true'><ReorderIcon /></span>
-          <span className='ramp--structured-nav__order-text'>Playing in</span>
+          <span aria-hidden='true'><ReorderIcon /></span>
+          <span>Playing in the order of</span>
           <span className='ramp--structured-nav__order-label'>{activeSequence.label}</span>
         </div>
       )}
@@ -330,6 +349,8 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         >
           {numberOfSections > 0 ? (
             <ul
+              // Re-render the structure when the active sequence changes
+              key={isSequenceTree ? activeSequenceId : 'structure-tree'}
               className='ramp--structured-nav__tree'
               role='tree'
               data-testid='nested-tree'

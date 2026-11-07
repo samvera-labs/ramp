@@ -2,7 +2,7 @@ import { decode } from 'html-entities';
 import isEmpty from 'lodash/isEmpty';
 import mimeTypes from 'mime-types';
 import DOMPurify from 'dompurify';
-import { getPlaceholderResource } from './iiif-parser';
+import { getCanvasId, getPlaceholderResource } from './iiif-parser';
 import { IS_ANDROID, IS_MOBILE, IS_SAFARI } from '@Services/browser';
 import { hasMotivation, normalizeValues } from '@Services/iiif-version-parser';
 
@@ -1218,5 +1218,60 @@ export function getActiveRangeForCanvas(item, canvasIndex, canvasDuration) {
     canvasIndex: range.canvasIndex,
     times: range.times,
     canvasDuration: canvasDuration ?? item.canvasDuration,
+  };
+}
+
+/**
+ * Get he next/previous Canvas index in the selected sequence's Canvas order
+ * with respect to the current Canvas index.
+ * @function Utils#getAdjacentCanvasIndex
+ * @param {Array} canvasOrder Canvas indices order in the selected sequence
+ * @param {Number} currentIndex current Canvas index
+ * @param {Number} step direction of the Canvas shift +1 for next and -1 for previous
+ * @returns {Number|undefined}
+ */
+export function getAdjacentCanvasIndex(canvasOrder, currentIndex, step) {
+  const position = canvasOrder.indexOf(currentIndex);
+  // When the current Canvas is not in the order, next is defaulted to the first Canvas in the selected order
+  if (position < 0) {
+    return step > 0 ? canvasOrder[0] : undefined;
+  }
+  return canvasOrder[position + step];
+}
+
+/**
+ * Check whether a particular Range has the 'sequence' behavior
+ * @function Utils#isSequenceRange
+ * @param {Object} range
+ * @returns {Boolean}
+ */
+export function isSequenceRange(range) {
+  const behavior = range?.getProperty ? range.getProperty('behavior') : range?.behavior;
+  return [].concat(behavior || []).includes('sequence');
+}
+
+/**
+ * Wrap each Canvas listed directly in a 'sequence' Range within another Range labeled with the
+ * Canvas label. So that, each Canvas is displayed as a section in the StructuredNavigation
+ * component in the given order.
+ * @function Utils#wrapSequenceCanvases
+ * @param {Object} manifest current IIIF Manifest
+ * @param {String} sequenceId Range id of the selected 'sequence' Range
+ * @param {Array} canvasesInfo info relevant to each Canvas in the Manifest
+ * @returns {Object} a copy of the Manifest with the update 'sequence' Range
+ */
+export function wrapSequenceCanvases(manifest, sequenceId, canvasesInfo) {
+  const wrapCanvas = (item, index) => {
+    if (item.type !== 'Canvas') return [item];
+    const canvas = canvasesInfo.find((c) => c.canvasId === getCanvasId(item.id));
+    return canvas
+      ? [{ id: `${sequenceId}/canvas/${index}`, type: 'Range', label: { none: [canvas.label] }, items: [item] }]
+      : [];
+  };
+  return {
+    ...manifest,
+    structures: (manifest.structures || []).map((range) => range.id === sequenceId
+      ? { ...range, items: (range.items || []).flatMap(wrapCanvas) } : range
+    )
   };
 }

@@ -64,6 +64,8 @@ class VideoJSSequenceMenu extends MenuButton {
       });
       item.setAttribute('title', sequence.label);
       item.setAttribute('data-testid', 'videojs-sequence-menu-item');
+      // Display a divider before the Canvas order in Manifest's 'items'
+      if (sequence.isManifestOrder) item.addClass('vjs-sequence-manifest-order');
 
       item.handleClick = () => {
         if (index !== this.activeIndex && typeof onSelect === 'function') onSelect(index);

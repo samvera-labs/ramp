@@ -12,7 +12,9 @@ import {
   setCanvasMessageTimeout,
   timeToHHmmss,
   identifyMachineGen,
+  isSequenceRange,
   sanitizeHTML,
+  wrapSequenceCanvases
 } from './utility-helpers';
 import { getAccompanyingProp, getPlaceholderProp, hasMotivation } from './iiif-version-parser';
 
@@ -553,7 +555,7 @@ export function parseAutoAdvance(behavior) {
  *  obj.markRoot: display root Range in the UI
  *  obj.hasCollapsibleStructure: has timespans/children in at least one Canvas
  */
-export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
+export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false, activeSequenceId) {
   let timespans = [];
   let manifestDuration = 0;
   let hasRoot = false;
@@ -561,6 +563,10 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   let hasCollapsibleStructure = false;
   // Initialize the subIndex for tracking indices for timespans in structure
   let subIndex = 0;
+
+  // Get the referenced Canvas in a Range or its child Ranges
+  const getRelatedCanvasId = (range) => range.getCanvasIds()[0]
+    ?? range.getRanges().map(getRelatedCanvasId).find((id) => id != undefined);
 
   let parseItem = (range, rootNode) => {
     let behavior = range.getBehavior();
@@ -587,7 +593,12 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
         // When parsing the root Range in structures, treat it as a Canvas
         isCanvas = isRoot || (canvasesInfo.length > 1 && rootNode == range.parentRange);
         if (canvasesInfo.length > 1 && rootNode == range.parentRange) {
-          cIndex = cIndex + 1;
+          // Sections in a 'sequence' Range is in a different order than canvasesInfo
+          const relatedCanvasId = isSequenceRange(rootNode) ? getRelatedCanvasId(range) : undefined;
+          const relatedCanvasIfo = relatedCanvasId
+            && canvasesInfo.find((c) => c.canvasId === getCanvasId(relatedCanvasId));
+
+          cIndex = relatedCanvasIfo ? relatedCanvasIfo.canvasIndex + 1 : cIndex + 1;
         } else if (canvasesInfo.length == 1) {
           // When only one Canvas is in the items list
           cIndex = 1;
@@ -688,7 +699,8 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
 
       // Parse start and end times from media-fragment URI
       // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
-      let times = id ? getMediaFragment(id, canvasDuration) : { start: 0, end: 0 };
+      const span = getMediaFragment(id, canvasDuration);
+      let times = span === undefined || isCanvas ? { start: 0, end: 0 } : span;
 
       // A timespan is only clickable when its start/end falls within the Canvas' duration
       if (canvases.length > 0 && canvasesInfo?.length > 0) {
@@ -719,11 +731,24 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
   };
 
   try {
+    // Wrap Canvas refs in 'sequence' Ranges to make them parser-friendly
+    if (activeSequenceId !== undefined && canvasesInfo?.length > 1) {
+      manifest = wrapSequenceCanvases(manifest, activeSequenceId, canvasesInfo);
+    }
     const allRanges = parseManifest(manifest).getAllRanges();
     if (allRanges?.length === 0) {
       return { structures: [], timespans: [], markRoot: false, hasCollapsibleStructure };
     } else {
-      const rootNode = allRanges[0];
+      /* When the a 'sequence' Range is active, use its content to create the navigational content
+      in the StructuredNavigation component. For the synthetic sequence with id 'manifest-order' in
+      Ramp, select the top-level Range without behavior='sequence' in 'structures'. */
+      const sequenceRange = allRanges.find((r) => r.id === activeSequenceId && isSequenceRange(r));
+      const activeSequenceRange = activeSequenceId === 'manifest-order'
+        ? allRanges.find((r) => !isSequenceRange(r)) : sequenceRange;
+      const rootNode = activeSequenceId === undefined ? allRanges[0] : activeSequenceRange;
+      if (!rootNode) {
+        return { structures: [], timespans: [], markRoot: false, hasCollapsibleStructure };
+      }
       let structures = [];
       const rootBehavior = rootNode.getBehavior();
       if (rootBehavior && NO_DISPLAY_STRUCTURE_BEHAVIORS.includes(rootBehavior)) {
@@ -749,6 +774,11 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
             (duration, canvas) => duration + canvas.range.end, 0
           );
           structures.push(parseItem(rootNode, rootNode, cIndex));
+          // Adjust the itemIndexLabel to reflect incremental order instead of the respective Canvas index
+          if (isSequenceRange(rootNode)) {
+            structures[0].items.filter((s) => s.isCanvas)
+              .forEach((s, index) => { s.itemIndexLabel = `${index + 1}`; });
+          }
         }
       }
       // Mark root Range for a single-canvased Manifest
@@ -965,16 +995,6 @@ export function getAccompanyingResource(annotation, version = '3') {
 }
 
 /**
- * Check whether a particular Range has the 'sequence' behavior
- * @param {Object} range
- * @returns {Boolean}
- */
-function isSequenceRange(range) {
-  const behavior = range?.getProperty ? range.getProperty('behavior') : range?.behavior;
-  return [].concat(behavior || []).includes('sequence');
-}
-
-/**
  * Parse Ranges with behavior='sequence' in 'structures'. These sequences
  * are used in the MediaPlayer to determine the order of playback when
  * switching between Canvases using previous/next buttons and auto-advancing
@@ -1000,11 +1020,10 @@ export function getSequences(manifest, canvasesInfo) {
       return [];
     }
 
-    const manifestOrder = canvasesInfo.map((c) => c.canvasIndex);
     const sequences = [];
     sequenceRanges.forEach((range) => {
       const canvasOrder = [];
-      let label = getLabelValue(range.getLabel().getValue());
+      let label = getLabelValue(range.getLabel().getValue()) || `Sequence ${sequences.length + 1}`;
       const sequenceCanvases = range.getCanvasIds();
       sequenceCanvases.forEach((canvasId) => {
         const canvasIndex = canvasesInfo.findIndex((c) => c.canvasId === getCanvasId(canvasId));
@@ -1015,18 +1034,23 @@ export function getSequences(manifest, canvasesInfo) {
         }
       });
 
-      const isManifestOrder = canvasOrder.every((c, i) => c === manifestOrder[i]);
-
       if (canvasOrder?.length > 0) {
         sequences.push({
-          id: range.id, label: `${label}${isManifestOrder ? ' (Manifest order)' : ''}`,
-          canvasOrder
+          id: range.id, label, canvasOrder, isManifestOrder: false
         });
       }
     });
 
     if (sequences?.length === 0) return [];
-    return sequences;
+    // Add a made-up Manifest order to the list for displaying the non-sequence Range navigation
+    return [
+      ...sequences,
+      {
+        id: 'manifest-order', label: 'Manifest Order',
+        canvasOrder: canvasesInfo.map((_, index) => index),
+        isManifestOrder: true,
+      }
+    ];
   } catch (error) {
     console.error('iiif-parser -> getSequences() -> error parsing sequences, ', error);
     return [];
