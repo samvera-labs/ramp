@@ -10,6 +10,7 @@ import singleCanvasManifest from '@TestData/single-canvas';
 import authManifest from '@TestData/auth-manifest';
 import waveformManifest from '@TestData/waveform-example';
 import multiSourceManifest from '@TestData/multi-source-manifest';
+import sequenceManifest from '@TestData/sequence-range';
 
 // Mock 'requestLogout' from auth-service module
 jest.mock('@Services/auth-service', () => ({
@@ -1009,6 +1010,151 @@ describe('VideoJSPlayer component', () => {
         expect(nextItemClickedSpy).toHaveBeenCalledWith(1, 381.1);
         // Seeks to the offset 381.1s within the second source
         expect(currentTimeSpy).toHaveBeenCalledWith(381.1);
+      });
+    });
+  });
+
+  describe('feature: sequence selection and navigation', () => {
+    const sequences = {
+      items: [
+        {
+          id: 'https://example.com/alternate-sequence-video/range/s1',
+          label: 'Physical sequence', canvasOrder: [1, 0], isManifestOrder: false
+        },
+        {
+          id: 'https://example.com/alternate-sequence-video/range/s2',
+          label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
+        },
+        { id: 'manifest-order', label: 'Manifest Order', canvasOrder: [0, 1], isManifestOrder: true }
+      ],
+      activeIndex: 0
+    };
+
+    test('doesn\'t render the sequence menu without sequence Ranges', async () => {
+      await renderPlayer({ manifest: videoManifest, canvasIndex: 0 });
+      await triggerLoadedMetadata('videojs-video-element');
+      expect(screen.queryByTestId('videojs-sequence-menu')).not.toBeInTheDocument();
+    });
+
+    test('renders the sequence menu with first sequence selected', async () => {
+      await renderPlayer({ manifest: sequenceManifest, canvasIndex: 1, manifestOverrides: { sequences } });
+      await triggerLoadedMetadata('videojs-video-element');
+
+      expect(screen.queryByTestId('videojs-sequence-menu')).toBeInTheDocument();
+      expect(screen.queryByText('Playback order: Physical sequence')).toBeInTheDocument();
+
+      const sequenceMenuItems = screen.getAllByTestId('videojs-sequence-menu-item');
+      expect(sequenceMenuItems[0].querySelector('.vjs-menu-item-text').textContent).toEqual('Physical sequence');
+      expect(sequenceMenuItems[0]).toHaveAttribute('aria-checked', 'true');
+
+      expect(sequenceMenuItems[1].querySelector('.vjs-menu-item-text').textContent).toEqual('Author-intended sequence');
+      expect(sequenceMenuItems[1]).toHaveAttribute('aria-checked', 'false');
+      expect(sequenceMenuItems[2].querySelector('.vjs-menu-item-text').textContent).toEqual('Manifest Order');
+      expect(sequenceMenuItems[2]).toHaveAttribute('aria-checked', 'false');
+    });
+
+    describe('selecting a sequence', () => {
+      const renderPlayerWithDefault = async () => {
+        await renderPlayer({ manifest: sequenceManifest, canvasIndex: 1, manifestOverrides: { sequences } });
+        const player = await triggerLoadedMetadata('videojs-video-element');
+        act(() => player.trigger('loadstart'));
+
+        const sequenceMenuItems = screen.getAllByTestId('videojs-sequence-menu-item');
+        return { player, sequenceMenuItems };
+      };
+
+      test('updates the menu', async () => {
+        const { sequenceMenuItems } = await renderPlayerWithDefault();
+
+        act(() => { fireEvent.click(sequenceMenuItems[1]); });
+
+        expect(screen.queryByText('Playback order: Author-intended sequence')).toBeInTheDocument();
+
+        expect(sequenceMenuItems[0]).toHaveAttribute('aria-checked', 'false');
+        expect(sequenceMenuItems[1]).toHaveAttribute('aria-checked', 'true');
+      });
+
+      test('shows a playback notice', async () => {
+        const { sequenceMenuItems } = await renderPlayerWithDefault();
+        expect(screen.queryByTestId('videojs-sequence-notice')).toBeInTheDocument();
+
+        const sequenceNotice = screen.getByTestId('videojs-sequence-notice');
+        expect(sequenceNotice).not.toHaveClass('vjs-sequence-notice--visible');
+
+        act(() => { fireEvent.click(sequenceMenuItems[1]); });
+
+        expect(sequenceNotice).toHaveTextContent('Now playing in: Author-intended sequence');
+        expect(sequenceNotice).toHaveClass('vjs-sequence-notice--visible');
+        expect(sequenceNotice).toHaveAttribute('aria-live', 'polite');
+      });
+
+      test('updates the previous/next button control texts', async () => {
+        const { player, sequenceMenuItems } = await renderPlayerWithDefault();
+        expect(screen.getByTestId('videojs-next-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Next: Atto Primo');
+
+        act(() => { fireEvent.click(sequenceMenuItems[1]); });
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('videojs-video-element')[0].dataset.canvasindex)
+            .toEqual('0');
+        });
+        act(() => player.trigger('loadstart'));
+
+        expect(screen.getByTestId('videojs-next-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Next: Atto Secondo');
+        expect(screen.getByTestId('videojs-previous-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Replay');
+      });
+    });
+
+    describe('updates previous/next button control texts', () => {
+      test('when Canvas is changed via next button click', async () => {
+        await renderPlayer({ manifest: sequenceManifest, canvasIndex: 1, manifestOverrides: { sequences } });
+        const player = await triggerLoadedMetadata('videojs-video-element');
+
+        expect(screen.getByTestId('videojs-next-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Next: Atto Primo');
+        expect(screen.getByTestId('videojs-previous-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Replay');
+
+        act(() => { fireEvent.click(screen.getByTestId('videojs-next-button')); });
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('videojs-video-element')[0].dataset.canvasindex)
+            .toEqual('0');
+        });
+        act(() => player.trigger('loadstart'));
+
+        expect(screen.getByTestId('videojs-next-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('');
+        expect(screen.getByTestId('videojs-previous-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Previous: Atto Secondo');
+      });
+
+      test('when Canvas is ended', async () => {
+        await renderPlayer({ manifest: sequenceManifest, canvasIndex: 1, manifestOverrides: { sequences, autoAdvance: true } });
+        const player = await triggerLoadedMetadata('videojs-video-element');
+
+        expect(screen.getByTestId('videojs-next-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Next: Atto Primo');
+        expect(screen.getByTestId('videojs-previous-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Replay');
+
+        act(() => { player.trigger('loadeddata'); });
+        act(() => { player.trigger('play'); });
+        act(() => { player.trigger('ended'); });
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('videojs-video-element')[0].dataset.canvasindex)
+            .toEqual('0');
+        });
+        act(() => { player.trigger('loadstart'); });
+
+        expect(screen.getByTestId('videojs-next-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('');
+        expect(screen.getByTestId('videojs-previous-button')
+          .querySelector('.vjs-control-text').textContent).toEqual('Previous: Atto Secondo');
       });
     });
   });

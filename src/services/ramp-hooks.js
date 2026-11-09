@@ -563,7 +563,7 @@ export const useVideoJSPlayer = ({
       playerRef.current.markers?.removeAll();
       playerRef.current.markers.add([
         ...(fragmentMarker ? [fragmentMarker] : []),
-        ...searchMarkers,
+        ...(searchMarkers ? searchMarkers : []),
         ...(markers ?? []),
       ]);
     }

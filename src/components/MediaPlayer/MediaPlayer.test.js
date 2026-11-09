@@ -11,6 +11,7 @@ import playlistManifest from '@TestData/playlist';
 import emptyManifest from '@TestData/empty-manifest';
 import forcedTextTracksManifest from '@TestData/forced-text-tracks';
 import adManifest from '@TestData/ad-annotation';
+import sequenceManifest, { audioSequenceRange } from '@TestData/sequence-range';
 import * as hooks from '@Services/ramp-hooks';
 
 // Mock the Video.js language loader
@@ -570,12 +571,82 @@ describe('MediaPlayer component', () => {
     });
   });
 
+  describe('sequence button in the control bar', () => {
+    test('renders with video Manifest', async () => {
+      const videoSequences = {
+        items: [
+          {
+            id: 'https://example.com/alternate-sequence-video/range/s1',
+            label: 'Physical sequence', canvasOrder: [1, 0], isManifestOrder: false
+          },
+          {
+            id: 'https://example.com/alternate-sequence-video/range/s2',
+            label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
+          },
+          { id: 'manifest-order', label: 'Manifest Order', canvasOrder: [0, 1], isManifestOrder: true }
+        ],
+        activeIndex: 0
+      };
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState(sequenceManifest), sequences: videoSequences },
+        initialPlayerState: {},
+      });
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
+      expect(
+        screen.queryAllByTestId('videojs-video-element').length
+      ).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.queryByTitle('Playback order: Physical sequence')).toBeInTheDocument();
+      });
+    });
+
+    test('renders with audio Manifest', async () => {
+      const audioSequences = {
+        items: [
+          {
+            id: 'https://example.com/alternate-sequence-audio/range/s1',
+            label: 'Physical sequence', canvasOrder: [1, 0], isManifestOrder: false
+          },
+          {
+            id: 'https://example.com/alternate-sequence-audio/range/s2',
+            label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
+          },
+          { id: 'manifest-order', label: 'Manifest Order', canvasOrder: [0, 1], isManifestOrder: true }
+        ],
+        activeIndex: 0
+      };
+      const PlayerWithManifest = withManifestAndPlayerProvider(MediaPlayer, {
+        initialManifestState: { ...manifestState(audioSequenceRange), sequences: audioSequences },
+        initialPlayerState: {},
+      });
+      await act(async () => render(
+        <ErrorBoundary>
+          <PlayerWithManifest />
+        </ErrorBoundary>
+      ));
+      expect(
+        screen.queryAllByTestId('videojs-audio-element').length
+      ).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(screen.queryByTitle('Playback order: Physical sequence')).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('displays inaccessible message', () => {
     const mockHooks = () => {
       jest.spyOn(hooks, 'useMediaPlayer').mockImplementation(() => ({
         canvasIsEmpty: true,
         canvasIndex: 1,
-        lastCanvasIndex: 5
+        lastCanvasIndex: 5,
+        canvasOrder: [0, 1, 2, 3, 4, 5],
+        nextCanvasIndex: 2,
+        previousCanvasIndex: 0,
+        isMultiCanvased: true
       }));
       const switchPlayerMock = jest.fn();
       jest.spyOn(hooks, 'useSetupPlayer').mockImplementation(() => ({
