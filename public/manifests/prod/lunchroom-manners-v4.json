@@ -111,6 +111,7 @@
 								"supplementing"
 							],
 							"provides": [
+								"audioDescription",
 								"subtitles"
 							],
 							"body": {

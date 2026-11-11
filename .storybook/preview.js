@@ -59,6 +59,7 @@ const preview = {
         method: 'alphabetical', // Sorts items without a specified order alphabetically
         order: [
           'Introduction', ['Getting Started', 'Contributing', 'Releasing'],
+          'Implementation Notes', ['IIIF Presentation API 4.0'],
           'Components', ['IIIFPlayer', 'MediaPlayer', 'StructuredNavigation', 'Transcript', 'Annotations']]
       },
     },

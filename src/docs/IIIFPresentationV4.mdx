@@ -1,0 +1,277 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Implementation Notes/IIIF Presentation API 4.0" parameters={{
+    viewMode: 'docs',
+    previewTabs: { canvas: { hidden: true } },
+  }} />
+
+# IIIF Presentation API 4.0 Support
+
+Ramp adds support for parsing and playing [IIIF Presentation API 4.0](https://iiif.io/api/presentation/4.0/) Manifests alongside [IIIF Presentation API 3.0](https://iiif.io/api/presentation/3.0/) Manifests.
+No changes are needed in your application to use a v4.0 Manifest. Once Ramp reads a Manifest URL from the `IIIFPlayer` component's `manifestUrl` prop as usual, it detects the version and adjusts how the Manifest is read and parsed.
+
+Presentation 4.0 support in Ramp covers both audio/video use-cases Ramp already supports for Presentation 3.0. However, it is not a complete implementation of the 4.0 specification. See [limitations](#limitations) below for what is not supported.
+
+### Detecting the IIIF Presentation API Version
+
+Ramp parses the version from the Manifest's `@context` property when the Manifest is loaded in [`IIIFPlayer`](?path=/docs/components-iiifplayer--docs).
+The detected version is then stored in Ramp's central state and used in every parsing function that reads version-specific properties.
+
+<table>
+  <thead>
+    <tr>
+      <th><code>@context</code> value</th>
+      <th>Version used by Ramp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>"http://iiif.io/api/presentation/4/context.json"</code></td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>An array that includes <code>"http://iiif.io/api/presentation/4/context.json"</code></td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td><code>"http://iiif.io/api/presentation/3/context.json"</code> , or an array that includes it</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>Missing, or any other value</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+
+Ramp defaults to version 3 when the `@context` is missing or not recognized. This keeps Manifests that worked with earlier releases (pre `@samvera/ramp@v5.2.0`) of Ramp working the same way.
+
+### Supported Containers
+
+Presentation 4.0 introduces [`Containers`](https://iiif.io/api/presentation/4.0/#containers) as a general term for the resources that hold content, with `Canvas`, `Timeline`, and `Scene` as `type` values. Ramp supports the following `Container` types:
+
+- `Canvas` with a `duration` property: identified as video content. In Presentation 4.0 a `Canvas` can also hold only images, so Ramp _requires_ a defined `duration` property in the Container before it treats a `Canvas` as a video resource.
+Ramp does not support media from a `Canvas` without a `duration` (an image).
+- `Timeline`: identified as audio content. A `Timeline` has a `duration` but no `width`/`height`.
+
+In Presentation 3.0 Manifests, Ramp keeps its existing behavior and reads every `Canvas` without the `duration` check.
+
+### Renamed Properties
+
+IIIF Presentation API 4.0 renames descriptive properties that link a `Container` to another `Container` for providing additional content for use before the main content of the resource that has the linked `Container` is rendered.
+Ramp reads the property name that matches the Manifest's version:
+
+<table>
+  <thead>
+    <tr>
+      <th>Purpose</th>
+      <th>Presentation 3.0</th>
+      <th>Presentation 4.0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Poster image, or message for an inaccessible item</td>
+      <td><code>placeholderCanvas</code></td>
+      <td><code>placeholderContainer</code></td>
+    </tr>
+    <tr>
+      <td>Waveform image</td>
+      <td><code>accompanyingCanvas</code></td>
+      <td><code>accompanyingContainer</code></td>
+    </tr>
+  </tbody>
+</table>
+
+Ramp does not fallback to the Presentation 3.0 property name in a Presentation 4.0 Manifest. For example, a Presentation 4.0 Manifest using `placeholderCanvas` displays no poster image, and an inaccessible item displays
+the default `This item cannot be played.` message instead of the label in the Manifest's `placeholderCanvas`.
+
+### `motivation` Values
+
+In Presentation 4.0, an Annotation's [`motivation`](https://iiif.io/api/presentation/4.0/model/#motivation) must be an array (e.g. `"motivation": ["painting"]`). In Presentation 3.0 it is conventionally a single string
+(e.g. `"motivation": "painting"`). Ramp accepts both formats in Manifests of either version and normalizes the value into an array, and checks whether the expected value is included in the array.
+
+This applies to every motivation Ramp reads: `painting` for media, `supplementing` for captions, transcripts and audio description, and `highlighting`/`commenting`/`tagging` for annotations
+(in [`Annotations` component](?path=/docs/components-annotations--docs)).
+
+### Identifying `supplementing` Annotations with `provides`
+
+Presentation 4.0 introduces a [`provides` property](https://iiif.io/api/presentation/4.0/model/#provides) on `supplementing` Annotations, which describes the accessibility features an Annotation offers using values from the
+[IIIF accessibility registry](https://iiif.io/api/registry/accessibility/). Ramp reads `provides` on `supplementing` Annotations to decide which components display each `supplementing` Annotation.
+
+<table>
+  <thead>
+    <tr>
+      <th><code>provides</code> value</th>
+      <th>Displayed in Ramp as</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>transcript</code></td>
+      <td>A transcript in the [`Transcript` component](?path=/docs/components-transcript--docs) and the [`Annotations` component](?path=/docs/components-annotations--docs)</td>
+    </tr>
+    <tr>
+      <td><code>closedCaptions</code></td>
+      <td>A captions/subtitles text track in the [`MediaPlayer` component](?path=/docs/components-mediaplayer--docs)</td>
+    </tr>
+    <tr>
+      <td><code>subtitles</code></td>
+      <td>A captions/subtitles text track in the MediaPlayer component</td>
+    </tr>
+    <tr>
+      <td><code>audioDescription</code></td>
+      <td>An audio description text track in the MediaPlayer component, and a transcript in the Transcript and Annotations components.</td>
+    </tr>
+  </tbody>
+</table>
+
+An Annotation can list more than one value for the `provides` property, and Ramp displays the Annotation accordingly in different components as intended. For example, `"provides": ["transcript", "closedCaptions"]`
+displays the file as both a transcript and a captions track.
+
+#### How Ramp decides when `provides` is missing
+
+Ramp checks the `provides` property first. When `provides` is missing or empty, Ramp falls back to the convention it uses for Presentation 3.0 Manifests, and reads the last segment of the Annotation body's
+`id` (e.g. 'https://example.com/supplemental_files/8810/captions'):
+
+<table>
+  <thead>
+    <tr>
+      <th>Last segment of the body <code>id</code> value</th>
+      <th>Displayed in Ramp as</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>transcript</code></td>
+      <td>A transcript</td>
+    </tr>
+    <tr>
+      <td><code>captions</code> or <code>subtitles</code></td>
+      <td>A captions/subtitles track</td>
+    </tr>
+    <tr>
+      <td><code>descriptions</code></td>
+      <td>An audio description track</td>
+    </tr>
+    <tr>
+      <td>Any other value</td>
+      <td>Both a transcript and a captions/subtitles track</td>
+    </tr>
+  </tbody>
+</table>
+
+This fallback applies to both Presentation 3.0 and 4.0 Manifests, so Presentation 4.0 Manifests that do not use `provides` behave the same as their Presentation 3.0 equivalents.
+
+**Note:** when `provides` lists only values Ramp does not support (e.g. `["signLanguage"]`), Ramp does not use the fallback and the respective Annotation is not displayed in any component.
+
+### Example
+
+The following is an example Canvas from a IIIF Presentation API 4.0 Manifest with a video, a poster image, and a WebVTT file that provides both subtitles and audio description.
+
+```json
+{
+  "@context": "http://iiif.io/api/presentation/4/context.json",
+  "id": "https://example.org/manifest.json",
+  "type": "Manifest",
+  "label": { "en": ["Lunchroom Manners"] },
+  "items": [
+    {
+      "id": "https://example.com/canvas/1",
+      "type": "Canvas",
+      "height": 360,
+      "width": 480,
+      "duration": 572.034,
+      "placeholderContainer": {
+        "id": "https://example.com/canvas/1/placeholder",
+        "type": "Canvas",
+        "height": 728,
+        "width": 962,
+        "items": [
+          {
+            "id": "https://example.com/canvas/1/placeholder/page",
+            "type": "AnnotationPage",
+            "items": [
+              {
+                "id": "https://example.com/canvas/1/placeholder/image",
+                "type": "Annotation",
+                "motivation": ["painting"],
+                "body": {
+                  "id": "https://example.com/lunchroom_manners_poster.jpg",
+                  "type": "Image",
+                  "format": "image/jpeg"
+                },
+                "target": { "id": "https://example.com/canvas/1/placeholder", "type": "Canvas" }
+              }
+            ]
+          }
+        ]
+      },
+      "items": [
+        {
+          "id": "https://example.com/canvas/1/page",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/canvas/1/media",
+              "type": "Annotation",
+              "motivation": ["painting"],
+              "body": {
+                "id": "https://example.com/lunchroom_manners_1024kb.mp4",
+                "type": "Video",
+                "format": "video/mp4",
+                "height": 360,
+                "width": 480,
+                "duration": 572.034
+              },
+              "target": { "id": "https://example.com/canvas/1", "type": "Canvas" }
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        {
+          "id": "https://example.com/canvas/1/supplementing",
+          "type": "AnnotationPage",
+          "items": [
+            {
+              "id": "https://example.com/canvas/1/supplementing/1",
+              "type": "Annotation",
+              "motivation": ["supplementing"],
+              "provides": ["audioDescription", "subtitles"],
+              "body": {
+                "id": "https://example.com/lunchroom_manners.vtt",
+                "type": "Text",
+                "format": "text/vtt",
+                "label": { "en": ["Subtitles in WebVTT format"] },
+                "language": ["en"]
+              },
+              "target": { "id": "https://example.com/canvas/1", "type": "Canvas" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+In this example Ramp:
+- detects version 4 from `@context`
+- loads and plays the video in `MediaPlayer` component, because the `Canvas` has a `duration`
+- displays `lunchroom_manners_poster.jpg` as the poster image from `placeholderContainer`
+- adds `lunchroom_manners.vtt` as a subtitles track and an audio description track in the `MediaPlayer`, and lists it in the `Transcript` component, based on the listed `provides` values
+
+A full sample Manifest is available in the Ramp repository at [`public/manifests/prod/lunchroom-manners-v4.json`](https://github.com/samvera-labs/ramp/blob/main/public/manifests/prod/lunchroom-manners-v4.json),
+and can be loaded in the [demo site](https://ramp.avalonmediasystem.org/?iiif-content=https://ramp.avalonmediasystem.org/manifests/prod/lunchroom-manners-v4.json).
+
+### Limitations
+
+- `Containers` with `type="Scene"` (3D content) are not supported.
+- A `Canvas` without a `duration` is not played in a Presentation 4.0 Manifest, even when it holds audio or video content.
+- Ramp does not fallback from a Presentation 4.0 property name to its Presentation 3.0 name, or the other way around.
+- Only the `transcript`, `closedCaptions`, `subtitles`, and `audioDescription` values of `provides` are supported as of `@samvera/ramp@v5.2.0`
+
+This is supported in Ramp from **`@samvera/ramp v5.2.0`** onward 🚀🔥.
+
+Note: Related issues [#980](https://github.com/samvera-labs/ramp/issues/980) and [#1009](https://github.com/samvera-labs/ramp/issues/1009).
