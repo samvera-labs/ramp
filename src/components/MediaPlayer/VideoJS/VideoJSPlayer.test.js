@@ -1025,7 +1025,7 @@ describe('VideoJSPlayer component', () => {
           id: 'https://example.com/alternate-sequence-video/range/s2',
           label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
         },
-        { id: 'manifest-order', label: 'Manifest Order', canvasOrder: [0, 1], isManifestOrder: true }
+        { id: 'manifest-order', label: 'Manifest order', canvasOrder: [0, 1], isManifestOrder: true }
       ],
       activeIndex: 0
     };
@@ -1049,7 +1049,7 @@ describe('VideoJSPlayer component', () => {
 
       expect(sequenceMenuItems[1].querySelector('.vjs-menu-item-text').textContent).toEqual('Author-intended sequence');
       expect(sequenceMenuItems[1]).toHaveAttribute('aria-checked', 'false');
-      expect(sequenceMenuItems[2].querySelector('.vjs-menu-item-text').textContent).toEqual('Manifest Order');
+      expect(sequenceMenuItems[2].querySelector('.vjs-menu-item-text').textContent).toEqual('Manifest order');
       expect(sequenceMenuItems[2]).toHaveAttribute('aria-checked', 'false');
     });
 

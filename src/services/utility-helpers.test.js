@@ -2004,4 +2004,16 @@ describe('util helper', () => {
       });
     });
   });
+
+  describe('getAdjacentCanvasIndex()', () => {
+    test('returns next and previous Canvas in the order', () => {
+      expect(util.getAdjacentCanvasIndex([2, 0, 1], 0, 1)).toEqual(1);
+      expect(util.getAdjacentCanvasIndex([2, 0, 1], 0, -1)).toEqual(2);
+    });
+
+    test('returns undefined at either ends of the order', () => {
+      expect(util.getAdjacentCanvasIndex([2, 0, 1], 1, 1)).toBeUndefined();
+      expect(util.getAdjacentCanvasIndex([2, 0, 1], 2, -1)).toBeUndefined();
+    });
+  });
 });

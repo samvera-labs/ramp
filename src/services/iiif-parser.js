@@ -700,7 +700,7 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false, a
       // Parse start and end times from media-fragment URI
       // For Canvas-level timespans returns { start: 0, end: 0 }: to avoid full time-rail highligting
       const span = getMediaFragment(id, canvasDuration);
-      let times = span === undefined || isCanvas ? { start: 0, end: 0 } : span;
+      let times = span === undefined || isCanvas && !isPlaylist ? { start: 0, end: 0 } : span;
 
       // A timespan is only clickable when its start/end falls within the Canvas' duration
       if (canvases.length > 0 && canvasesInfo?.length > 0) {
@@ -1009,12 +1009,7 @@ export function getSequences(manifest, canvasesInfo) {
     const topRanges = parseManifest(manifest).getTopRanges();
     let sequenceRanges = [];
     if (topRanges?.length > 0) {
-      sequenceRanges = topRanges[0].items.filter(r => {
-        const behavior = r.getBehavior();
-        if (isSequenceRange(r)) {
-          return r;
-        }
-      }).filter(id => id != undefined);
+      sequenceRanges = topRanges[0].items.filter(r => isSequenceRange(r)).filter(id => id != undefined);
     }
     if (sequenceRanges?.length === 0 || canvasesInfo?.length === 0) {
       return [];
@@ -1046,7 +1041,7 @@ export function getSequences(manifest, canvasesInfo) {
     return [
       ...sequences,
       {
-        id: 'manifest-order', label: 'Manifest Order',
+        id: 'manifest-order', label: 'Manifest order',
         canvasOrder: canvasesInfo.map((_, index) => index),
         isManifestOrder: true,
       }

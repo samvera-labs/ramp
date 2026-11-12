@@ -583,7 +583,7 @@ describe('MediaPlayer component', () => {
             id: 'https://example.com/alternate-sequence-video/range/s2',
             label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
           },
-          { id: 'manifest-order', label: 'Manifest Order', canvasOrder: [0, 1], isManifestOrder: true }
+          { id: 'manifest-order', label: 'Manifest order', canvasOrder: [0, 1], isManifestOrder: true }
         ],
         activeIndex: 0
       };
@@ -615,7 +615,7 @@ describe('MediaPlayer component', () => {
             id: 'https://example.com/alternate-sequence-audio/range/s2',
             label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
           },
-          { id: 'manifest-order', label: 'Manifest Order', canvasOrder: [0, 1], isManifestOrder: true }
+          { id: 'manifest-order', label: 'Manifest order', canvasOrder: [0, 1], isManifestOrder: true }
         ],
         activeIndex: 0
       };

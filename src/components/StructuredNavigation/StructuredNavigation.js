@@ -97,7 +97,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         showBoundary(error);
       }
     }
-  }, [activeSequenceId]);
+  }, [activeSequenceId, playlist.isPlaylist]);
 
   // Set currentNavItem when current Canvas is an inaccessible/empty item
   useEffect(() => {
@@ -311,14 +311,19 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       aria-label='structured navigation'
     >
       {activeSequence && (
-        <div className='ramp--structured-nav__order' aria-live='polite'>
+        <div className='ramp--structured-nav__order' aria-live='polite' data-testid='structured-nav-order'>
           <span aria-hidden='true'><ReorderIcon /></span>
-          <span>Playing in the order of</span>
+          <span>Playing in the order of </span>
           <span className='ramp--structured-nav__order-label'>{activeSequence.label}</span>
         </div>
       )}
       {showAllSectionsButton && !playlist.isPlaylist &&
-        <div className='ramp--structured-nav__sections'>
+        <div className={cx(
+          'ramp--structured-nav__sections',
+          // Hide sections panel for structures with root and doesn't have collapsible structure
+          (!hasCollapsibleStructRef.current && hasRootRangeRef.current) && 'hidden'
+        )}
+          data-testid='structured-nav-sections'>
           <span
             data-testid='sections-heading-text'
             className={cx(

@@ -15,6 +15,7 @@ import authManifest from '@TestData/auth-manifest';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
 import rangeMetadataManifest from '@TestData/range-metadata';
 import waveformManifestRaw from '@TestData/waveform-example';
+import sequenceManifest, { invalidSequenceRanges, nestedSequenceRange } from '@TestData/sequence-range';
 import * as iiifParser from './iiif-parser';
 import * as util from './utility-helpers';
 import cloneDeep from 'lodash/cloneDeep';
@@ -677,13 +678,11 @@ describe('iiif-parser', () => {
       console.warn = originalWarn;
     });
 
-    describe('when type="Canvas"', () => {
-      it('returns custom start canvas', () => {
-        const customStart = iiifParser.getCustomStart(manifest);
-        expect(customStart.type).toEqual('C');
-        expect(customStart.time).toEqual(0);
-        expect(customStart.canvas).toEqual(0);
-      });
+    it('when type="Canvas" returns custom start canvas', () => {
+      const customStart = iiifParser.getCustomStart(manifest);
+      expect(customStart.type).toEqual('C');
+      expect(customStart.time).toEqual(0);
+      expect(customStart.canvas).toEqual(0);
     });
 
     describe('when type="SpecificResource"', () => {
@@ -741,6 +740,7 @@ describe('iiif-parser', () => {
       expect(customStart.type).toEqual('C');
       expect(customStart.time).toEqual(0);
       expect(customStart.canvas).toEqual(0);
+      expect(customStart.isDefault).toBeTruthy();
     });
 
     it('returns values related to given start canvas ID', () => {
@@ -1104,7 +1104,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('01:06:11');
       expect(firstStructCanvas.canvasDuration).toEqual(3971.24);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 3971.24 });
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
 
       const firstTimespan = timespans[0];
       expect(firstTimespan).toEqual(firstStructCanvas);
@@ -1136,7 +1136,7 @@ describe('iiif-parser', () => {
       expect(secondStructCanvas.isClickable).toBeTruthy();
       expect(secondStructCanvas.duration).toEqual('55:07');
       expect(secondStructCanvas.canvasDuration).toEqual(3307.22);
-      expect(secondStructCanvas.times).toEqual({ start: 0, end: 3307.22 });
+      expect(secondStructCanvas.times).toEqual({ start: 0, end: 0 });
     });
 
     it('returns mediafragment with only start time for structure item relevant to Canvas', () => {
@@ -1165,7 +1165,7 @@ describe('iiif-parser', () => {
       expect(firstStructCanvas.isClickable).toBeTruthy();
       expect(firstStructCanvas.duration).toEqual('11:00');
       expect(firstStructCanvas.canvasDuration).toEqual(660);
-      expect(firstStructCanvas.times).toEqual({ start: 0, end: 660 });
+      expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
     });
 
     it('returns structure with root for a single canvas manifest', () => {
@@ -1329,10 +1329,7 @@ describe('iiif-parser', () => {
         expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
         expect(timespanWithStringMediaFrag.duration).toEqual('11:00');
         expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
-        expect(timespanWithStringMediaFrag.times).toEqual({
-          start: 0,
-          end: 660,
-        });
+        expect(timespanWithStringMediaFrag.times).toEqual({ start: 0, end: 0 });
       });
     });
 
@@ -1799,6 +1796,50 @@ describe('iiif-parser', () => {
         );
         expect(waveform).toHaveLength(2);
       });
+    });
+  });
+
+  describe('getSequences()', () => {
+    let originalWarn;
+    beforeEach(() => {
+      originalWarn = console.warn;
+      console.warn = jest.fn();
+    });
+    afterEach(() => {
+      console.warn = originalWarn;
+    });
+
+    test('returns sequences in the given order followed by Manifest order', () => {
+      const sequences = iiifParser.getSequences(sequenceManifest, iiifParser.canvasesInManifest(sequenceManifest));
+      expect(sequences).toEqual([
+        {
+          id: 'https://example.com/alternate-sequence-video/range/s1',
+          label: 'Physical sequence', canvasOrder: [1, 0], isManifestOrder: false,
+        },
+        {
+          id: 'https://example.com/alternate-sequence-video/range/s2',
+          label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false,
+        },
+        { id: 'manifest-order', label: 'Manifest order', canvasOrder: [0, 1], isManifestOrder: true },
+      ]);
+    });
+
+    test('returns an empty array without sequence Ranges', () => {
+      const canvases = iiifParser.canvasesInManifest(lunchroomManifest);
+      expect(iiifParser.getSequences(lunchroomManifest, canvases))
+        .toEqual([]);
+    });
+
+    test('ignores sequence Ranges not at the root-level', () => {
+      const canvases = iiifParser.canvasesInManifest(nestedSequenceRange);
+      expect(iiifParser.getSequences(nestedSequenceRange, canvases)).toEqual([]);
+    });
+
+    test('skips unknown Canvases with a warning', () => {
+      const canvases = iiifParser.canvasesInManifest(invalidSequenceRanges);
+      const sequences = iiifParser.getSequences(invalidSequenceRanges, canvases);
+      expect(sequences[1].canvasOrder).toEqual([0, 1]);
+      expect(console.warn).toHaveBeenCalledTimes(1);
     });
   });
 });
