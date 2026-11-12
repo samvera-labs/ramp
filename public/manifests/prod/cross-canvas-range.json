@@ -177,6 +177,11 @@
       "height": 360,
       "width": 480,
       "duration": 572.034,
+      "label": {
+        "en": [
+          "Lunchroom Manners I"
+        ]
+      },
       "placeholderCanvas": {
         "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/1/placeholder",
         "type": "Canvas",
@@ -301,6 +306,11 @@
       "height": 360,
       "width": 480,
       "duration": 572.034,
+      "label": {
+        "en": [
+          "Lunchroom Manners II"
+        ]
+      },
       "items": [
         {
           "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/2/page",
@@ -330,6 +340,11 @@
       "width": 1920,
       "height": 1080,
       "duration": 662.037,
+      "label": {
+        "en": [
+          "Volleyball for Boys"
+        ]
+      },
       "items": [
         {
           "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/3/page",
@@ -395,6 +410,58 @@
     }
   ],
   "structures": [
+    {
+      "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/range/s1",
+      "type": "Range",
+      "behavior": [
+        "sequence"
+      ],
+      "label": {
+        "en": [
+          "Reverse sequence"
+        ]
+      },
+      "items": [
+        {
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/3",
+          "type": "Canvas"
+        },
+        {
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/2",
+          "type": "Canvas"
+        },
+        {
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/1",
+          "type": "Canvas"
+        }
+      ]
+    },
+    {
+      "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/range/s2",
+      "type": "Range",
+      "behavior": [
+        "sequence"
+      ],
+      "label": {
+        "en": [
+          "Physical sequence"
+        ]
+      },
+      "items": [
+        {
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/1",
+          "type": "Canvas"
+        },
+        {
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/3",
+          "type": "Canvas"
+        },
+        {
+          "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/canvas/2",
+          "type": "Canvas"
+        }
+      ]
+    },
     {
       "id": "https://ramp.avalonmediasystem.org/manifests/prod/lunchroom_manners/range/0",
       "type": "Range",

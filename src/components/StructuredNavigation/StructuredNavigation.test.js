@@ -10,6 +10,7 @@ import playlist from '@TestData/playlist';
 import nonCollapsibleStructure from '@TestData/multiple-canvas-auto-advance';
 import outOfRangeManifest from '@TestData/out-of-range-structure';
 import crossRangeManifest from '@TestData/multi-part-ranges';
+import sequenceRangeManifest, { audioSequenceRange } from '@TestData/sequence-range';
 import {
   withManifestProvider,
   withManifestAndPlayerProvider,
@@ -1064,6 +1065,177 @@ describe('StructuredNavigation component', () => {
       expect(multiPartItem).toHaveLength(2);
 
       expect(multiPartItem[0].closest('li')).not.toHaveClass('active');
+    });
+  });
+
+  test('with structures without sequence Ranges doesn\'t render sequence section', () => {
+    const NavWithInvalidFragment = withManifestAndPlayerProvider(
+      StructuredNavigation,
+      {
+        initialManifestState: { ...manifestState(manifest) },
+        initialPlayerState: {},
+      }
+    );
+    render(
+      <ErrorBoundary>
+        <NavWithInvalidFragment />
+      </ErrorBoundary>
+    );
+
+    expect(screen.queryByTestId('structured-nav-order')).not.toBeInTheDocument();
+  });
+
+  describe('with structures with only sequence Ranges', () => {
+    beforeEach(() => {
+      const sequences = {
+        items: [
+          {
+            id: 'https://example.com/alternate-sequence-audio/range/s1',
+            label: 'Physical sequence', canvasOrder: [1, 0], isManifestOrder: false
+          },
+          {
+            id: 'https://example.com/alternate-sequence-audio/range/s2',
+            label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
+          },
+          { id: 'manifest-order', label: 'Manifest order', canvasOrder: [0, 1], isManifestOrder: true }
+        ],
+        activeIndex: 0
+      };
+      const NavWithInvalidFragment = withManifestAndPlayerProvider(
+        StructuredNavigation,
+        {
+          initialManifestState: { ...manifestState(audioSequenceRange), sequences },
+          initialPlayerState: {},
+          props: { showAllSectionsButton: true }
+        }
+      );
+      render(
+        <ErrorBoundary>
+          <NavWithInvalidFragment />
+        </ErrorBoundary>
+      );
+    });
+
+    test('renders the sequence section with the first sequence Range', () => {
+      expect(screen.queryByTestId('structured-nav-order')).toBeInTheDocument();
+      expect(screen.getByTestId('structured-nav-order')).toHaveTextContent('Playing in the order of Physical sequence');
+      expect(screen.getByTestId('structured-nav')).toHaveTextContent('Physical sequence');
+    });
+
+    test('renders a section item for each Canvas in sequence', () => {
+      expect(screen.queryAllByTestId('treeitem-section')).toHaveLength(3);
+
+      const sections = screen.getAllByTestId('treeitem-section');
+      expect(sections[0]).toHaveTextContent('Physical sequence02:01:18');
+      expect(sections[1]).toHaveTextContent('1.Atto Secondo55:07');
+      expect(sections[2]).toHaveTextContent('2.Atto Primo01:06:11');
+    });
+
+    test('doesn\'t render section text and collapse section button', () => {
+      expect(screen.queryByTestId('structured-nav-sections')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('with structures with both sequence Ranges and Range without behavior', () => {
+    const renderWithCanvas = (canvasIndex, activeIndex) => {
+      const sequences = {
+        items: [
+          {
+            id: 'https://example.com/alternate-sequence-video/range/s1',
+            label: 'Physical sequence', canvasOrder: [1, 0], isManifestOrder: false
+          },
+          {
+            id: 'https://example.com/alternate-sequence-video/range/s2',
+            label: 'Author-intended sequence', canvasOrder: [0, 1], isManifestOrder: false
+          },
+          { id: 'manifest-order', label: 'Manifest order', canvasOrder: [0, 1], isManifestOrder: true }
+        ],
+        activeIndex
+      };
+      const props = { showAllSectionsButton: true };
+      const NavWithInvalidFragment = withManifestAndPlayerProvider(
+        StructuredNavigation,
+        {
+          initialManifestState: { ...manifestState(sequenceRangeManifest, canvasIndex), sequences },
+          initialPlayerState: {},
+          ...props,
+        }
+      );
+      render(
+        <ErrorBoundary>
+          <NavWithInvalidFragment />
+        </ErrorBoundary>
+      );
+    };
+
+    describe('renders the sequence section with the first sequence Range and,', () => {
+      test('displays the selected order', () => {
+        renderWithCanvas(1, 0);
+
+        const orderSection = screen.getByTestId('structured-nav-order');
+
+        expect(orderSection).toHaveTextContent('Playing in the order of');
+        expect(orderSection).toHaveTextContent('Physical sequence');
+        expect(orderSection).toHaveAttribute('aria-live', 'polite');
+      });
+
+      test('renders a section item for each Canvas in sequence', () => {
+        renderWithCanvas(1, 0);
+
+        expect(screen.queryByTestId('structured-nav-order')).toBeInTheDocument();
+        expect(screen.getByTestId('structured-nav-order')).toHaveTextContent('Playing in the order of Physical sequence');
+        expect(screen.getByTestId('structured-nav')).toHaveTextContent('Physical sequence');
+        expect(screen.queryAllByTestId('treeitem-section')).toHaveLength(3);
+        expect(screen.getAllByTestId('treeitem-section')[0]).toHaveTextContent('Physical sequence02:01:18');
+        expect(screen.getAllByTestId('treeitem-section')[1]).toHaveTextContent('1.Atto Secondo55:07');
+
+        expect(screen.getByTestId('structured-nav')).not.toHaveTextContent("Gaetano Donizetti, L'Elisir D'Amore");
+      });
+
+      test('highlights the first section item in the selected sequence order', () => {
+        renderWithCanvas(1, 0);
+
+        expect(screen.queryAllByTestId('treeitem-section')).toHaveLength(3);
+        expect(screen.getAllByTestId('treeitem-section')[0]).toHaveTextContent('Physical sequence02:01:18');
+        expect(screen.getAllByTestId('treeitem-section')[1]).toHaveClass('active');
+        expect(screen.getAllByTestId('treeitem-section')[2]).not.toHaveClass('active');
+      });
+
+      test('doesn\'t render section text and collapse section button', () => {
+        expect(screen.queryByTestId('structured-nav-sections')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('collapse-expand-all-btn')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('when manifest-order is selected', () => {
+      test('renders nested Range without behavior', () => {
+        renderWithCanvas(0, 2);
+
+        // Displays 3 section style elements for root, and 2 Canvases in the Manifest
+        expect(screen.queryAllByTestId('treeitem-section')).toHaveLength(3);
+        expect(screen.getAllByTestId('treeitem-section')[0]).toHaveTextContent("Gaetano Donizetti, L'Elisir D'Amore02:01:18");
+        expect(screen.getAllByTestId('treeitem-section')[1]).toHaveTextContent("1.Atto Primo01:06:11");
+        expect(screen.getAllByTestId('treeitem-section')[2]).toHaveTextContent("2.Atto Secondo55:07");
+        expect(screen.getByTestId('structured-nav')).not.toHaveTextContent('Physical sequence');
+        expect(screen.getByTestId('structured-nav-order')).toHaveTextContent('Playing in the order of Manifest order');
+      });
+
+      test('highlights the section for the current Canvas', () => {
+        renderWithCanvas(1, 2);
+
+        expect(screen.getAllByTestId('treeitem-section')[1]).toHaveTextContent("1.Atto Primo01:06:11");
+        expect(screen.getAllByTestId('treeitem-section')[1]).not.toHaveClass('active');
+        expect(screen.getAllByTestId('treeitem-section')[2]).toHaveTextContent("2.Atto Secondo55:07");
+        expect(screen.getAllByTestId('treeitem-section')[2]).toHaveClass('active');
+      });
+
+      test('renders section text and collapse section button', () => {
+        renderWithCanvas(0, 2);
+
+        expect(screen.queryByTestId('structured-nav-sections')).toBeInTheDocument();
+        expect(screen.queryByTestId('collapse-expand-all-btn')).toBeInTheDocument();
+      });
     });
   });
 });

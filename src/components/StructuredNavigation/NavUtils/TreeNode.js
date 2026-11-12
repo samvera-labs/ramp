@@ -283,7 +283,7 @@ const TreeNode = ({
                 tabIndex={-1}
               >
                 <span className='ramp--structured-nav__title' aria-label={label}>
-                  {isRoot ? '' : `${itemIndex}.`}
+                  {isRoot ? '' : `${displayIndex}.`}
                   <span className='ramp--structured-nav__section-label'>{label}</span>
                   {duration != '' &&
                     <span className='ramp--structured-nav__section-duration'>

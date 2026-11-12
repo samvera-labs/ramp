@@ -43,7 +43,7 @@ const MediaPlayer = ({
   const playerState = usePlayerState();
   const { showBoundary } = useErrorBoundary();
 
-  const { srcIndex, playlist, structures, auth, allCanvases, waveform } = manifestState;
+  const { srcIndex, playlist, structures, auth, allCanvases, sequences, waveform } = manifestState;
   const { isPlaylist } = playlist;
   const { hasStructure } = structures;
   const { currentTime } = playerState;
@@ -62,6 +62,12 @@ const MediaPlayer = ({
 
   const { canvasIsEmpty, canvasIndex, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
+
+  const hasSequences = sequences?.items?.length > 0;
+  // Read Canvas labels to be used in previous/next button control texts
+  const canvasLabels = useMemo(() => {
+    return hasSequences ? allCanvases.map((c) => c.label) : undefined;
+  }, [allCanvases, hasSequences]);
 
   const {
     isMultiSourced,
@@ -179,6 +185,7 @@ const MediaPlayer = ({
             'durationDisplay',
             'customControlSpacer', // Spacer element from VideoJS
             IS_MOBILE ? 'muteToggle' : 'volumePanel',
+            hasSequences ? 'videoJSSequenceMenu' : '',
             (tracks.length > 0 && isVideo) ? 'subsCapsButton' : '',
             (audioDescTracks.length > 0 && isVideo) ? 'videoJSADButton' : '',
             (hasStructure || isPlaylist) ? 'videoJSTrackScrubber' : '',
@@ -212,9 +219,16 @@ const MediaPlayer = ({
             },
           },
           videoJSPreviousButton: isMultiCanvased &&
-            { canvasIndex, switchPlayer },
+            { canvasIndex, canvasLabels, switchPlayer },
           videoJSNextButton: isMultiCanvased &&
-            { canvasIndex, lastCanvasIndex, switchPlayer },
+            { canvasIndex, canvasLabels, lastCanvasIndex, switchPlayer },
+          videoJSSequenceMenu: hasSequences && {
+            title: 'Playback Order',
+            sequences: sequences.items,
+            activeIndex: sequences.activeIndex,
+            onSelect: (index) =>
+              manifestDispatch({ type: 'switchSequence', sequenceIndex: index })
+          },
           videoJSTrackScrubber: (hasStructure || isPlaylist) &&
             { trackScrubberRef, timeToolRef, isPlaylist, nextItemClicked },
           videoJSADButton: (audioDescTracks.length > 0) && { audioDescTracks }

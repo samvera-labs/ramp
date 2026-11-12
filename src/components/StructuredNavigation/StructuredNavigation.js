@@ -8,6 +8,7 @@ import { useManifestState, useManifestDispatch } from '../../context/manifest-co
 import { getCanvasId, getStructureRanges } from '@Services/iiif-parser';
 import { getCanvasTarget, getMediaFragment } from '@Services/utility-helpers';
 import { useErrorBoundary } from "react-error-boundary";
+import { ReorderIcon } from '@Services/svg-icons';
 import './StructuredNavigation.scss';
 
 /**
@@ -34,6 +35,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     playlist,
     canvasIsEmpty,
     canvasSegments,
+    sequences
   } = useManifestState();
 
   const { showBoundary } = useErrorBoundary();
@@ -56,11 +58,29 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
 
   const structureContentRef = useRef(null);
 
+  const activeSequence = sequences?.items?.[sequences?.activeIndex];
+  const activeSequenceId = activeSequence?.id;
+
+  // Memoise the parsed top-level Range for selected sequence for each Manifest
+  const parsedStructuresRef = useRef({ manifest: null, sequences: new Map() });
+
+  useEffect(() => {
+    if (manifest && parsedStructuresRef.current.manifest != manifest) {
+      parsedStructuresRef.current = { manifest, sequences: new Map() };
+    }
+  }, [manifest]);
+
   useEffect(() => {
     if (manifest) {
       try {
-        let { structures, timespans, markRoot, hasCollapsibleStructure }
-          = getStructureRanges(manifest, allCanvases, playlist.isPlaylist);
+        const { sequences } = parsedStructuresRef.current;
+        // Parse Range only when the sequence has not been saved before
+        if (!sequences.has(activeSequenceId)) {
+          const structureInfo = getStructureRanges(manifest, allCanvases, playlist.isPlaylist, activeSequenceId);
+          sequences.set(activeSequenceId, structureInfo);
+        }
+
+        let { structures, timespans, markRoot, hasCollapsibleStructure } = sequences.get(activeSequenceId);
         structureItemsRef.current = structures;
         canvasStructRef.current = structures;
         hasRootRangeRef.current = markRoot;
@@ -77,7 +97,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         showBoundary(error);
       }
     }
-  }, [manifest]);
+  }, [activeSequenceId, playlist.isPlaylist]);
 
   // Set currentNavItem when current Canvas is an inaccessible/empty item
   useEffect(() => {
@@ -273,6 +293,9 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     return structureItemsRef.current?.length || 0;
   }, [structureItemsRef.current]);
 
+  const isSequenceTree = activeSequenceId != undefined
+    && structureItemsRef.current?.[0]?.rangeId === activeSequenceId;
+
   if (!manifest) {
     return (<p className='ramp--no-structure'>
       No manifest - Please provide a valid manifest.
@@ -287,8 +310,20 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
       role='complementary'
       aria-label='structured navigation'
     >
+      {activeSequence && (
+        <div className='ramp--structured-nav__order' aria-live='polite' data-testid='structured-nav-order'>
+          <span aria-hidden='true'><ReorderIcon /></span>
+          <span>Playing in the order of </span>
+          <span className='ramp--structured-nav__order-label'>{activeSequence.label}</span>
+        </div>
+      )}
       {showAllSectionsButton && !playlist.isPlaylist &&
-        <div className='ramp--structured-nav__sections'>
+        <div className={cx(
+          'ramp--structured-nav__sections',
+          // Hide sections panel for structures with root and doesn't have collapsible structure
+          (!hasCollapsibleStructRef.current && hasRootRangeRef.current) && 'hidden'
+        )}
+          data-testid='structured-nav-sections'>
           <span
             data-testid='sections-heading-text'
             className={cx(
@@ -319,6 +354,8 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
         >
           {numberOfSections > 0 ? (
             <ul
+              // Re-render the structure when the active sequence changes
+              key={isSequenceTree ? activeSequenceId : 'structure-tree'}
               className='ramp--structured-nav__tree'
               role='tree'
               data-testid='nested-tree'

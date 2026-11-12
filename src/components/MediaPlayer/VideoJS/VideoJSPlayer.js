@@ -11,7 +11,7 @@ import '@silvermine/videojs-quality-selector/dist/css/quality-selector.css';
 
 import { usePlayerDispatch, usePlayerState } from '../../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../../context/manifest-context';
-import { getMediaFragment, offsetTextTrackCues } from '@Services/utility-helpers';
+import { getMediaFragment, getAdjacentCanvasIndex, offsetTextTrackCues } from '@Services/utility-helpers';
 import {
   IS_ANDROID, IS_IOS, IS_IPAD, IS_MOBILE,
   IS_SAFARI, IS_TOUCH_ONLY
@@ -41,6 +41,7 @@ import VideoJSTrackScrubber from './components/js/VideoJSTrackScrubber';
 import VideoJSWaveform from './components/js/VideoJSWaveform';
 import VideoJSADButton from './components/js/VideoJSADButton';
 import VideoJSAuthMenu from './components/js/VideoJSAuthMenu';
+import VideoJSSequenceMenu from './components/js/VideoJSSequenceMenu';
 
 /**
  * Module to setup VideoJS instance on initial page load and update
@@ -91,6 +92,7 @@ function VideoJSPlayer({
     structures,
     canvasSegments,
     auth,
+    sequences
   } = manifestState;
   const { hasStructure, structItems } = structures;
   const { clickedUrl, isEnded, isPlaying, currentTime } = playerState;
@@ -116,12 +118,13 @@ function VideoJSPlayer({
   const resumeModalRef = useRef(null);
   const vjsErrorModalRef = useRef(null);
 
-  const { canvasIndex, canvasIsEmpty, isMultiCanvased, lastCanvasIndex, resetPlayerContainer } = useMediaPlayer();
+  const { canvasIndex, canvasIsEmpty, canvasOrder, isMultiCanvased,
+    lastCanvasIndex, nextCanvasIndex, previousCanvasIndex, resetPlayerContainer } = useMediaPlayer();
   const authService = allCanvases[canvasIndex]?.authService ?? null;
 
   const { isPlaylist, nextItemClicked, renderingFiles, srcIndex, switchPlayer }
     = useSetupPlayer({ enableFileDownload, withCredentials, lastCanvasIndex });
-  const { messageTime } = useShowInaccessibleMessage({ lastCanvasIndex });
+  const { messageTime } = useShowInaccessibleMessage({ nextCanvasIndex });
 
   const { hasWaveform } = useWaveform({ nextItemClicked, savedPosition, showWaveform, waveformRef });
 
@@ -184,6 +187,9 @@ function VideoJSPlayer({
   // Flag to track whether the player was playing during a fallback for source selection
   const wasPlayingRef = useRef();
 
+  const canvasOrderRef = useRef();
+  canvasOrderRef.current = useMemo(() => { return canvasOrder; }, [canvasOrder]);
+
   /**
    * Setup player with player-related information parsed from the IIIF
    * Manifest Canvas. This gets called on both initial page load and each
@@ -237,6 +243,8 @@ function VideoJSPlayer({
         player.volume(startVolume);
         player.canvasIndex = cIndexRef.current;
         player.duration(canvasDuration);
+        // Read by previous/next button VideoJS components
+        player.canvasOrder = canvasOrderRef.current;
         // Set source index and targets for source items in the Canvas
         player.srcIndex = srcIndex;
         player.targets = targets;
@@ -1111,7 +1119,8 @@ function VideoJSPlayer({
     activeId, getActiveSegment, fragmentMarker, isReadyRef, playerRef,
     setActiveId, setFragmentMarker, setIsReady, updateMenuDirection
   } = useVideoJSPlayer({
-    audioDescTracks, options, playerInitSetup, updatePlayer, startQuality, tracks, videoJSRef, videoJSLangMap
+    audioDescTracks, canvasOrder, options, playerInitSetup, updatePlayer,
+    startQuality, tracks, videoJSRef, videoJSLangMap
   });
 
   let cIndexRef = useRef();
@@ -1369,7 +1378,11 @@ function VideoJSPlayer({
    * (not the next item in list) when the current item is coming to its end.
    */
   const handleEnded = useMemo(() => throttle(() => {
-    const isLastCanvas = cIndexRef.current === lastCanvasIndex;
+    // Next Canvas in the selected order, returns undefined for the last Canvas
+    const nextCanvasIndex = getAdjacentCanvasIndex(canvasOrderRef.current, cIndexRef.current, 1);
+
+    const isLastCanvas = nextCanvasIndex === undefined;
+
     /* Do nothing if Canvas is not multi-sourced AND autoAdvance is turned off
     OR current Canvas is the last Canvas in the Manifest.  */
     if ((!autoAdvanceRef.current || isLastCanvas) && !hasMultiItems) {
@@ -1397,7 +1410,10 @@ function VideoJSPlayer({
       const endedPartIndex = rangeParts.findIndex((t) => t.id === endedItem.id);
       const nextRangePart = endedPartIndex > -1 ? rangeParts[endedPartIndex + 1] : undefined;
 
-      if (nextRangePart) {
+      // Only follow the next Range part when 'sequences' are not available in a Manifest
+      const followRangePart = nextRangePart && sequences?.items?.length === 0;
+
+      if (followRangePart) {
         manifestDispatch({ canvasIndex: nextRangePart.canvasIndex - 1, type: 'switchCanvas' });
         playerDispatch({ startTime: 0, type: 'setTimeFragment' });
         playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
@@ -1418,12 +1434,13 @@ function VideoJSPlayer({
         } else {
           return;
         }
-      } else if (structItems?.length > 0 && structItems.length > cIndexRef.current + 1) {
-        const nextItem = structItems[cIndexRef.current + 1];
+      } else if (structItems?.find((i) => i.canvasIndex === nextCanvasIndex + 1)) {
+        // Move to the next Canvas in the selected sequence
+        const nextItem = structItems.find((i) => i.canvasIndex === nextCanvasIndex + 1);
 
         if (nextItem) {
           manifestDispatch({
-            canvasIndex: cIndexRef.current + 1,
+            canvasIndex: nextCanvasIndex,
             type: 'switchCanvas',
           });
 
@@ -1460,15 +1477,14 @@ function VideoJSPlayer({
         in state and the auto-advance feature doesn't have enough information to function properly.
         This code branch is a fallback to provide auto-advance functionality using other available data
         such as 'allCanvases'  */
-        const nextCanvasIndex = cIndexRef.current + 1;
-        if (nextCanvasIndex <= lastCanvasIndex) {
+        if (nextCanvasIndex != undefined) {
           manifestDispatch({ canvasIndex: nextCanvasIndex, type: 'switchCanvas' });
           playerDispatch({ startTime: 0, type: 'setTimeFragment' });
           playerDispatch({ currentTime: 0, type: 'setCurrentTime' });
         }
       }
     }
-  }), [cIndexRef.current]);
+  }), [cIndexRef.current, sequences]);
 
   /**
    * Handle the 'timeUpdate' event emitted by VideoJS player.
@@ -1664,23 +1680,23 @@ function VideoJSPlayer({
             <p className="ramp--media-player_inaccessible-message__content" data-testid="inaccessible-message-content"
               dangerouslySetInnerHTML={{ __html: placeholderText }}>
             </p>
-            {lastCanvasIndex > 0 &&
+            {isMultiCanvased &&
               <div className="ramp--media-player_inaccessible-message__buttons"
                 data-testid="inaccessible-message-buttons">
-                {canvasIndex >= 1 &&
+                {previousCanvasIndex != undefined &&
                   <button aria-label="Go back to previous item"
-                    onClick={() => handlePrevNextClick(canvasIndex - 1)}
-                    onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex - 1, 'previousBtn')}
+                    onClick={() => handlePrevNextClick(previousCanvasIndex)}
+                    onKeyDown={(e) => handlePrevNextKeydown(e, previousCanvasIndex, 'previousBtn')}
                     data-testid="inaccessible-previous-button"
                     className="placeholder-previous-button"
                     role="button">
                     <SectionButtonIcon flip={true} /> Previous
                   </button>
                 }
-                {canvasIndex != lastCanvasIndex &&
+                {nextCanvasIndex != undefined &&
                   <button aria-label="Go to next item"
-                    onClick={() => handlePrevNextClick(canvasIndex + 1)}
-                    onKeyDown={(e) => handlePrevNextKeydown(e, canvasIndex + 1, 'nextBtn')}
+                    onClick={() => handlePrevNextClick(nextCanvasIndex)}
+                    onKeyDown={(e) => handlePrevNextKeydown(e, nextCanvasIndex, 'nextBtn')}
                     data-testid="inaccessible-next-button"
                     className="placeholder-next-button"
                     role="button">
@@ -1689,7 +1705,7 @@ function VideoJSPlayer({
                 }
               </div>
             }
-            {canvasIndex != lastCanvasIndex && lastCanvasIndex > 0 &&
+            {nextCanvasIndex != undefined && isMultiCanvased &&
               <p data-testid="inaccessible-message-timer"
                 className={cx(
                   'ramp--media-player_inaccessible-message__timer',

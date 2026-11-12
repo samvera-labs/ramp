@@ -1,5 +1,5 @@
 import { parseAnnotationSets } from '@Services/annotations-parser';
-import { canvasesInManifest, parseAutoAdvance } from '../services/iiif-parser';
+import { canvasesInManifest, parseAutoAdvance, getSequences } from '../services/iiif-parser';
 import { getAnnotationService, getIsPlaylist } from '@Services/playlist-parser';
 import { getIIIFAPIVersion } from '@Services/iiif-version-parser';
 import React, { createContext, useContext, useReducer } from 'react';
@@ -22,6 +22,7 @@ const defaultState = {
   customStart: {
     startIndex: 0,
     startTime: 0,
+    isDefault: true, // no start is given in the Manifest or IIIFPlayer props
   },
   targets: [],
   hasMultiItems: false, // multiple resources in a single canvas
@@ -42,6 +43,10 @@ const defaultState = {
     hasStructure: false, // current Canvas has structure timespans
     isCollapsed: false, // all sections are expanded by default
     structItems: [],
+  },
+  sequences: {
+    items: [], // [{ id: String, label: String, canvasOrder: Array }]
+    activeIndex: 0 // index of the active sequence, defaults to 0
   },
   annotations: [], // [{ canvasIndex: Number, annotationSets: Array }]
   clickedAnnotation: null, // clicked annotation in the Canvas
@@ -79,6 +84,7 @@ function manifestReducer(state = defaultState, action) {
       const manifestBehavior = parseAutoAdvance(manifest.behavior);
       const isPlaylist = getIsPlaylist(manifest.label);
       const annotationService = getAnnotationService(manifest.service);
+      const sequenceItems = isPlaylist ? [] : getSequences(manifest, canvases);
 
       return {
         ...state,
@@ -86,6 +92,16 @@ function manifestReducer(state = defaultState, action) {
         iiifVersion: iiifVersion,
         allCanvases: canvases,
         autoAdvance: manifestBehavior,
+        // Use the first Canvas in the desfault sequence when a custom start is not given
+        canvasIndex: state.customStart.isDefault && sequenceItems?.length > 0
+          ? sequenceItems[0].canvasOrder[0] : state.canvasIndex,
+        /* Set this as part of the initial state setup process because, this affects
+        the playback order in player regardless of the use of other components such
+        as StructuredNavigation. */
+        sequences: {
+          items: sequenceItems,
+          activeIndex: 0,
+        },
         playlist: {
           ...state.playlist,
           isPlaylist: isPlaylist,
@@ -225,12 +241,13 @@ function manifestReducer(state = defaultState, action) {
       };
     }
     case 'setCustomStart': {
-      const { canvas, time } = action.customStart;
+      const { canvas, time, isDefault = false } = action.customStart;
       return {
         ...state,
         customStart: {
           startIndex: canvas,
           startTime: time,
+          isDefault,
         },
         canvasIndex: canvas,
         structures: {
@@ -289,6 +306,16 @@ function manifestReducer(state = defaultState, action) {
         ...state,
         auth: { token: null, status: 'idle' },
       };
+    }
+    case 'switchSequence': {
+      const canvasOrder = state.sequences.items[action.sequenceIndex]?.canvasOrder;
+      if (!canvasOrder) return state;
+      const newState = {
+        ...state,
+        sequences: { ...state.sequences, activeIndex: action.sequenceIndex }
+      };
+      // Switch to the first Canvas in the new sequence
+      return manifestReducer(newState, { type: 'switchCanvas', canvasIndex: canvasOrder[0] });
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);

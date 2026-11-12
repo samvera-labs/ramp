@@ -1,4 +1,5 @@
 import videojs from 'video.js';
+import { getAdjacentCanvasIndex } from '@Services/utility-helpers';
 import '../styles/VideoJSSectionButtons.scss';
 
 const Button = videojs.getComponent('Button');
@@ -10,6 +11,7 @@ const Button = videojs.getComponent('Button');
  * @param {Object} props.player VideoJS player instance
  * @param {Object} props.options
  * @param {Number} props.options.canvasIndex current Canvas index
+ * @param {Array} props.options.canvasLabels Canvas labels of all the Canvases in Manifest
  * @param {Number} props.options.lastCanvasIndex index of the last Canvas in the Manifest
  * @param {Function} props.options.switchPlayer callback func to update Canvas change in state
  */
@@ -26,7 +28,7 @@ class VideoJSNextButton extends Button {
     this.cIndex = options.canvasIndex;
 
     // Handle player reload or source change events
-    this.player.on('loadstart', () => {
+    this.player.on(['loadstart', 'sequencechange'], () => {
       this.updateComponent();
     });
   }
@@ -42,6 +44,28 @@ class VideoJSNextButton extends Button {
         this.cIndex = player.canvasIndex;
       }
     }
+
+    const nextIndex = this.getNextIndex();
+    let controlText = 'Next Canvas';
+    if (nextIndex === undefined) {
+      // Clear control text when last Canvas is reached
+      controlText = '';
+    } else if (this.options.canvasLabels?.[nextIndex]) {
+      controlText = `Next: ${this.options.canvasLabels[nextIndex]}`;
+    }
+    this.controlText(controlText);
+  }
+
+  getNextIndex() {
+    const { canvasOrder } = this.player;
+    if (canvasOrder) {
+      return getAdjacentCanvasIndex(canvasOrder, this.cIndex, 1);
+    } else if (this.cIndex != this.options.lastCanvasIndex) {
+      return this.cIndex + 1;
+    } else {
+      // Return nothing when last Canvas is reached
+      return;
+    }
   }
 
   handleClick() {
@@ -56,8 +80,9 @@ class VideoJSNextButton extends Button {
   }
 
   handleNextClick() {
-    if (this.cIndex != this.options.lastCanvasIndex) {
-      this.options.switchPlayer(this.cIndex + 1, true);
+    const nextIndex = this.getNextIndex();
+    if (nextIndex != undefined) {
+      this.options.switchPlayer(nextIndex, true);
     }
   }
 }

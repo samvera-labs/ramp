@@ -16,7 +16,7 @@ import {
 } from './transcript-parser';
 import {
   CANVAS_MESSAGE_TIMEOUT, checkSrcRange, HOTKEY_ACTION_OUTPUT, playerHotKeys,
-  screenReaderFriendlyTime, identifyMachineGen,
+  screenReaderFriendlyTime, identifyMachineGen, getAdjacentCanvasIndex,
   truncateText, autoScroll, roundToPrecision
 } from '@Services/utility-helpers';
 import { IS_IPAD } from '@Services/browser';
@@ -51,8 +51,11 @@ export const useMarkers = () => {
  * @returns { 
  * canvasIndex: number,
  * canvasIsEmpty: bool,
+ * canvasOrder: array,
  * isMultiCanvased: bool,
  * lastCanvasIndex: number,
+ * nextCanvasIndex: number,
+ * previousCanvasIndex: number,
  * player: object 
  * getCurrentTime: func, 
  * resetPlayerContainer: func,
@@ -64,18 +67,24 @@ export const useMediaPlayer = () => {
   const playerDispatch = useContext(PlayerDispatchContext);
 
   const { player } = playerState;
-  const { allCanvases, canvasIndex, canvasIsEmpty } = manifestState;
+  const { allCanvases, canvasIndex, canvasIsEmpty, sequences } = manifestState;
 
   const [currentTime, _setCurrentTime] = useState(-1);
   const setCurrentTime = useMemo(() => throttle(_setCurrentTime, 50), []);
 
   const playerRef = useRef(null);
 
+  const canvasOrder = useMemo(() => {
+    return sequences?.items?.[sequences?.activeIndex]?.canvasOrder
+      ?? Array.from({ length: allCanvases.length }, (_, i) => i);
+  }, [allCanvases, sequences]);
+
   // Deduct 1 from length to compare against canvasIndex, which starts from 0
   const lastCanvasIndex = useMemo(() => { return allCanvases.length > 0 ? allCanvases.length - 1 : 0; },
     [allCanvases]);
-  const isMultiCanvased = useMemo(() => { return allCanvases?.length - 1 > 0 ? true : false; },
-    [allCanvases]);
+  const isMultiCanvased = useMemo(() => { return canvasOrder?.length > 1; }, [canvasOrder]);
+  const nextCanvasIndex = canvasOrder && getAdjacentCanvasIndex(canvasOrder, canvasIndex, 1);
+  const previousCanvasIndex = canvasOrder && getAdjacentCanvasIndex(canvasOrder, canvasIndex, -1);
 
   // Wrapper function to get player's time for creating a new playlist marker
   const getCurrentTime = useCallback(() => {
@@ -150,9 +159,12 @@ export const useMediaPlayer = () => {
   return {
     canvasIndex,
     canvasIsEmpty,
+    canvasOrder,
     currentTime,
     isMultiCanvased,
     lastCanvasIndex,
+    nextCanvasIndex,
+    previousCanvasIndex,
     player,
     getCurrentTime,
     resetPlayerContainer,
@@ -353,6 +365,7 @@ export const useSetupPlayer = ({
  * Canvas changes
  * @param {Object} obj
  * @param {Array} obj.audioDescTracks text-tracks for audioDescription functionality
+ * @param {Array} obj.canvasOrder Canvas order in the selected sequence
  * @param {Object} obj.options VideoJS options
  * @param {Function} obj.playerInitSetup VideoJS initialize setup func
  * @param {String} obj.startQuality selected quality stored in local storage
@@ -374,6 +387,7 @@ export const useSetupPlayer = ({
  */
 export const useVideoJSPlayer = ({
   audioDescTracks,
+  canvasOrder,
   options,
   playerInitSetup,
   startQuality,
@@ -386,7 +400,7 @@ export const useVideoJSPlayer = ({
   const playerState = useContext(PlayerStateContext);
   const playerDispatch = useContext(PlayerDispatchContext);
   const { allCanvases, canvasDuration, canvasIndex, canvasIsEmpty,
-    currentNavItem, canvasSegments, playlist } = manifestState;
+    currentNavItem, canvasSegments, playlist, sequences } = manifestState;
   const { clickedUrl, currentTime, isClicked, player, searchMarkers } = playerState;
 
   const [activeId, setActiveId] = useState('');
@@ -506,6 +520,17 @@ export const useVideoJSPlayer = ({
     }
   }, [isClicked, player]);
 
+  /* Update the Canvas order in the player when a sequence is selected in the sequence menu
+  and trigger a 'sequencechange' player event that is listened by previous/next buttons. */
+  useEffect(() => {
+    const player = playerRef.current;
+    if (player) {
+      player.canvasOrder = canvasOrder;
+      player.getChild('controlBar')?.getChild('VideoJSSequenceMenu')?.setActive(sequences?.activeIndex);
+      player.trigger('sequencechange');
+    }
+  }, [canvasOrder]);
+
   const markers = useMemo(() => {
     if (playlist?.markers?.length > 0) {
       const canvasMarkers = playlist.markers
@@ -538,7 +563,7 @@ export const useVideoJSPlayer = ({
       playerRef.current.markers?.removeAll();
       playerRef.current.markers.add([
         ...(fragmentMarker ? [fragmentMarker] : []),
-        ...searchMarkers,
+        ...(searchMarkers ? searchMarkers : []),
         ...(markers ?? []),
       ]);
     }
@@ -828,14 +853,14 @@ export const useIsUserInactive = () => {
  * Handle display of inaccessible message timer and interval for
  * countdown
  * @param {Object} obj
- * @param {Number} obj.lastCanvasIndex
+ * @param {Number} obj.nextCanvasIndex next Canvas index in the selected sequence
  * @returns {
  * messageTime: number,
  * clearCanvasMessageTimer: func,
  * createCanvasMessageTimer: func
  * }
  */
-export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
+export const useShowInaccessibleMessage = ({ nextCanvasIndex }) => {
   const manifestDispatch = useContext(ManifestDispatchContext);
   const manifestState = useContext(ManifestStateContext);
   const { autoAdvance, canvasIndex, canvasIsEmpty } = manifestState;
@@ -868,7 +893,7 @@ export const useShowInaccessibleMessage = ({ lastCanvasIndex }) => {
         setMessageTime(Math.ceil(timeRemaining));
       } else {
         // Advance to next Canvas when timer ends
-        if (canvasIndex < lastCanvasIndex && autoAdvance) {
+        if (canvasIndex < nextCanvasIndex && autoAdvance) {
           manifestDispatch({
             canvasIndex: canvasIndex + 1,
             type: 'switchCanvas',
@@ -1073,18 +1098,20 @@ export const useCollapseExpandAll = () => {
     // Convert global status into a string value
     const allSectionStatus = isCollapsed ? 'isCollapsed' : 'isExpanded';
 
-    // Get all sections' statuses
-    const eachSectionStatus = collapsibleStructure.map((s) => s.collapseStatus)
-      .filter(c => c != undefined);
+    if (Array.isArray(collapsibleStructure)) {
+      // Get all sections' statuses
+      const eachSectionStatus = collapsibleStructure.map((s) => s.collapseStatus)
+        .filter(c => c != undefined);
 
-    if (eachSectionStatus?.length > 0) {
-      // Check all sections have the same status
-      const allSectionsHaveChanged = eachSectionStatus
-        .every(s => s === eachSectionStatus[0]);
+      if (eachSectionStatus?.length > 0) {
+        // Check all sections have the same status
+        const allSectionsHaveChanged = eachSectionStatus
+          .every(s => s === eachSectionStatus[0]);
 
-      // Update global state when all sections have been updated manually
-      if (allSectionsHaveChanged && eachSectionStatus[0] != allSectionStatus) {
-        collapseExpandAll();
+        // Update global state when all sections have been updated manually
+        if (allSectionsHaveChanged && eachSectionStatus[0] != allSectionStatus) {
+          collapseExpandAll();
+        }
       }
     }
   };
