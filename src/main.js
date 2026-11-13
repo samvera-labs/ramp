@@ -8,3 +8,5 @@ export { default as MetadataDisplay } from '@Components/MetadataDisplay/Metadata
 export { default as SupplementalFiles } from '@Components/SupplementalFiles/SupplementalFiles';
 export { default as AutoAdvanceToggle } from '@Components/AutoAdvanceToggle/AutoAdvanceToggle';
 export { default as Annotations } from '@Components/Annotations/Annotations';
+export { useCanvasIndex } from '@Services/hooks/useCanvasIndex';
+
