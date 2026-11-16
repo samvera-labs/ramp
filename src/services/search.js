@@ -334,10 +334,12 @@ export const useSearchCounts = ({ searchResults, canvasTranscripts, searchQuery 
 
   const hitCounts = searchResults.counts;
   let canvasTranscriptsWithCount = [];
-  canvasTranscripts.map((ct) => {
-    const numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url)?.numberOfHits || 0;
-    canvasTranscriptsWithCount.push({ ...ct, numberOfHits });
-  });
+  if (canvasTranscripts) {
+    canvasTranscripts.map((ct) => {
+      const numberOfHits = hitCounts.find((h) => h.transcriptURL === ct.url)?.numberOfHits || 0;
+      canvasTranscriptsWithCount.push({ ...ct, numberOfHits });
+    });
+  }
 
   return canvasTranscriptsWithCount;
 };

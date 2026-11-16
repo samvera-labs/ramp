@@ -748,22 +748,7 @@ describe('useSearchCounts', () => {
     );
     return { resultRef, Component };
   };
-  test('when the search query is not null, transcript list is returned with numberOfHits property', async () => {
-    const { resultRef, Component } = createTest({ searchQuery: 'Bungle' });
-    render(Component);
-    await waitFor(() => {
-      expect(resultRef.current.length).toEqual(transcriptListFixture.length);
-      expect(resultRef.current[0]).toEqual({
-        filename: 'transcript1.vtt',
-        format: 'text/vtt',
-        id: 'transcritp1.vtt-0-1',
-        isMachineGen: false,
-        title: 'transcript1.vtt',
-        url: 'http://example.com/canvas/1/transcript1.vtt',
-        numberOfHits: 2
-      });
-    });
-  });
+
   test('when the search query is null, original transcript list is returned', async () => {
     const { resultRef, Component } = createTest({ searchQuery: null });
     render(Component);
@@ -776,6 +761,33 @@ describe('useSearchCounts', () => {
         isMachineGen: false,
         title: 'transcript1.vtt',
         url: 'http://example.com/canvas/1/transcript1.vtt'
+      });
+    });
+  });
+
+  describe('when the search query is not null', () => {
+    test('transcript list is returned with numberOfHits property', async () => {
+      const { resultRef, Component } = createTest({ searchQuery: 'Bungle' });
+      render(Component);
+      await waitFor(() => {
+        expect(resultRef.current.length).toEqual(transcriptListFixture.length);
+        expect(resultRef.current[0]).toEqual({
+          filename: 'transcript1.vtt',
+          format: 'text/vtt',
+          id: 'transcritp1.vtt-0-1',
+          isMachineGen: false,
+          title: 'transcript1.vtt',
+          url: 'http://example.com/canvas/1/transcript1.vtt',
+          numberOfHits: 2
+        });
+      });
+    });
+
+    test('and canvasTranscripts=undefined empty transcript list is returned', async () => {
+      const { resultRef, Component } = createTest({ searchQuery: 'Bungle', canvasTranscripts: undefined });
+      render(Component);
+      await waitFor(() => {
+        expect(resultRef.current.length).toEqual(0);
       });
     });
   });
