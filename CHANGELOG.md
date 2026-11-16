@@ -1,5 +1,70 @@
 # @samvera/ramp
 
+## v5.2.0 tag (11/16/2026)
+- Fix search bug for undefined list of transcripts by @Dananji in https://github.com/samvera-labs/ramp/pull/1050
+- Upgrade dependencies to fix vulnerabilities before 5.2.0 release by @Dananji in https://github.com/samvera-labs/ramp/pull/1049
+- Add supporting docs for upgrade, fix v4 Manifest by @Dananji in https://github.com/samvera-labs/ramp/pull/1048
+- Bump Storybook and related packages to same version by @Dananji in https://github.com/samvera-labs/ramp/pull/1047
+- Bump picomatch from 2.3.1 to 2.3.2 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1046
+- Bump brace-expansion from 1.1.11 to 1.1.21 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1045
+- Bump dompurify from 3.4.13 to 3.4.17 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1040
+- Bump vite from 7.3.5 to 7.3.7 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1038
+- Bump source-map-js from 1.2.1 to 1.2.2 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1034
+- Pin npm by @Dananji in https://github.com/samvera-labs/ramp/pull/1031
+- Document new displayOnlyRangeMetadata prop in Storybook and Wiki by @Dananji in https://github.com/samvera-labs/ramp/pull/1025
+- Integrate 'provides' prop values to decide display of Annotations by @Dananji in https://github.com/samvera-labs/ramp/pull/1024
+- Bump js-yaml from 3.15.1 to 3.15.2 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1023
+- Bump browserslist from 4.28.1 to 4.28.9 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1020
+- Publish and release by @Dananji in https://github.com/samvera-labs/ramp/pull/1019
+- Bump @xmldom/xmldom from 0.8.13 to 0.8.15 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1018
+- Fix playhead and duration updates for multi-source switch by @Dananji in https://github.com/samvera-labs/ramp/pull/1016
+- Support display of waveform for each Annotation in multi-src Canvases by @Dananji in https://github.com/samvera-labs/ramp/pull/1015
+- Display range metadata in metadata display by @jamesmisson in https://github.com/samvera-labs/ramp/pull/1014
+- Fix UX for out of range structure timespans by @Dananji in https://github.com/samvera-labs/ramp/pull/1013
+- Waveform display by @Dananji in https://github.com/samvera-labs/ramp/pull/1007
+- Bump js-yaml from 3.15.0 to 3.15.1 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1006
+- Bump dompurify from 3.4.12 to 3.4.13 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/1004
+- Add a description to each Manifest option in demo combobox by @Dananji in https://github.com/samvera-labs/ramp/pull/1002
+- Cross canvas ranges by @Dananji in https://github.com/samvera-labs/ramp/pull/1000
+- Support hh:mm:ss.ms format in structure media-fragments by @Dananji in https://github.com/samvera-labs/ramp/pull/997
+- Bump postcss from 8.5.12 to 8.5.23 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/996
+- Bump dompurify from 3.4.11 to 3.4.12 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/995
+- Bump immutable from 5.1.5 to 5.1.9 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/994
+- Cleanup duplicated SVG symbols in VideoJS custom components by @Dananji in https://github.com/samvera-labs/ramp/pull/991
+- Combobox with sample manifests for demo site and update/add sample manifests by @Dananji in https://github.com/samvera-labs/ramp/pull/990
+- Parse presentation 4 by @Dananji in https://github.com/samvera-labs/ramp/pull/989
+- Update circleCI to use node 26, add engines to package.json by @Dananji in https://github.com/samvera-labs/ramp/pull/988
+- Show/hide auth badge with video player controls during playback by @Dananji in https://github.com/samvera-labs/ramp/pull/987
+- Fix auth by @Dananji in https://github.com/samvera-labs/ramp/pull/986
+- Bump ws from 8.20.0 to 8.21.0 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/985
+- Bump js-yaml from 3.14.2 to 3.15.0 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/984
+- Refactor playerHotKeys() to be generic by @Dananji in https://github.com/samvera-labs/ramp/pull/981
+- Logout UI for IIIF Auth by @Dananji in https://github.com/samvera-labs/ramp/pull/979
+- Bump dompurify from 3.4.9 to 3.4.11 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/977
+- Add start guide and code playground to docs by @Dananji in https://github.com/samvera-labs/ramp/pull/976
+- Add an empty Manifest story to IIIFPlayer component docs by @Dananji in https://github.com/samvera-labs/ramp/pull/975
+- Enable prop descriptions in controls by @Dananji in https://github.com/samvera-labs/ramp/pull/974
+- Bump dompurify from 3.4.1 to 3.4.9 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/973
+- Add Github workflow to build and deploy Storybook to GitHub pages by @Dananji in https://github.com/samvera-labs/ramp/pull/970
+- Bump @babel/core from 7.28.3 to 7.29.6 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/969
+- Bump vite from 7.3.2 to 7.3.5 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/968
+- Bump braces from 3.0.2 to 3.0.3 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/967
+- Remove Styleguidist and related files/configs by @Dananji in https://github.com/samvera-labs/ramp/pull/966
+- Add the rest of the docs and stories to Storybook by @Dananji in https://github.com/samvera-labs/ramp/pull/965
+- Bump shell-quote from 1.8.0 to 1.8.4 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/964
+- Add stories to AutoAdvanceToggle, IIIFPlayer, MetadataDisplay components by @Dananji in https://github.com/samvera-labs/ramp/pull/963
+- Add sample storybook manifests and clean up props and state in stories by @Dananji in https://github.com/samvera-labs/ramp/pull/962
+- Setup Storybook by @Dananji in https://github.com/samvera-labs/ramp/pull/961
+- Fix empty playlist annotation bug by @Dananji in https://github.com/samvera-labs/ramp/pull/960
+- Iiif auth by @Dananji in https://github.com/samvera-labs/ramp/pull/959
+- Fix styling in the form in demo site by @Dananji in https://github.com/samvera-labs/ramp/pull/955
+- Restore the playback state in the source fallback logic by @Dananji in https://github.com/samvera-labs/ramp/pull/954
+- Fix captions overlap with transcript cue clicks by @Dananji in https://github.com/samvera-labs/ramp/pull/951
+- Bump @babel/plugin-transform-modules-systemjs from 7.20.11 to 7.29.4 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/950
+- Scope playback pause on inactive tab to iOS by @Dananji in https://github.com/samvera-labs/ramp/pull/949
+- Bump fast-uri from 3.0.6 to 3.1.2 by @app/dependabot in https://github.com/samvera-labs/ramp/pull/948
+- Cdl playlist items by @Dananji in https://github.com/samvera-labs/ramp/pull/947
+
 ## v5.1.1 tag (08/05/2026)
 * Fix transcript content search for untimed text by @Dananji in https://github.com/samvera-labs/ramp/pull/1003
 
