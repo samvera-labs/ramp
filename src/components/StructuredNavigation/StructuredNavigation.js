@@ -340,7 +340,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
             </ul>
           ) : (
             <p className='ramp--no-structure'>
-              There are no structures in the manifest
+              There are no structures in the Manifest
             </p>
           )}
           <div aria-live='assertive' className='ramp--structured-nav__sr-only' />
