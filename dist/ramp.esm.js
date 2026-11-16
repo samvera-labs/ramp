@@ -65189,7 +65189,7 @@ const jB = ({
     return e;
   const i = n.counts;
   let r = [];
-  return e.map((a) => {
+  return e && e.map((a) => {
     const s = i.find((o) => o.transcriptURL === a.url)?.numberOfHits || 0;
     r.push({
       ...a,
