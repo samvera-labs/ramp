@@ -17,7 +17,7 @@ according to the [IIIF Presentation 3.0 spec](https://iiif.io/api/presentation/3
 navigation
 
 When a regular Manifest (not playlist) has `structures`, StructuredNavigation component can render a toggle via `structurePlayback` prop.
-This prop accepts the either a Boolean or a JS Object as its value as follows;
+This prop accepts either a Boolean or a JS Object as its value as follows;
 - as a Boolean shorthand -> `<StructuredNavigation structurePlayback />` -> turns structure-only playback in the background (no toggle button)
 - as an Object 
   - `<StructuredNavigation structurePlayback={{ toggleOn: false, label: 'Play structure only' }} />` -> displays the toggle button in UI with it

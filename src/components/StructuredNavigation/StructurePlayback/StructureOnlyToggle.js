@@ -62,7 +62,7 @@ const StructureOnlyToggle = ({ label, initStatus, show }) => {
           </span>
         </div>
         {showNotice && (
-          <div className='ramp--structure-only-playback__notice'>
+          <div className='ramp--structure-only-playback__notice' data-testid='structure-only-playback-notice'>
             <div aria-live='polite' className='ramp--structure-only-playback__banner' role='status'>
               <div className='ramp--structure-only-playback__icon'>
                 <ExclamationSVGIcon />
@@ -84,7 +84,7 @@ const StructureOnlyToggle = ({ label, initStatus, show }) => {
   } else if (showStaticStructNotice) {
     // Display a static notice for structure-only playback in the background
     return (
-      <div className='ramp--structure-only-playback__notice'>
+      <div className='ramp--structure-only-playback__notice' data-testid='structure-only-playback-static-notice'>
         <div aria-live='polite' className='ramp--structure-only-playback__banner' role='status'>
           <div className='ramp--structure-only-playback__icon'>
             <ExclamationSVGIcon />
@@ -96,6 +96,8 @@ const StructureOnlyToggle = ({ label, initStatus, show }) => {
         </div>
       </div>
     );
+  } else {
+    return null;
   }
 };
 

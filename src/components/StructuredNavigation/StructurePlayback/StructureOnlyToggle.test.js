@@ -218,31 +218,5 @@ describe('StructureOnlyToggle', () => {
         expect(screen.queryByRole('button', { name: '×' })).not.toBeInTheDocument();
       });
     });
-
-    test('\'Got it\' action dismisses the notice and keeps structure-only playback ON', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
-      fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-      // Structure-only playback stays ON
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
-    });
-
-    test('\'Turn off\' action dismisses the notice and turns structure-only playback OFF', () => {
-      renderToggle({ props: { initStatus: true } });
-      expect(screen.queryByRole('status')).toBeInTheDocument();
-
-      fireEvent.click(screen.getByRole('button', { name: 'Turn off' }));
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
-      expect(player.play).not.toHaveBeenCalled();
-    });
-
-    test('dismiss "×" button click dismisses the notice and keeps structure-only playback ON', () => {
-      renderToggle({ manifestOverrides: { structureOnlyPlayback: true } });
-      fireEvent.click(screen.getByRole('button', { name: '×' }));
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-      // Structure-only playback stays ON
-      expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
-    });
   });
 });

@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import StructuredNavigation from './StructuredNavigation';
 import manifestWoCanvasRefs from '@TestData/transcript-annotation';
 import manifest from '@TestData/lunchroom-manners';
-import singleCanvasManifest from '@TestData/single-canvas';
+import singleCanvasManifest, { nonZeroFirstTimespan } from '@TestData/single-canvas';
 import invalidStructure from '@TestData/invalid-structure';
 import thumbnailNavStructure from '@TestData/transcript-multiple-canvas';
 import playlist from '@TestData/playlist';
@@ -308,7 +308,6 @@ describe('StructuredNavigation component', () => {
           <ErrorBoundary>
             <NavWithPlayerAndManifest />
           </ErrorBoundary>);
-
       });
 
       afterEach(() => handleClickMock.mockClear());
@@ -1370,47 +1369,73 @@ describe('StructuredNavigation component', () => {
     });
   });
 
-  describe('structure-only playback toggle', () => {
+  describe('structure-only playback', () => {
     describe('doesn\'t render', () => {
-      test('with default structurePlayback value (false)', () => {
-        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {},
-        });
-        const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: { ...manifestState(manifest) },
-        });
-        render(
-          <ErrorBoundary>
-            <NavWithManifest />
-          </ErrorBoundary>
-        );
+      describe('both toggle and notice ', () => {
+        test('with default structurePlayback value (false)', () => {
+          const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+            initialState: {},
+          });
+          const NavWithManifest = withManifestProvider(NavWithPlayer, {
+            initialState: { ...manifestState(manifest) },
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithManifest />
+            </ErrorBoundary>
+          );
 
-        expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+        });
+
+        test('when structurePlayback is turned ON with a Manifest without structures (ToC)', () => {
+          const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+            initialState: {}, structurePlayback: { toggleOn: true },
+          });
+          const NavWithManifest = withManifestProvider(NavWithPlayer, {
+            initialState: { ...manifestState(manifestWoStructure) },
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithManifest />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+
+          // Displays section items for the ToC
+          const sections = screen.getAllByTestId('treeitem-section-button');
+          expect(sections).toHaveLength(3);
+          expect(sections[0]).toHaveTextContent('1.Lunchroom Manners11:00');
+          expect(sections[1]).toHaveTextContent('2.Sample Audio Example33:05');
+        });
+
+        test('when structurePlayback turned ON for a playlist Manifest', () => {
+          const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
+            initialState: {}, structurePlayback: { toggleOn: true },
+          });
+          const NavWithManifest = withManifestProvider(NavWithPlayer, {
+            initialState: { ...manifestState(playlist) },
+          });
+          render(
+            <ErrorBoundary>
+              <NavWithManifest />
+            </ErrorBoundary>
+          );
+
+          expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+          expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+        });
       });
+    });
 
-      test('with structurePlayback turned ON and no structures (ToC)', () => {
-        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {}, structurePlayback: { toggleOn: true },
-        });
-        const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: { ...manifestState(manifestWoStructure) },
-        });
-        render(
-          <ErrorBoundary>
-            <NavWithManifest />
-          </ErrorBoundary>
-        );
-
-        expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
-
-        // Displays section items for the ToC
-        const sections = screen.getAllByTestId('treeitem-section-button');
-        expect(sections).toHaveLength(3);
-        expect(sections[0]).toHaveTextContent('1.Lunchroom Manners11:00');
-        expect(sections[1]).toHaveTextContent('2.Sample Audio Example33:05');
-      });
-
-      test('with structurePlayback turned ON in the background', () => {
+    describe('renders', () => {
+      test('only the static notice when structurePlayback is turned ON in the background', () => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
           initialState: {}, structurePlayback: true,
         });
@@ -1424,42 +1449,130 @@ describe('StructuredNavigation component', () => {
         );
 
         expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
-      });
-    });
-
-    describe('renders when structures are present and', () => {
-      test('structurePlayback turned ON via structurePlayback={{ toggleOn: true }}', () => {
-        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {}, structurePlayback: { toggleOn: true },
-        });
-        const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: { ...manifestState(manifest) },
-        });
-        render(
-          <ErrorBoundary>
-            <NavWithManifest />
-          </ErrorBoundary>
-        );
-
-        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
-        expect(screen.getByText('Play structure only')).toBeInTheDocument();
+        expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+        expect(screen.queryByTestId('structure-only-playback-static-notice')).toBeInTheDocument();
+        expect(screen.getByRole('status')).toHaveTextContent('Structure-only playback is turned on');
       });
 
-      test('structurePlayback turned ON via structurePlayback={{ toggleOn: true, label: "Auto-play structure" }}', () => {
-        const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
-          initialState: {}, structurePlayback: { toggleOn: true, label: "Auto-play structure" },
-        });
-        const NavWithManifest = withManifestProvider(NavWithPlayer, {
-          initialState: { ...manifestState(manifest) },
-        });
-        render(
-          <ErrorBoundary>
-            <NavWithManifest />
-          </ErrorBoundary>
-        );
+      describe('both toggle and a dismissable notice', () => {
+        describe('for a Manifest with structures with a first timespan starting from non-zero', () => {
+          describe('with structurePlayback turned ON', () => {
+            test('structurePlayback={{ toggleOn: true }} with default label', () => {
+              const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+                StructuredNavigation,
+                {
+                  initialManifestState: { ...manifestState(nonZeroFirstTimespan) },
+                  initialPlayerState: {},
+                  structurePlayback: { toggleOn: true },
+                }
+              );
+              render(<ErrorBoundary><NavWithPlayerAndManifest /></ErrorBoundary>);
 
-        expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
-        expect(screen.getByText('Auto-play structure')).toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-notice')).toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+              // Shows the default label
+              expect(screen.getByText('Play structure only')).toBeInTheDocument();
+            });
+
+            test('structurePlayback={{ toggleOn: true, label: "Auto-play structure" }} with a custom label', () => {
+              const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+                StructuredNavigation,
+                {
+                  initialManifestState: { ...manifestState(nonZeroFirstTimespan) },
+                  initialPlayerState: {},
+                  structurePlayback: { toggleOn: true, label: "Auto-play structure" },
+                }
+              );
+              render(<ErrorBoundary><NavWithPlayerAndManifest /></ErrorBoundary>);
+
+              expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-notice')).toBeInTheDocument();
+              // Shows the custom label
+              expect(screen.getByText('Auto-play structure')).toBeInTheDocument();
+            });
+          });
+        });
+      });
+
+      describe('only the toggle', () => {
+        describe('for a Manifest with a start property with structurePlayback turned ON as', () => {
+          test('structurePlayback={{ toggleOn: true }} with default label', () => {
+            const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+              StructuredNavigation,
+              {
+                initialManifestState: { ...manifestState(manifest) },
+                initialPlayerState: {},
+                structurePlayback: { toggleOn: true },
+              }
+            );
+            render(<ErrorBoundary><NavWithPlayerAndManifest /></ErrorBoundary>);
+
+            expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+            expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+            // Shows the default label
+            expect(screen.getByText('Play structure only')).toBeInTheDocument();
+          });
+
+          test('structurePlayback={{ toggleOn: true, label: "Auto-play structure" }} with a custom label', () => {
+            const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+              StructuredNavigation,
+              {
+                initialManifestState: { ...manifestState(manifest) },
+                initialPlayerState: {},
+                structurePlayback: { toggleOn: true, label: "Auto-play structure" },
+              }
+            );
+            render(<ErrorBoundary><NavWithPlayerAndManifest /></ErrorBoundary>);
+
+            expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+            expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+            // Shows the custom label
+            expect(screen.getByText('Auto-play structure')).toBeInTheDocument();
+          });
+        });
+
+        describe('for a Manifest with structures with a first timespan starting from zero', () => {
+          describe('with structurePlayback turned ON as', () => {
+            test('structurePlayback={{ toggleOn: true }} with default label', () => {
+              const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+                StructuredNavigation,
+                {
+                  initialManifestState: { ...manifestState(singleCanvasManifest) },
+                  initialPlayerState: {},
+                  structurePlayback: { toggleOn: true },
+                }
+              );
+              render(<ErrorBoundary><NavWithPlayerAndManifest /></ErrorBoundary>);
+
+              expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+              // Shows the default label
+              expect(screen.getByText('Play structure only')).toBeInTheDocument();
+            });
+
+            test('structurePlayback={{ toggleOn: true, label: "Auto-play structure" }} with a custom label', () => {
+              const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
+                StructuredNavigation,
+                {
+                  initialManifestState: { ...manifestState(singleCanvasManifest) },
+                  initialPlayerState: {},
+                  structurePlayback: { toggleOn: true, label: "Auto-play structure" },
+                }
+              );
+              render(<ErrorBoundary><NavWithPlayerAndManifest /></ErrorBoundary>);
+
+              expect(screen.queryByTestId('structure-only-playback')).toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-notice')).not.toBeInTheDocument();
+              expect(screen.queryByTestId('structure-only-playback-static-notice')).not.toBeInTheDocument();
+              // Shows the custom label
+              expect(screen.getByText('Auto-play structure')).toBeInTheDocument();
+            });
+          });
+        });
       });
     });
   });
