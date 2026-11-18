@@ -1,4 +1,7 @@
 import * as util from './utility-helpers';
+import crossRangeManifest from '@TestData/multi-part-ranges';
+import lunchroomManners from '@TestData/lunchroom-manners';
+import * as iiifParser from './iiif-parser';
 
 describe('util helper', () => {
   describe('timeToS()', () => {
@@ -2002,6 +2005,45 @@ describe('util helper', () => {
         const content = util.getAnnotations(canvas, 'painting', '4');
         expect(content).toEqual([]);
       });
+    });
+  });
+
+  describe('getNextStructureTimespan()', () => {
+    let canvasSegments;
+
+    beforeAll(() => {
+      ({ timespans: canvasSegments } = iiifParser.getStructureRanges(
+        crossRangeManifest,
+        iiifParser.canvasesInManifest(crossRangeManifest),
+      ));
+    });
+
+    it('resolves the next timespan within a Range spanning across Canvases', () => {
+      const timespan = canvasSegments.find(
+        (t) => t.id === 'http://example.com/multi-part-ranges/canvas/1#t=550,600'
+      );
+      const next = util.getNextStructureTimespan(timespan, canvasSegments);
+      expect(next.id).toEqual('http://example.com/multi-part-ranges/canvas/2#t=0,100');
+      expect(next.canvasIndex).toEqual(2);
+    });
+
+    it('returns null for the last timespan', () => {
+      const last = canvasSegments[canvasSegments.length - 1];
+      expect(util.getNextStructureTimespan(last, canvasSegments)).toBeNull();
+    });
+
+    it('returns null when given timespan is null', () => {
+      expect(util.getNextStructureTimespan(null, canvasSegments)).toBeNull();
+    });
+
+    it('returns null when the canvasSegments list is empty', () => {
+      expect(util.getNextStructureTimespan(canvasSegments[0], [])).toBeNull();
+    });
+
+    it('skips Canvas-level items listed after the last timepan of a Canvas', () => {
+      const { timespans } = iiifParser.getStructureRanges(lunchroomManners, iiifParser.canvasesInManifest(lunchroomManners));
+      const lastTimespanInStructure = timespans.find((t) => t.label === 'Putting Things Away');
+      expect(util.getNextStructureTimespan(lastTimespanInStructure, timespans)).toBeNull();
     });
   });
 });

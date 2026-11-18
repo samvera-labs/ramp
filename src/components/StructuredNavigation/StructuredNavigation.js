@@ -2,6 +2,7 @@ import React, { createRef, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import CollapseExpandButton from './NavUtils/CollapseExpandButton';
+import StructureOnlyToggle from './StructurePlayback/StructureOnlyToggle';
 import TreeNode from './NavUtils/TreeNode';
 import { usePlayerDispatch, usePlayerState } from '../../context/player-context';
 import { useManifestState, useManifestDispatch } from '../../context/manifest-context';
@@ -18,8 +19,25 @@ import './StructuredNavigation.scss';
  * respectively.
  * @param {Object} props
  * @param {String} props.showAllSectionsButton
+ * @param {Object | Boolean} props.structurePlayback
  */
-const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading = 'Sections' }) => {
+const StructuredNavigation = ({
+  showAllSectionsButton = false, sectionsHeading = 'Sections',
+  structurePlayback = { enable: false, label: 'Play structure only' },
+}) => {
+
+  // Default structurePlayback prop
+  const defaultStructurePlayback = { enable: false, label: 'Play structure only' };
+
+  /* Normalize structurePlayback prop to support both
+  - Boolean shorthand -> <StructuredNavigation structurePlayback />
+  - Object form -> <StructuredNavigation structurePlayback={{ enable: true }} />
+  and fill-in missing properties as needed. */
+  structurePlayback = {
+    ...defaultStructurePlayback,
+    ...(typeof structurePlayback === 'boolean' ? { enable: structurePlayback } : structurePlayback),
+  };
+
   const manifestDispatch = useManifestDispatch();
   const playerDispatch = usePlayerDispatch();
 
@@ -273,6 +291,12 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
     return structureItemsRef.current?.length || 0;
   }, [structureItemsRef.current]);
 
+  const showStructureToggle = useMemo(() => {
+    // There are no timespans to highlight when only section items are in structure (e.g. ToC)
+    const hasTimespans = canvasSegments?.some((s) => !s.isCanvas);
+    return structurePlayback.enable && hasTimespans && !playlist.isPlaylist;
+  }, [structurePlayback, canvasSegments, playlist.isPlaylist]);
+
   if (!manifest) {
     return (<p className='ramp--no-structure'>
       No manifest - Please provide a valid manifest.
@@ -298,6 +322,7 @@ const StructuredNavigation = ({ showAllSectionsButton = false, sectionsHeading =
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={numberOfSections} />}
         </div>
       }
+      {showStructureToggle && <StructureOnlyToggle label={structurePlayback.label} />}
       <div className={cx(
         'ramp--structured-nav__border',
         numberOfSections == 0 && 'full-border'
@@ -360,6 +385,10 @@ StructuredNavigation.propTypes = {
   showAllSectionsButton: PropTypes.bool,
   /** Label shown next to the collapse/expand all sections button  (**added in `@samvera/ramp@3.3.0`**). */
   sectionsHeading: PropTypes.string,
+  /** Show/hide the structure-only playback toggle above the structures, when the Manifest has structures.
+   * Accepts either a Boolean shorthand (`structurePlayback`) or an Object to customize the label
+   * (`structurePlayback={{ enable: true, label: 'Play structure only' }}`) (** Next `@samvera/ramp` release **). */
+  structurePlayback: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 
 export default StructuredNavigation;

@@ -1,7 +1,7 @@
 import manifest from '@TestData/transcript-annotation';
 import volleyballManifest from '@TestData/volleyball-for-boys';
 import lunchroomManifest from '@TestData/lunchroom-manners';
-import crossRangeManifest from '@TestData/multi-part-ranges';
+import crossRangeManifest, { crossRangeWithSwitchBack } from '@TestData/multi-part-ranges';
 import manifestWoStructure from '@TestData/transcript-canvas';
 import singleSrcManifest from '@TestData/transcript-multiple-canvas';
 import autoAdvanceManifest from '@TestData/multiple-canvas-auto-advance';
@@ -1077,7 +1077,7 @@ tempor incididunt ut labore et dolore magna aliqua',
             canvasDuration: 3971.24, canvasIndex: 1, duration: "01:06:11", isCanvas: true, isClickable: true,
             isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: "Atto Primo", metadata: [],
             homepage: "", id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,",
-            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2", times: { end: 3971.24, start: 0 },
+            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2", times: { end: 0, start: 0 },
             summary: undefined
           });
           const firstTimespan = timespans[0];
@@ -1101,7 +1101,7 @@ tempor incididunt ut labore et dolore magna aliqua',
             canvasDuration: 3307.22, canvasIndex: 2, duration: "55:07", isCanvas: true, isClickable: true,
             isEmpty: false, isRoot: false, isTitle: false, itemIndex: 2, items: [], label: "Atto Secondo", metadata: [],
             homepage: "", id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,",
-            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3", times: { end: 3307.22, start: 0 },
+            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3", times: { end: 0, start: 0 },
             summary: undefined
           });
         });
@@ -1125,7 +1125,7 @@ tempor incididunt ut labore et dolore magna aliqua',
           );
           expect(firstStructCanvas.isClickable).toBeTruthy();
           expect(firstStructCanvas.canvasDuration).toEqual(660);
-          expect(firstStructCanvas.times).toEqual({ start: 0, end: 660 });
+          expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
         });
 
         it('returns structure with root for a single canvas manifest', () => {
@@ -1414,10 +1414,7 @@ tempor incididunt ut labore et dolore magna aliqua',
         expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
         expect(timespanWithStringMediaFrag.duration).toEqual('11:00');
         expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
-        expect(timespanWithStringMediaFrag.times).toEqual({
-          start: 0,
-          end: 660,
-        });
+        expect(timespanWithStringMediaFrag.times).toEqual({ start: 0, end: 0 });
       });
     });
 
@@ -1556,6 +1553,18 @@ tempor incididunt ut labore et dolore magna aliqua',
         expect(timespans[0].isMultiRange).toBeFalsy();
         expect(timespans[3].isMultiRange).toBeFalsy();
       });
+    });
+
+    it('uses the referenced Canvas\'s index for a part in a Range nested under another Canvas', () => {
+      const { timespans } = iiifParser.getStructureRanges(
+        crossRangeWithSwitchBack,
+        iiifParser.canvasesInManifest(crossRangeWithSwitchBack));
+
+      expect(timespans.length).toBe(4);
+      expect(timespans[1].isMultiRange).toBeTruthy();
+      expect(timespans[1].canvasIndex).toEqual(1);
+      expect(timespans[2].isMultiRange).toBeTruthy();
+      expect(timespans[2].canvasIndex).toEqual(2);
     });
   });
 
