@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { useManifestState } from '../../context/manifest-context';
 
 
