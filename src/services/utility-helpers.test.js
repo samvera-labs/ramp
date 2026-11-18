@@ -1,5 +1,6 @@
 import * as util from './utility-helpers';
 import crossRangeManifest from '@TestData/multi-part-ranges';
+import lunchroomManners from '@TestData/lunchroom-manners';
 import * as iiifParser from './iiif-parser';
 
 describe('util helper', () => {
@@ -2038,6 +2039,11 @@ describe('util helper', () => {
     it('returns null when the canvasSegments list is empty', () => {
       expect(util.getNextStructureTimespan(canvasSegments[0], [])).toBeNull();
     });
-  });
 
+    it('skips Canvas-level items listed after the last timepan of a Canvas', () => {
+      const { timespans } = iiifParser.getStructureRanges(lunchroomManners, iiifParser.canvasesInManifest(lunchroomManners));
+      const lastTimespanInStructure = timespans.find((t) => t.label === 'Putting Things Away');
+      expect(util.getNextStructureTimespan(lastTimespanInStructure, timespans)).toBeNull();
+    });
+  });
 });

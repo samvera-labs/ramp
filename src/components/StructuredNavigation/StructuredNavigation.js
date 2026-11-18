@@ -291,6 +291,12 @@ const StructuredNavigation = ({
     return structureItemsRef.current?.length || 0;
   }, [structureItemsRef.current]);
 
+  const showStructureToggle = useMemo(() => {
+    // There are no timespans to highlight when only section items are in structure (e.g. ToC)
+    const hasTimespans = canvasSegments?.some((s) => !s.isCanvas);
+    return structurePlayback.enable && hasTimespans && !playlist.isPlaylist;
+  }, [structurePlayback, canvasSegments, playlist.isPlaylist]);
+
   if (!manifest) {
     return (<p className='ramp--no-structure'>
       No manifest - Please provide a valid manifest.
@@ -316,9 +322,7 @@ const StructuredNavigation = ({
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={numberOfSections} />}
         </div>
       }
-      {structurePlayback.enable && canvasSegments?.length > 0 && !playlist.isPlaylist &&
-        <StructureOnlyToggle label={structurePlayback.label} />
-      }
+      {showStructureToggle && <StructureOnlyToggle label={structurePlayback.label} />}
       <div className={cx(
         'ramp--structured-nav__border',
         numberOfSections == 0 && 'full-border'

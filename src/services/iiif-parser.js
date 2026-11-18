@@ -699,7 +699,8 @@ export function getStructureRanges(manifest, canvasesInfo, isPlaylist = false) {
       And Canvas-level items without a Canvas reference get  { start: 0, end: 0 } to avoid full
       time-rail highlighting. */
       const fragmentURI = isCanvas && canvases[0]?.includes('#t=') ? canvases[0] : id;
-      let times = fragmentURI ? getMediaFragment(fragmentURI, canvasDuration) : { start: 0, end: 0 };
+      const showHighlight = !isCanvas || isPlaylist;
+      let times = fragmentURI && showHighlight ? getMediaFragment(fragmentURI, canvasDuration) : { start: 0, end: 0 };
 
       // A timespan is only clickable when its start/end falls within the Canvas' duration
       if (canvases.length > 0 && canvasesInfo?.length > 0) {

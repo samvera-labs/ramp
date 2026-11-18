@@ -1237,5 +1237,6 @@ export function getNextStructureTimespan(currentTimespan, canvasSegments) {
   const currentIndex = canvasSegments.findIndex((c) => c.id === currentTimespan.id);
   if (currentIndex === -1) return null;
 
-  return canvasSegments[currentIndex + 1] || null;
+  // Skip over Canvas-level items that are not intended to be played as timespans
+  return canvasSegments.slice(currentIndex + 1).find((c) => !c.isCanvas) || null;
 }

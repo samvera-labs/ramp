@@ -141,6 +141,5 @@ describe('StructureOnlyToggle', () => {
       // Structure-only playback stays ON
       expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
     });
-
   });
 });

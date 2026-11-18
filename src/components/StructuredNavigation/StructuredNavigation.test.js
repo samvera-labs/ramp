@@ -299,7 +299,7 @@ describe('StructuredNavigation component', () => {
         const NavWithPlayerAndManifest = withManifestAndPlayerProvider(
           StructuredNavigation,
           {
-            initialManifestState: { ...manifestState(manifestWoStructure) },
+            initialManifestState: { ...manifestState(manifestWithoutStructures) },
             initialPlayerState: {},
             showAllSectionsButton: true
           }
@@ -1388,7 +1388,7 @@ describe('StructuredNavigation component', () => {
         expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
       });
 
-      test('with structurePlayback turned ON and structures are NOT present', () => {
+      test('with structurePlayback turned ON and no structures (ToC)', () => {
         const NavWithPlayer = withPlayerProvider(StructuredNavigation, {
           initialState: {}, structurePlayback: true,
         });
@@ -1402,6 +1402,12 @@ describe('StructuredNavigation component', () => {
         );
 
         expect(screen.queryByTestId('structure-only-playback')).not.toBeInTheDocument();
+
+        // Displays section items for the ToC
+        const sections = screen.getAllByTestId('treeitem-section-button');
+        expect(sections).toHaveLength(3);
+        expect(sections[0]).toHaveTextContent('1.Lunchroom Manners11:00');
+        expect(sections[1]).toHaveTextContent('2.Sample Audio Example33:05');
       });
     });
 

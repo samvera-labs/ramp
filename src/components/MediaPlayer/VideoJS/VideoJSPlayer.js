@@ -1634,9 +1634,13 @@ function VideoJSPlayer({
       return;
     }
 
-    // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
+    // When a saved time exists with the need to be shown as resume option
     if (showModal) {
+      // Store same-Canvas resume for 'loadedmetadata' to show after confirming media loaded successfully
       pendingResumeRef.current = { time: savedTime, manifestURL, isSameCanvas: true };
+
+      // Set hasResume to true so that StructureNavigation can show the structure-only playback notice
+      manifestDispatch({ type: 'setHasResume', hasResume: true });
     }
   };
 

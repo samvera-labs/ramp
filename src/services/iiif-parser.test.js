@@ -1077,7 +1077,7 @@ tempor incididunt ut labore et dolore magna aliqua',
             canvasDuration: 3971.24, canvasIndex: 1, duration: "01:06:11", isCanvas: true, isClickable: true,
             isEmpty: false, isRoot: false, isTitle: false, itemIndex: 1, items: [], label: "Atto Primo", metadata: [],
             homepage: "", id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/1#t=0,",
-            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2", times: { end: 3971.24, start: 0 },
+            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/2", times: { end: 0, start: 0 },
             summary: undefined
           });
           const firstTimespan = timespans[0];
@@ -1101,7 +1101,7 @@ tempor incididunt ut labore et dolore magna aliqua',
             canvasDuration: 3307.22, canvasIndex: 2, duration: "55:07", isCanvas: true, isClickable: true,
             isEmpty: false, isRoot: false, isTitle: false, itemIndex: 2, items: [], label: "Atto Secondo", metadata: [],
             homepage: "", id: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/canvas/2#t=0,",
-            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3", times: { end: 3307.22, start: 0 },
+            rangeId: "https://iiif.io/api/cookbook/recipe/0065-opera-multiple-canvases/range/3", times: { end: 0, start: 0 },
             summary: undefined
           });
         });
@@ -1125,7 +1125,7 @@ tempor incididunt ut labore et dolore magna aliqua',
           );
           expect(firstStructCanvas.isClickable).toBeTruthy();
           expect(firstStructCanvas.canvasDuration).toEqual(660);
-          expect(firstStructCanvas.times).toEqual({ start: 0, end: 660 });
+          expect(firstStructCanvas.times).toEqual({ start: 0, end: 0 });
         });
 
         it('returns structure with root for a single canvas manifest', () => {
@@ -1414,10 +1414,7 @@ tempor incididunt ut labore et dolore magna aliqua',
         expect(timespanWithStringMediaFrag.isClickable).toBeTruthy();
         expect(timespanWithStringMediaFrag.duration).toEqual('11:00');
         expect(timespanWithStringMediaFrag.canvasDuration).toEqual(660);
-        expect(timespanWithStringMediaFrag.times).toEqual({
-          start: 0,
-          end: 660,
-        });
+        expect(timespanWithStringMediaFrag.times).toEqual({ start: 0, end: 0 });
       });
     });
 
