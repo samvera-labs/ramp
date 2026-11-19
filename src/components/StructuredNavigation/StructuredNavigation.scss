@@ -125,12 +125,10 @@
 
 // Border box
 .ramp--structured-nav__border {
-  margin-top: 20px;
   box-sizing: border-box;
   border: 1px solid #ddd;
   // Remove border-top to avoid double lines with section elements
   border-top: none;
-  border-radius: 0.25rem;
   display: flex;
   flex-direction: column;
   max-height: 40vh;

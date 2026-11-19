@@ -23,19 +23,18 @@ import './StructuredNavigation.scss';
  */
 const StructuredNavigation = ({
   showAllSectionsButton = false, sectionsHeading = 'Sections',
-  structurePlayback = { enable: false, label: 'Play structure only' },
+  structurePlayback = false,
 }) => {
+  // Determine whether the 'structurePlayback' prop is an Object
+  const isStructurePlaybackObject = typeof structurePlayback === 'object' && structurePlayback != null;
 
-  // Default structurePlayback prop
-  const defaultStructurePlayback = { enable: false, label: 'Play structure only' };
+  // Read the initial structure-playback toggle status from props
+  const toggleOn = isStructurePlaybackObject ? structurePlayback.toggleOn : structurePlayback;
 
-  /* Normalize structurePlayback prop to support both
-  - Boolean shorthand -> <StructuredNavigation structurePlayback />
-  - Object form -> <StructuredNavigation structurePlayback={{ enable: true }} />
-  and fill-in missing properties as needed. */
+  // Normalize structurePlayback prop to support both prop data types
   structurePlayback = {
-    ...defaultStructurePlayback,
-    ...(typeof structurePlayback === 'boolean' ? { enable: structurePlayback } : structurePlayback),
+    show: isStructurePlaybackObject, initStatus: toggleOn,
+    label: (isStructurePlaybackObject && structurePlayback.label) || 'Play structure only'
   };
 
   const manifestDispatch = useManifestDispatch();
@@ -294,8 +293,8 @@ const StructuredNavigation = ({
   const showStructureToggle = useMemo(() => {
     // There are no timespans to highlight when only section items are in structure (e.g. ToC)
     const hasTimespans = canvasSegments?.some((s) => !s.isCanvas);
-    return structurePlayback.enable && hasTimespans && !playlist.isPlaylist;
-  }, [structurePlayback, canvasSegments, playlist.isPlaylist]);
+    return hasTimespans && !playlist.isPlaylist;
+  }, [canvasSegments, playlist.isPlaylist]);
 
   if (!manifest) {
     return (<p className='ramp--no-structure'>
@@ -322,7 +321,7 @@ const StructuredNavigation = ({
           {hasCollapsibleStructRef.current && <CollapseExpandButton numberOfSections={numberOfSections} />}
         </div>
       }
-      {showStructureToggle && <StructureOnlyToggle label={structurePlayback.label} />}
+      {showStructureToggle && <StructureOnlyToggle {...structurePlayback} />}
       <div className={cx(
         'ramp--structured-nav__border',
         numberOfSections == 0 && 'full-border'
@@ -385,9 +384,10 @@ StructuredNavigation.propTypes = {
   showAllSectionsButton: PropTypes.bool,
   /** Label shown next to the collapse/expand all sections button  (**added in `@samvera/ramp@3.3.0`**). */
   sectionsHeading: PropTypes.string,
-  /** Show/hide the structure-only playback toggle above the structures, when the Manifest has structures.
-   * Accepts either a Boolean shorthand (`structurePlayback`) or an Object to customize the label
-   * (`structurePlayback={{ enable: true, label: 'Play structure only' }}`) (** Next `@samvera/ramp` release **). */
+  /** Enable/disable structure driven playback feature. This prop accepts either,
+   * - a Boolean shorthand - `<StructuredNavigation structurePlayback />` - which turns ON the feature in the background (without UI)
+   * - an Object to customize the initial toggle status and label - `<StructuredNavigation structurePlayback={{ toggleOn: true,
+   * label: 'Play structure only' }} />` - (** Next `@samvera/ramp` release **). */
   structurePlayback: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
 };
 
